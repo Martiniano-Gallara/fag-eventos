@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiénes Somos & Historia | FAG Eventos S.A.S.</title>
+  <meta name="description" content="Conocé la historia y el equipo directivo de FAG Eventos S.A.S. Fernando Gigena y Federico Pellizzon: más de 30 años produciendo espectáculos y eventos deportivos de nivel mundial.">
+  <meta name="keywords" content="Quiénes somos FAG Eventos, Fernando Gigena, Federico Pellizzon, historia FAG Eventos, productora eventos deportivos, financiamiento municipios">
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Quiénes Somos & Historia | FAG Eventos S.A.S.">
+  <meta property="og:description" content="Liderazgo con trayectoria probada en más de 10 países y los espectáculos más convocantes del planeta.">
+  <meta property="og:image" content="assets/fag-logo.png">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/fag-logo.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER (SLIM & MOBILE FIRST)
+       ========================================================================== -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="index.html" class="nav-brand" aria-label="FAG Eventos Inicio">
+        <img src="assets/fag-logo.png" alt="Logo FAG Eventos" class="brand-logo-img">
+      </a>
+
+      <nav class="desktop-nav">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Inicio</a></li>
+          <li><a href="quienes-somos.html" class="nav-link active">Quiénes Somos</a></li>
+          <li><a href="index.html#servicios" class="nav-link">Servicios</a></li>
+          <li><a href="index.html#trabajos" class="nav-link">Trabajos Realizados</a></li>
+          <li><a href="index.html#contacto" class="nav-link">Contacto</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="index.html#contacto" class="btn-primary desktop-only">
+          <span>Cotizar Evento</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <button class="mobile-toggle" id="mobileDrawerOpen" aria-label="Abrir menú de navegación">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       LATERAL MOBILE DRAWER (MENÚ LATERAL)
+       ========================================================================== -->
+  <div class="drawer-backdrop" id="drawerBackdrop" aria-hidden="true"></div>
+
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Menú lateral móvil">
+    <div class="drawer-header">
+      <img src="assets/fag-logo.png" alt="Logo FAG Eventos" class="drawer-logo">
+      <button class="drawer-close" id="mobileDrawerClose" aria-label="Cerrar menú">&times;</button>
+    </div>
+
+    <div class="drawer-body">
+      <ul class="drawer-links">
+        <li><a href="index.html" class="drawer-link"><i class="fa-solid fa-house"></i> Inicio</a></li>
+        <li><a href="quienes-somos.html" class="drawer-link active"><i class="fa-solid fa-users"></i> Quiénes Somos</a></li>
+        <li><a href="index.html#servicios" class="drawer-link"><i class="fa-solid fa-gear"></i> Servicios</a></li>
+        <li><a href="index.html#trabajos" class="drawer-link"><i class="fa-solid fa-images"></i> Trabajos Realizados</a></li>
+        <li><a href="index.html#contacto" class="drawer-link"><i class="fa-solid fa-envelope"></i> Contacto</a></li>
+      </ul>
+    </div>
+
+    <div class="drawer-footer">
+      <a href="https://www.instagram.com/fag.eventos/" target="_blank" rel="noopener noreferrer" class="drawer-ig-btn" title="Instagram fag.eventos">
+        <i class="fa-brands fa-instagram drawer-ig-icon"></i>
+        <span>fag.eventos</span>
+      </a>
+      <a href="#" class="drawer-wa-btn dynamic-whatsapp-btn" title="Contactar por WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>WhatsApp</span>
+      </a>
+    </div>
+  </aside>
+
+  <main>
+    <!-- ==========================================================================
+         HERO BANNER DE LA PÁGINA (COMPACTO)
+         ========================================================================== -->
+    <section class="page-hero" style="padding: 100px 20px 40px;">
+      <div class="container page-hero-content">
+        <span class="section-badge" style="background: rgba(255, 255, 255, 0.12); color: #FFFFFF; border-color: rgba(255, 255, 255, 0.25); margin-bottom: 10px;">
+          <i class="fa-solid fa-users-gear" style="color: var(--accent-cyan);"></i>
+          Historia & Equipo Directivo
+        </span>
+        <h1 class="page-hero-title" style="margin-bottom: 8px;">Quiénes Somos</h1>
+        <p class="page-hero-desc" style="max-width: 600px; margin-bottom: 0; font-size: 0.98rem;">
+          Creatividad, producción de nivel internacional y solidez financiera corporativa.
+        </p>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         CONTENIDO PRINCIPAL: TARJETA EJECUTIVA & ACORDEONES INTERACTIVOS
+         ========================================================================== -->
+    <section class="about-section" style="padding: 32px 0 50px;">
+      <div class="container">
+        
+        <!-- Tarjeta Ejecutiva Compacta de Presentación -->
+        <div class="about-hero-summary-card">
+          <div class="about-summary-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+            FAG Eventos S.A.S. &bull; Institucional
+          </div>
+          <h2 class="about-summary-title">
+            Creatividad, Producción y <span class="text-highlight">Solidez Financiera</span>
+          </h2>
+          <p class="about-summary-desc">
+            Somos una productora de eventos artísticos y deportivos nacida de la unión estratégica de dos socios con perfiles complementarios: creatividad, producción y solidez financiera.
+          </p>
+
+          <div class="about-summary-directors">
+            <div class="summary-director-chip">
+              <img src="assets/team/fernando-gigena.png" alt="Fernando Gigena" class="summary-chip-avatar">
+              <div class="summary-chip-info">
+                <strong>Fernando Gigena</strong>
+                <span>Socio Fundador &bull; Producción (+30 Años)</span>
+              </div>
+            </div>
+            <div class="summary-director-chip">
+              <img src="assets/team/federico-pellizzon.png" alt="Federico Pellizzon" class="summary-chip-avatar">
+              <div class="summary-chip-info">
+                <strong>Federico Pellizzon</strong>
+                <span>Socio Fundador &bull; Finanzas (+20 Años)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================================================================
+             ACORDEONES INTERACTIVOS COMPACTOS (100% VERÍDICOS)
+             ====================================================================== -->
+        <div class="about-accordion-wrapper">
+          
+          <!-- Acordeón 1: ¿Qué generamos? -->
+          <div class="about-accordion-item" data-about="que-generamos">
+            <button class="about-accordion-header" aria-expanded="false">
+              <div class="about-accordion-lead">
+                <div class="about-accordion-icon">
+                  <i class="fa-solid fa-landmark"></i>
+                </div>
+                <div class="about-accordion-titles">
+                  <h3 class="about-accordion-title">¿Qué generamos?</h3>
+                  <span class="about-accordion-sub">Financiamiento para municipios & eventos masivos</span>
+                </div>
+              </div>
+              <div class="about-accordion-arrow">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+            <div class="about-accordion-body">
+              <div class="about-accordion-content">
+                <p class="about-accordion-text">
+                  Generamos eventos, branding deportivo y activaciones de marcas.
+                </p>
+                <p class="about-accordion-text">
+                  Somos la <strong>única productora que financia eventos para municipios, comunas y organismos oficiales</strong>, permitiendo el acceso a espectáculos de primer nivel sin inversión inicial por parte del Estado, bajo modelos de gestión profesional, transparente y autosustentable.
+                </p>
+                <div class="about-pills-row">
+                  <span class="about-pill-mini"><i class="fa-solid fa-check"></i> Cero Inversión Inicial del Estado</span>
+                  <span class="about-pill-mini"><i class="fa-solid fa-check"></i> Gestión Autosustentable</span>
+                  <span class="about-pill-mini"><i class="fa-solid fa-check"></i> Transparencia Administrativa</span>
+                  <span class="about-pill-mini"><i class="fa-solid fa-check"></i> Espectáculos de Primer Nivel</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acordeón 2: Fernando Gigena -->
+          <div class="about-accordion-item" data-about="fernando-gigena">
+            <button class="about-accordion-header" aria-expanded="false">
+              <div class="about-accordion-lead">
+                <div class="about-accordion-avatar">
+                  <img src="assets/team/fernando-gigena.png" alt="Fernando Gigena">
+                </div>
+                <div class="about-accordion-titles">
+                  <h3 class="about-accordion-title">Fernando Gigena</h3>
+                  <span class="about-accordion-sub">Socio Fundador &bull; Director de Producción</span>
+                </div>
+              </div>
+              <div class="about-accordion-arrow">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+            <div class="about-accordion-body">
+              <div class="about-accordion-content">
+                <p class="about-accordion-text">
+                  Cuenta con más de <strong>30 años de trayectoria</strong> en el entretenimiento internacional. Desde <strong>1996</strong> ha desarrollado su carrera como <strong>Production Manager, representante artístico, booking y responsable de distintas áreas técnicas</strong>, trabajando en la producción y siendo staff de artistas de primer nivel mundial.
+                </p>
+
+                <h4 class="about-accordion-subtitle">Artistas de Primer Nivel Mundial</h4>
+                <div class="about-pills-row">
+                  <span class="about-pill-mini">Sir Paul McCartney</span>
+                  <span class="about-pill-mini">Luis Miguel</span>
+                  <span class="about-pill-mini">Ricardo Arjona</span>
+                  <span class="about-pill-mini">Marc Anthony</span>
+                  <span class="about-pill-mini">Maná</span>
+                  <span class="about-pill-mini">Juan Luis Guerra</span>
+                  <span class="about-pill-mini">Los Tigres del Norte</span>
+                  <span class="about-pill-mini">Calle 13</span>
+                  <span class="about-pill-mini">Julio Iglesias</span>
+                  <span class="about-pill-mini">Américo</span>
+                  <span class="about-pill-mini">Holiday on Ice</span>
+                </div>
+
+                <h4 class="about-accordion-subtitle">Giras y Espectáculos Internacionales</h4>
+                <p class="about-accordion-text" style="font-size: 0.86rem; color: var(--text-muted);">
+                  México, Perú, Chile, Guatemala, Ecuador, Paraguay, Uruguay, Italia, España y Bolivia.
+                </p>
+
+                <h4 class="about-accordion-subtitle">Consultor Externo (desde 2006)</h4>
+                <ul class="about-entity-list">
+                  <li><i class="fa-solid fa-circle-check"></i> Team Producciones (Ecuador)</li>
+                  <li><i class="fa-solid fa-circle-check"></i> Grupo Financiero Bantrab (Guatemala)</li>
+                  <li><i class="fa-solid fa-circle-check"></i> Bizzarro Producciones (Uruguay y Chile)</li>
+                  <li><i class="fa-solid fa-circle-check"></i> Grupo Sancor Seguros (Argentina)</li>
+                  <li><i class="fa-solid fa-circle-check"></i> Vibra Marketing (Chile)</li>
+                </ul>
+
+                <a href="https://www.instagram.com/fergigena/" target="_blank" rel="noopener noreferrer" class="about-ig-link">
+                  <i class="fa-brands fa-instagram"></i>
+                  <span>@fergigena</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acordeón 3: Federico Pellizzon -->
+          <div class="about-accordion-item" data-about="federico-pellizzon">
+            <button class="about-accordion-header" aria-expanded="false">
+              <div class="about-accordion-lead">
+                <div class="about-accordion-avatar">
+                  <img src="assets/team/federico-pellizzon.png" alt="Federico Pellizzon">
+                </div>
+                <div class="about-accordion-titles">
+                  <h3 class="about-accordion-title">Federico Pellizzon</h3>
+                  <span class="about-accordion-sub">Socio Fundador &bull; Director Financiero</span>
+                </div>
+              </div>
+              <div class="about-accordion-arrow">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+            <div class="about-accordion-body">
+              <div class="about-accordion-content">
+                <p class="about-accordion-text">
+                  <strong>Contador Público Nacional</strong>, con más de <strong>20 años de trayectoria</strong> en el área de planificación estratégica y proyección financiera.
+                </p>
+                <p class="about-accordion-text">
+                  Cuenta con una <strong>experiencia internacional de 10 años</strong> ocupando cargos de dirección financiera corporativa en <strong>Argentina, España, México y Brasil</strong>.
+                </p>
+                <p class="about-accordion-text">
+                  Lidera el <strong>desarrollo financiero y administrativo</strong> de la productora, garantizando control presupuestario, eficiencia y sustentabilidad en cada proyecto.
+                </p>
+
+                <div class="about-pills-row">
+                  <span class="about-pill-mini"><i class="fa-solid fa-check"></i> Planificación Estratégica</span>
+                  <span class="about-pill-mini"><i class="fa-solid fa-check"></i> Proyección Financiera</span>
+                  <span class="about-pill-mini"><i class="fa-solid fa-check"></i> Control Presupuestario</span>
+                  <span class="about-pill-mini"><i class="fa-solid fa-check"></i> Sustentabilidad Corporativa</span>
+                </div>
+
+                <a href="https://www.instagram.com/fedepellizzon/" target="_blank" rel="noopener noreferrer" class="about-ig-link">
+                  <i class="fa-brands fa-instagram"></i>
+                  <span>@fedepellizzon</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acordeón 4: Presencia e Hitos Nacionales -->
+          <div class="about-accordion-item" data-about="hitos-nacionales">
+            <button class="about-accordion-header" aria-expanded="false">
+              <div class="about-accordion-lead">
+                <div class="about-accordion-icon">
+                  <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div class="about-accordion-titles">
+                  <h3 class="about-accordion-title">Presencia e Hitos Nacionales</h3>
+                  <span class="about-accordion-sub">Festival de Peñas &bull; Copa Argentina 2025</span>
+                </div>
+              </div>
+              <div class="about-accordion-arrow">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+            <div class="about-accordion-body">
+              <div class="about-accordion-content">
+                <h4 class="about-accordion-subtitle">Festival de Peñas de Villa María</h4>
+                <p class="about-accordion-text">
+                  En el ámbito nacional, participamos activamente en la programación artística de varios festivales como el <strong>Festival de Peñas de Villa María</strong>, incorporando figuras de alcance internacional y popular como <strong>Maná, Marco Antonio Solís y María Becerra</strong>, y consolidando propuestas de alto impacto masivo.
+                </p>
+
+                <h4 class="about-accordion-subtitle">Copa Argentina 2025</h4>
+                <p class="about-accordion-text">
+                  La productora desarrolla <strong>branding deportivo y activaciones de marca</strong> en eventos de gran visibilidad, destacándose su participación en la <strong>Copa Argentina 2025</strong>.
+                </p>
+
+                <div class="about-philosophy-quote" style="margin-top: 14px;">
+                  "La combinación de trayectoria internacional, visión creativa, gestión financiera y financiamiento propio posiciona a FAG EVENTOS SAS como un socio estratégico confiable para el desarrollo cultural, deportivo y turístico."
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acordeón 5: Nuestros Principios & Filosofía -->
+          <div class="about-accordion-item" data-about="principios-filosofia">
+            <button class="about-accordion-header" aria-expanded="false">
+              <div class="about-accordion-lead">
+                <div class="about-accordion-icon">
+                  <i class="fa-solid fa-compass"></i>
+                </div>
+                <div class="about-accordion-titles">
+                  <h3 class="about-accordion-title">Nuestros Principios & Filosofía</h3>
+                  <span class="about-accordion-sub">Pilares éticos & trabajo en equipo</span>
+                </div>
+              </div>
+              <div class="about-accordion-arrow">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+            <div class="about-accordion-body">
+              <div class="about-accordion-content">
+                <h4 class="about-accordion-subtitle">Nuestros Principios</h4>
+                <ul class="about-principles-list">
+                  <li class="about-principle-row">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span><strong>Respeto mutuo</strong> con clientes, sponsors, proveedores y nuestro equipo.</span>
+                  </li>
+                  <li class="about-principle-row">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span><strong>Transparencia</strong> en la gestión y la comunicación.</span>
+                  </li>
+                  <li class="about-principle-row">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span><strong>Compromiso</strong> con la excelencia y la satisfacción total.</span>
+                  </li>
+                  <li class="about-principle-row">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span><strong>Apoyo constante</strong> al desarrollo personal y profesional en un entorno positivo.</span>
+                  </li>
+                </ul>
+
+                <h4 class="about-accordion-subtitle">Nuestra Filosofía</h4>
+                <div class="about-philosophy-quote">
+                  "Trabajo en equipo, como base de cada logro."
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Cierre de página: Contacto Directo -->
+        <div class="about-bottom-cta">
+          <h4>¿Tenés un proyecto o requerimiento en mente?</h4>
+          <p>Contactá directamente con la dirección ejecutiva y de producción de FAG Eventos.</p>
+          <div class="about-cta-btns">
+            <a href="#" class="btn-direct-action btn-direct-whatsapp dynamic-whatsapp-btn" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-whatsapp"></i>
+              <span>WhatsApp Directo</span>
+            </a>
+            <a href="mailto:contacto@fageventos.com" class="btn-direct-action btn-direct-mail">
+              <i class="fa-solid fa-envelope"></i>
+              <span>Enviar Correo</span>
+            </a>
+          </div>
+          <div style="margin-top: 16px;">
+            <a href="index.html" class="btn-back-home">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Volver a la portada</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER (SIMPLE)
+       ========================================================================== -->
+  <footer class="footer-simple">
+    <div class="container footer-simple-container">
+      <p class="footer-developer">
+        Desarrollado por <a href="https://www.instagram.com/mgh.software/" target="_blank" rel="noopener noreferrer" class="developer-link">MGH</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript File -->
+  <script src="js/main.js"></script>
+</body>
+</html>

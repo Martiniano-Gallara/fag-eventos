@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAG Eventos | Eventos Deportivos, Festivales y Experiencias</title>
+  <meta name="description" content="FAG Eventos: Productora líder de eventos deportivos, festivales masivos y experiencias de marca. Seguinos en Instagram fag.eventos">
+  <meta name="keywords" content="FAG Eventos, eventos deportivos, maratones, carreras nocturnas, torneos de padel, festivales, experiencias de marca, produccion de eventos">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="FAG Eventos | Producción Integral">
+  <meta property="og:description" content="Organización de eventos deportivos, festivales y experiencias únicas. Seguinos en fag.eventos">
+  <meta property="og:image" content="assets/fag-banner.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/fag-logo.png">
+
+  <!-- Google Fonts: Outfit (Titulares deportivos) & Plus Jakarta Sans (Texto limpio) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER & BARRA DE NAVEGACIÓN (SLIM & MOBILE FIRST)
+       ========================================================================== -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="#inicio" class="nav-brand" aria-label="FAG Eventos Inicio">
+        <img src="assets/fag-logo.png" alt="Logo FAG Eventos" class="brand-logo-img">
+      </a>
+
+      <nav class="desktop-nav">
+        <ul class="nav-links">
+          <li><a href="#inicio" class="nav-link active">Inicio</a></li>
+          <li><a href="quienes-somos.html" class="nav-link">Quiénes Somos</a></li>
+          <li><a href="#servicios" class="nav-link">Servicios</a></li>
+          <li><a href="#trabajos" class="nav-link">Trabajos Realizados</a></li>
+          <li><a href="#contacto" class="nav-link">Contacto</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="#contacto" class="btn-primary desktop-only">
+          <span>Cotizar Evento</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <button class="mobile-toggle" id="mobileDrawerOpen" aria-label="Abrir menú de navegación">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       LATERAL MOBILE DRAWER (DESPLIEGUE DESDE EL LATERAL DERECHO)
+       ========================================================================== -->
+  <div class="drawer-backdrop" id="drawerBackdrop" aria-hidden="true"></div>
+
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Menú lateral móvil">
+    <div class="drawer-header">
+      <img src="assets/fag-logo.png" alt="Logo FAG Eventos" class="drawer-logo">
+      <button class="drawer-close" id="mobileDrawerClose" aria-label="Cerrar menú">&times;</button>
+    </div>
+
+    <div class="drawer-body">
+      <ul class="drawer-links">
+        <li><a href="#inicio" class="drawer-link active"><i class="fa-solid fa-house"></i> Inicio</a></li>
+        <li><a href="quienes-somos.html" class="drawer-link"><i class="fa-solid fa-users"></i> Quiénes Somos</a></li>
+        <li><a href="#servicios" class="drawer-link"><i class="fa-solid fa-gear"></i> Servicios</a></li>
+        <li><a href="#trabajos" class="drawer-link"><i class="fa-solid fa-images"></i> Trabajos Realizados</a></li>
+        <li><a href="#contacto" class="drawer-link"><i class="fa-solid fa-envelope"></i> Contacto</a></li>
+      </ul>
+    </div>
+
+    <div class="drawer-footer">
+      <a href="https://www.instagram.com/fag.eventos/" target="_blank" rel="noopener noreferrer" class="drawer-ig-btn" title="Instagram fag.eventos">
+        <i class="fa-brands fa-instagram drawer-ig-icon"></i>
+        <span>fag.eventos</span>
+      </a>
+      <a href="#" class="drawer-wa-btn dynamic-whatsapp-btn" title="Contactar por WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>WhatsApp</span>
+      </a>
+    </div>
+  </aside>
+
+  <main>
+    <!-- ==========================================================================
+         HERO SECTION: RÉPLICA FIEL Y ADAPTACIÓN DE LA PORTADA FAG EVENTOS
+         ========================================================================== -->
+    <section id="inicio" class="hero-section">
+      <!-- Decoraciones geométricas esquineras idénticas al afiche original -->
+      <!-- Esquina Superior Izquierda -->
+      <div class="hero-corner-decor hero-corner-tl" aria-hidden="true">
+        <svg class="svg-decor" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Franja de acento celeste/hielo -->
+          <polygon points="0,0 230,0 0,230" fill="#E8EDF3" />
+          <!-- Línea fina azul oscuro -->
+          <polygon points="0,60 270,330 250,330 0,80" fill="#14356B" opacity="0.4" />
+          <polygon points="40,0 350,310 330,310 20,0" fill="#14356B" />
+          <!-- Barra gruesa azul marino principal -->
+          <polygon points="0,0 120,0 380,260 300,340 0,40" fill="#14356B" />
+        </svg>
+      </div>
+
+      <!-- Esquina Inferior Derecha -->
+      <div class="hero-corner-decor hero-corner-br" aria-hidden="true">
+        <svg class="svg-decor" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Franja de acento celeste/hielo -->
+          <polygon points="170,400 400,400 400,170" fill="#E8EDF3" />
+          <!-- Línea fina azul -->
+          <polygon points="150,400 400,150 400,170 170,400" fill="#14356B" opacity="0.4" />
+          <polygon points="120,400 400,120 400,140 140,400" fill="#14356B" />
+          <!-- Barra gruesa azul marino principal -->
+          <polygon points="70,400 0,400 400,0 400,70" fill="#14356B" />
+        </svg>
+      </div>
+
+      <div class="container hero-content">
+        <!-- Logo Oficial FAG EVENTOS -->
+        <div class="hero-logo-wrapper">
+          <img src="assets/fag-logo.png" alt="FAG Eventos - Logo Oficial" class="hero-logo-img">
+        </div>
+
+        <!-- Solo el Título Principal debajo del Logo -->
+        <h1 class="hero-main-title">
+          Grandes Convocatorias.<br>
+          <span class="hero-title-accent">Espectáculos de Nivel Mundial.</span>
+        </h1>
+
+        <!-- 3 Items Horizontales y Cortos -->
+        <div class="hero-trust-horizontal">
+          <span class="hero-trust-item"><i class="fa-solid fa-award"></i> +30 Años</span>
+          <span class="hero-trust-separator">&bull;</span>
+          <span class="hero-trust-item"><i class="fa-solid fa-landmark"></i> Financiamiento Propio</span>
+          <span class="hero-trust-separator">&bull;</span>
+          <span class="hero-trust-item"><i class="fa-solid fa-globe"></i> Internacional</span>
+        </div>
+
+        <!-- Botón Estilizado Contactanos con flecha hacia abajo -->
+        <div class="hero-contact-wrap">
+          <a href="#contacto" class="hero-contact-scroll" aria-label="Ir a sección Contacto">
+            <span class="hero-contact-scroll-text">Contactanos</span>
+            <span class="hero-contact-scroll-icon">
+              <i class="fa-solid fa-arrow-down"></i>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         MÉTRICAS & CIFRAS DE IMPACTO (ANGOSTO & 3 FRASES EN 2 RENGLONES)
+         ========================================================================== -->
+    <section id="estadisticas" class="stats-section">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number-wrap">
+              <span class="stat-plus">+</span>
+              <span class="stat-number" data-target="30">0</span>
+            </div>
+            <p class="stat-label">
+              <span>Años de</span>
+              <span>Trayectoria</span>
+            </p>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-number-wrap">
+              <span class="stat-plus">+</span>
+              <span class="stat-number" data-target="10">0</span>
+            </div>
+            <p class="stat-label">
+              <span>Países con</span>
+              <span>Producciones</span>
+            </p>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-number-wrap">
+              <span class="stat-number" data-target="100">0</span>
+              <span class="stat-plus">%</span>
+            </div>
+            <p class="stat-label">
+              <span>Gestión Propia</span>
+              <span>& Financiamiento</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SOBRE NOSOTROS (INSTITUCIONAL, HUMANO Y CERCANO)
+         ========================================================================== -->
+    <section class="about-brand-section">
+      <div class="container">
+        <div class="about-brand-card">
+          <div class="about-brand-top">
+            <span class="about-inst-badge">
+              <i class="fa-solid fa-shield-halved"></i>
+              FAG Eventos S.A.S. &bull; Institucional
+            </span>
+
+            <!-- Avatares de los Socios Fundadores -->
+            <div class="about-founders-cluster">
+              <div class="founders-avatar-stack">
+                <img src="assets/team/fernando-gigena.png" alt="Fernando Gigena" class="founder-micro-avatar" title="Fernando Gigena - Producción">
+                <img src="assets/team/federico-pellizzon.png" alt="Federico Pellizzon" class="founder-micro-avatar" title="Federico Pellizzon - Finanzas">
+              </div>
+              <div class="founders-cluster-label">
+                <span class="founders-cluster-title">Fernando Gigena</span>
+                <span class="founders-cluster-title">Federico Pellizzon</span>
+                <span class="founders-cluster-sub">Dirección General & Financiera</span>
+              </div>
+            </div>
+          </div>
+
+          <h2 class="about-brand-title">
+            Creatividad Artística con <span class="text-highlight">Solidez Financiera</span>
+          </h2>
+
+          <p class="about-brand-text">
+            Productora de eventos deportivos, festivales masivos y soluciones de financiamiento para municipios. La información completa sobre nuestra trayectoria está en <a href="quienes-somos.html" style="color: var(--accent-blue); font-weight: 700;">Quiénes Somos</a>.
+          </p>
+
+          <div class="about-brand-footer">
+            <div class="about-brand-tags">
+              <span class="about-brand-tag"><i class="fa-solid fa-check"></i> Cero Inversión Estatal Inicial</span>
+              <span class="about-brand-tag"><i class="fa-solid fa-check"></i> Producción y Logística 360°</span>
+            </div>
+
+            <a href="quienes-somos.html" class="btn-about-link">
+              <span>Conocé Nuestra Historia & Equipo</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN SERVICIOS / ESPECIALIDADES (ACORDEÓN DESPLEGABLE INTERACTIVO)
+         ========================================================================== -->
+    <section id="servicios" class="services-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">
+            <i class="fa-solid fa-gear"></i>
+            Nuestras Especialidades
+          </span>
+          <h2 class="section-title">Soluciones Integrales para <span class="text-highlight">Grandes Eventos</span></h2>
+          <p class="section-subtitle">Toca cada especialidad para conocer nuestro alcance técnico y operativo.</p>
+        </div>
+
+        <div class="services-accordion-wrapper">
+          <!-- Acordeón 1: Eventos Deportivos -->
+          <div class="service-accordion-item" data-service="deportes">
+            <button class="service-accordion-header" aria-expanded="false">
+              <div class="service-accordion-lead">
+                <div class="service-accordion-icon">
+                  <i class="fa-solid fa-person-running"></i>
+                </div>
+                <div class="service-accordion-titles">
+                  <h3 class="service-accordion-title">Eventos Deportivos & Competiciones</h3>
+                  <span class="service-accordion-sub">Maratones, Pádel, Ciclismo & Crossfit</span>
+                </div>
+              </div>
+              <div class="service-accordion-arrow">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+            <div class="service-accordion-body">
+              <div class="service-accordion-content">
+                <p class="service-accordion-desc">
+                  Organización integral de competencias oficiales: diseño y habilitación de circuitos urbanos, cronometraje por chip RFID, puestos de hidratación y cobertura médica.
+                </p>
+                <div class="service-tags-row">
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Circuitos urbanos homologados</span>
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Cronometraje digital RFID</span>
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Cobertura médica y seguridad</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acordeón 2: Festivales & Shows Masivos -->
+          <div class="service-accordion-item" data-service="festivales">
+            <button class="service-accordion-header" aria-expanded="false">
+              <div class="service-accordion-lead">
+                <div class="service-accordion-icon">
+                  <i class="fa-solid fa-music"></i>
+                </div>
+                <div class="service-accordion-titles">
+                  <h3 class="service-accordion-title">Festivales Masivos & Espectáculos</h3>
+                  <span class="service-accordion-sub">Producción técnica 360°, escenarios y sonido</span>
+                </div>
+              </div>
+              <div class="service-accordion-arrow">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+            <div class="service-accordion-body">
+              <div class="service-accordion-content">
+                <p class="service-accordion-desc">
+                  Producción técnica y logística integral con estándar internacional de giras: escenarios Layher techados, sonido Line-Array, iluminación DMX y control de accesos.
+                </p>
+                <div class="service-tags-row">
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Escenarios homologados Layher</span>
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Sonido Line-Array & Iluminación</span>
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Molinetes y seguridad privada</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acordeón 3: Experiencias de Marca & BTL -->
+          <div class="service-accordion-item" data-service="experiencias">
+            <button class="service-accordion-header" aria-expanded="false">
+              <div class="service-accordion-lead">
+                <div class="service-accordion-icon">
+                  <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <div class="service-accordion-titles">
+                  <h3 class="service-accordion-title">Experiencias de Marca & BTL</h3>
+                  <span class="service-accordion-sub">Stands interactivos, activaciones y lounges VIP</span>
+                </div>
+              </div>
+              <div class="service-accordion-arrow">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+            <div class="service-accordion-body">
+              <div class="service-accordion-content">
+                <p class="service-accordion-desc">
+                  Activaciones de alto impacto y engagement en eventos de gran visibilidad (como Copa Argentina): hospitalities corporativos, stands interactivos, photocalls y sampling.
+                </p>
+                <div class="service-tags-row">
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Espacios VIP y hospitalities</span>
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Dinámicas y juegos de marca</span>
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Kits, merchandising y sampling</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acordeón 4: Financiamiento para Municipios & Comunas -->
+          <div class="service-accordion-item" data-service="municipios">
+            <button class="service-accordion-header" aria-expanded="false">
+              <div class="service-accordion-lead">
+                <div class="service-accordion-icon">
+                  <i class="fa-solid fa-landmark"></i>
+                </div>
+                <div class="service-accordion-titles">
+                  <h3 class="service-accordion-title">Financiamiento para Municipios & Comunas</h3>
+                  <span class="service-accordion-sub">Cero inversión estatal inicial & Gestión autosustentable</span>
+                </div>
+              </div>
+              <div class="service-accordion-arrow">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+            <div class="service-accordion-body">
+              <div class="service-accordion-content">
+                <p class="service-accordion-desc">
+                  Modelo exclusivo donde FAG Eventos financia la producción de espectáculos masivos, con recupero autosustentable por sponsors y ticketing, sin riesgo para el erario público.
+                </p>
+                <div class="service-tags-row">
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Cero desembolso público inicial</span>
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Gestión económica transparente</span>
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Fomento al turismo y comercio regional</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acordeón 5: Logística Técnica & Pantallas LED -->
+          <div class="service-accordion-item" data-service="logistica">
+            <button class="service-accordion-header" aria-expanded="false">
+              <div class="service-accordion-lead">
+                <div class="service-accordion-icon">
+                  <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <div class="service-accordion-titles">
+                  <h3 class="service-accordion-title">Logística Técnica & Pantallas LED</h3>
+                  <span class="service-accordion-sub">Infraestructura perimetral, pantallas gigantes y energía</span>
+                </div>
+              </div>
+              <div class="service-accordion-arrow">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+            <div class="service-accordion-body">
+              <div class="service-accordion-content">
+                <p class="service-accordion-desc">
+                  Infraestructura propia para eventos de alta demanda: pantallas gigantes outdoor P3.9 de alto brillo, generadores insonorizados sincronizados y vallados perimetrales modulares.
+                </p>
+                <div class="service-tags-row">
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Pantallas LED outdoor de alto brillo</span>
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Generadores con respaldo dual</span>
+                  <span class="service-tag-pill"><i class="fa-solid fa-check"></i> Vallas de contención antivuelco</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN TRABAJOS REALIZADOS (PORTAFOLIO COMPACTO & FÁCIL DE ENTENDER EN MÓVILES)
+         ========================================================================== -->
+    <section id="trabajos" class="gallery-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">
+            <i class="fa-solid fa-camera-retro"></i>
+            Portafolio & Cobertura
+          </span>
+          <h2 class="section-title">Trabajos <span class="text-highlight">Realizados</span></h2>
+          <p class="section-subtitle">Energía, convocatoria y despliegue técnico en cada producción.</p>
+        </div>
+
+        <!-- Filtros por categoría (Desplazamiento horizontal fluido en móviles) -->
+        <div class="gallery-filters-wrapper">
+          <div class="gallery-filters">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="deportes">Deportes</button>
+            <button class="filter-btn" data-filter="festivales">Festivales</button>
+            <button class="filter-btn" data-filter="experiencias">Marcas & BTL</button>
+            <button class="filter-btn" data-filter="videos">Videos</button>
+          </div>
+        </div>
+
+        <!-- Grid de Galería -->
+        <div class="gallery-grid" id="galleryGrid">
+          <!-- Item 1: Maratón Nocturna -->
+          <div class="gallery-item" data-category="deportes" data-category-name="Eventos Deportivos" data-img="assets/gallery/marathon.jpg">
+            <div class="gallery-thumb-wrap">
+              <span class="gallery-badge">Deportivo</span>
+              <img src="assets/gallery/marathon.jpg" alt="Maratón Nocturna FAG" class="gallery-img">
+              <div class="gallery-overlay">
+                <div class="gallery-info">
+                  <h4 class="gallery-title">Maratón Nocturna 21K & 10K</h4>
+                  <div class="gallery-meta">
+                    <span><i class="fa-regular fa-calendar"></i> Circuito Urbano</span>
+                    <span><i class="fa-solid fa-users"></i> +4.500 Runners</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 2: Torneo de Pádel -->
+          <div class="gallery-item" data-category="deportes" data-category-name="Eventos Deportivos" data-img="assets/gallery/padel.jpg">
+            <div class="gallery-thumb-wrap">
+              <span class="gallery-badge">Deportivo</span>
+              <img src="assets/gallery/padel.jpg" alt="Torneo de Pádel Championship" class="gallery-img">
+              <div class="gallery-overlay">
+                <div class="gallery-info">
+                  <h4 class="gallery-title">FAG Pádel Open Championship</h4>
+                  <div class="gallery-meta">
+                    <span><i class="fa-solid fa-medal"></i> Torneo Nacional</span>
+                    <span><i class="fa-solid fa-location-dot"></i> Complejo Central</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 3: Festival de Música -->
+          <div class="gallery-item" data-category="festivales" data-category-name="Festivales & Shows" data-img="assets/gallery/festival.jpg">
+            <div class="gallery-thumb-wrap">
+              <span class="gallery-badge">Festival</span>
+              <img src="assets/gallery/festival.jpg" alt="Electric Beats Festival" class="gallery-img">
+              <div class="gallery-overlay">
+                <div class="gallery-info">
+                  <h4 class="gallery-title">Sunset Music Fest - Main Stage</h4>
+                  <div class="gallery-meta">
+                    <span><i class="fa-solid fa-music"></i> Escenario Masivo</span>
+                    <span><i class="fa-solid fa-users"></i> +12.000 Personas</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 4: Festival Gastronómico -->
+          <div class="gallery-item" data-category="festivales" data-category-name="Festivales & Shows" data-img="assets/gallery/gastronomia.jpg">
+            <div class="gallery-thumb-wrap">
+              <span class="gallery-badge">Feria / Festival</span>
+              <img src="assets/gallery/gastronomia.jpg" alt="Festival Gastronómico y Food Trucks" class="gallery-img">
+              <div class="gallery-overlay">
+                <div class="gallery-info">
+                  <h4 class="gallery-title">Feria & Food Truck Experience</h4>
+                  <div class="gallery-meta">
+                    <span><i class="fa-solid fa-burger"></i> 25 Food Trucks</span>
+                    <span><i class="fa-regular fa-sun"></i> 3 Días al Aire Libre</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 5: Ciclismo de Ruta -->
+          <div class="gallery-item" data-category="deportes" data-category-name="Eventos Deportivos" data-img="assets/gallery/ciclismo.jpg">
+            <div class="gallery-thumb-wrap">
+              <span class="gallery-badge">Deportivo</span>
+              <img src="assets/gallery/ciclismo.jpg" alt="Gran Premio de Ciclismo" class="gallery-img">
+              <div class="gallery-overlay">
+                <div class="gallery-info">
+                  <h4 class="gallery-title">Gran Premio Ciclismo en Ruta</h4>
+                  <div class="gallery-meta">
+                    <span><i class="fa-solid fa-bicycle"></i> 120km Competitivos</span>
+                    <span><i class="fa-solid fa-flag-checkered"></i> Arco de Llegada</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 6: Experiencia BTL / Corporativa -->
+          <div class="gallery-item" data-category="experiencias" data-category-name="Experiencias de Marca" data-img="assets/gallery/experiencia.jpg">
+            <div class="gallery-thumb-wrap">
+              <span class="gallery-badge">Experiencia BTL</span>
+              <img src="assets/gallery/experiencia.jpg" alt="Champions Lounge Experiencia de Marca" class="gallery-img">
+              <div class="gallery-overlay">
+                <div class="gallery-info">
+                  <h4 class="gallery-title">Champions Lounge & BTL</h4>
+                  <div class="gallery-meta">
+                    <span><i class="fa-solid fa-laptop"></i> Pantallas Táctiles</span>
+                    <span><i class="fa-solid fa-couch"></i> Espacio VIP</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 7: Video Highlight Maratón (Categoría Videos) -->
+          <div class="gallery-item" data-category="videos" data-category-name="Videos & Resúmenes" data-img="assets/gallery/marathon.jpg">
+            <div class="gallery-thumb-wrap">
+              <span class="gallery-badge" style="background:#E1306C;"><i class="fa-solid fa-video"></i> Video Reel</span>
+              <div class="video-play-indicator">
+                <i class="fa-solid fa-play"></i>
+              </div>
+              <img src="assets/gallery/marathon.jpg" alt="Video Aftermovie Maratón" class="gallery-img" style="filter: brightness(0.85);">
+              <div class="gallery-overlay">
+                <div class="gallery-info">
+                  <h4 class="gallery-title">Aftermovie Oficial: Maratón Nocturna</h4>
+                  <div class="gallery-meta">
+                    <span><i class="fa-solid fa-circle-play"></i> Ver Highlights 4K</span>
+                    <span><i class="fa-brands fa-instagram"></i> Reel Oficial</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 8: Video Highlight Festival (Categoría Videos) -->
+          <div class="gallery-item" data-category="videos" data-category-name="Videos & Resúmenes" data-img="assets/gallery/festival.jpg">
+            <div class="gallery-thumb-wrap">
+              <span class="gallery-badge" style="background:#E1306C;"><i class="fa-solid fa-video"></i> Video Reel</span>
+              <div class="video-play-indicator">
+                <i class="fa-solid fa-play"></i>
+              </div>
+              <img src="assets/gallery/festival.jpg" alt="Video Aftermovie Festival" class="gallery-img" style="filter: brightness(0.85);">
+              <div class="gallery-overlay">
+                <div class="gallery-info">
+                  <h4 class="gallery-title">Recap: Montaje & Show de Luces</h4>
+                  <div class="gallery-meta">
+                    <span><i class="fa-solid fa-circle-play"></i> Backstage & Escenario</span>
+                    <span><i class="fa-brands fa-instagram"></i> fag.eventos</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================================================
+         SECCIÓN CONTACTO DIRECTO (MINIMALISTA: IG, WHATSAPP, MAIL)
+         ========================================================================== -->
+    <section id="contacto" class="contact-section-simple">
+      <div class="container">
+        <div class="contact-simple-wrap">
+          <span class="section-badge">
+            <i class="fa-solid fa-paper-plane"></i>
+            Contacto Directo
+          </span>
+          <h2 class="section-title contact-simple-title">
+            ¿Tenés un evento en mente?<br>
+            <span class="text-highlight">Hagámoslo realidad</span>
+          </h2>
+
+          <!-- 3 Botones de acción directa -->
+          <div class="contact-direct-buttons">
+            <a href="https://www.instagram.com/fag.eventos/" target="_blank" rel="noopener noreferrer" class="btn-direct-action btn-direct-instagram">
+              <i class="fa-brands fa-instagram"></i>
+              <span>Instagram</span>
+            </a>
+
+            <a href="#" class="btn-direct-action btn-direct-whatsapp dynamic-whatsapp-btn" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-whatsapp"></i>
+              <span>WhatsApp</span>
+            </a>
+
+            <a href="mailto:contacto@fageventos.com" class="btn-direct-action btn-direct-mail">
+              <i class="fa-solid fa-envelope"></i>
+              <span>Email</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER (SIMPLE)
+       ========================================================================== -->
+  <footer class="footer-simple">
+    <div class="container footer-simple-container">
+      <p class="footer-developer">
+        Desarrollado por <a href="https://www.instagram.com/mgh.software/" target="_blank" rel="noopener noreferrer" class="developer-link">MGH</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       MODAL LIGHTBOX PARA FOTOS Y VIDEOS
+       ========================================================================== -->
+  <div id="lightboxModal" class="lightbox-modal" role="dialog" aria-modal="true" aria-label="Visualizador de eventos">
+    <div class="lightbox-container">
+      <button id="lightboxClose" class="lightbox-close" aria-label="Cerrar vista previa">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <button id="lightboxPrev" class="lightbox-nav lightbox-prev" aria-label="Elemento anterior">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <button id="lightboxNext" class="lightbox-nav lightbox-next" aria-label="Elemento siguiente">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+
+      <div class="lightbox-img-wrap">
+        <img id="lightboxMedia" src="" alt="Vista previa de evento" class="lightbox-media">
+      </div>
+
+      <div class="lightbox-caption">
+        <div>
+          <h4 id="lightboxTitle" class="lightbox-title">Título del Evento</h4>
+          <span id="lightboxCategory" class="lightbox-category">Categoría</span>
+        </div>
+        <div>
+          <a href="https://www.instagram.com/fag.eventos/" target="_blank" rel="noopener noreferrer" class="btn-ig-pill" style="padding:6px 14px; font-size:0.8rem;">
+            <i class="fa-brands fa-instagram"></i>
+            <span>Ver en Instagram</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       TOAST DE NOTIFICACIÓN
+       ========================================================================== -->
+  <div id="toastNotice" class="toast-notice" role="alert">
+    <i class="fa-solid fa-circle-check toast-icon"></i>
+    <span id="toastMessage">¡Consulta enviada con éxito!</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+</body>
+</html>
