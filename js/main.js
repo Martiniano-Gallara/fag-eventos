@@ -171,11 +171,12 @@ document.addEventListener('DOMContentLoaded', () => {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      const filterValue = btn.getAttribute('data-filter');
+      const filterValue = btn.getAttribute('data-filter') || 'all';
 
       galleryItems.forEach(item => {
-        const itemCategory = item.getAttribute('data-category');
-        if (filterValue === 'all' || itemCategory === filterValue) {
+        const itemCategory = item.getAttribute('data-category') || '';
+        const categories = itemCategory.toLowerCase().split(/\s+/);
+        if (filterValue === 'all' || categories.includes(filterValue.toLowerCase())) {
           item.style.display = 'block';
           setTimeout(() => {
             item.style.opacity = '1';
@@ -200,12 +201,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const lightboxClose = document.getElementById('lightboxClose');
   const lightboxPrev = document.getElementById('lightboxPrev');
   const lightboxNext = document.getElementById('lightboxNext');
+  const lightboxIgLink = document.getElementById('lightboxIgLink') || document.querySelector('.lightbox-caption .btn-ig-pill');
+  const lightboxIgText = document.getElementById('lightboxIgText');
 
   let currentGalleryIndex = 0;
   const visibleGalleryItems = () => Array.from(document.querySelectorAll('.gallery-item')).filter(i => i.style.display !== 'none');
 
   const updateLightboxContent = (index) => {
     const items = visibleGalleryItems();
+    if (!items.length) return;
     if (index < 0) index = items.length - 1;
     if (index >= items.length) index = 0;
     currentGalleryIndex = index;
@@ -216,11 +220,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const imgSrc = item.getAttribute('data-img') || item.querySelector('.gallery-img')?.src;
     const title = item.querySelector('.gallery-title')?.textContent || 'FAG Eventos';
     const category = item.getAttribute('data-category-name') || 'Evento';
+    const link = item.getAttribute('data-link') || 'https://www.instagram.com/fag.eventos/';
 
     lightboxImg.src = imgSrc;
     lightboxImg.alt = title;
     lightboxTitle.textContent = title;
     lightboxCategory.textContent = category;
+
+    if (lightboxIgLink) {
+      lightboxIgLink.href = link;
+      if (lightboxIgText) {
+        if (link.includes('/reel/') || link.includes('/p/')) {
+          lightboxIgText.textContent = item.querySelector('.video-play-indicator') ? 'Ver Reel en Instagram' : 'Ver Publicación';
+        } else if (link.includes('highlights')) {
+          lightboxIgText.textContent = 'Ver Historia Destacada';
+        } else {
+          lightboxIgText.textContent = 'Ver en Instagram';
+        }
+      }
+    }
   };
 
   const openLightbox = (index) => {
