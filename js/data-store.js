@@ -12,7 +12,7 @@ const DEFAULT_FAG_DATA = {
     whatsapp: "5493517580045",
     whatsappDisplay: "+54 9 351 758-0045",
     whatsappMessage: "¡Hola FAG Eventos! Me comunico desde la web oficial para consultar por la organización y producción de un evento.",
-    email: "contacto@fageventos.com",
+    email: "fgigena@gmail.com",
     instagram: "https://www.instagram.com/fag.eventos/",
     instagramDisplay: "@fag.eventos",
     instagramFer: "https://www.instagram.com/fergigena/",
