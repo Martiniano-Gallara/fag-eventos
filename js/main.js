@@ -3,16 +3,31 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Navigation Scroll Effect
+  // 0. Cargar y Aplicar Datos Dinámicos Centrales
+  if (window.fagStore) {
+    window.fagStore.applyToDOM();
+    // Intento de sincronización en segundo plano si la nube está configurada
+    if (window.fagStore.isCloudConfigured()) {
+      window.fagStore.fetchFromCloud().then(cloudData => {
+        if (cloudData) {
+          window.fagStore.applyToDOM();
+          bindGalleryLightbox();
+        }
+      });
+    }
+  }
+
+  // 1. Navigation Scroll Effect (Passive Listener)
   const navbar = document.querySelector('.navbar');
   const handleScroll = () => {
+    if (!navbar) return;
     if (window.scrollY > 40) {
       navbar.classList.add('scrolled');
     } else {
       navbar.classList.remove('scrolled');
     }
   };
-  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('scroll', handleScroll, { passive: true });
   handleScroll();
 
   // 2. Lateral Mobile Drawer Logic
@@ -72,23 +87,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 3. Active Nav Link on Scroll
   const sections = document.querySelectorAll('section[id]');
-  window.addEventListener('scroll', () => {
-    const scrollY = window.pageYOffset;
-    sections.forEach(current => {
-      const sectionHeight = current.offsetHeight;
-      const sectionTop = current.offsetTop - 120;
-      const sectionId = current.getAttribute('id');
-      const navLink = document.querySelector(`.nav-link[href*="${sectionId}"]`);
-      
-      if (navLink) {
-        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-          navLink.classList.add('active');
-        } else {
-          navLink.classList.remove('active');
-        }
+  if (sections.length > 0) {
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY || window.pageYOffset;
+          sections.forEach(current => {
+            const sectionHeight = current.offsetHeight;
+            const sectionTop = current.offsetTop - 120;
+            const sectionId = current.getAttribute('id');
+            const navLink = document.querySelector(`.nav-link[href*="${sectionId}"]`);
+            
+            if (navLink) {
+              if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                navLink.classList.add('active');
+              } else {
+                navLink.classList.remove('active');
+              }
+            }
+          });
+          ticking = false;
+        });
+        ticking = true;
       }
-    });
-  });
+    }, { passive: true });
+  }
 
   // 4. Stats Counter Animation
   const statNumbers = document.querySelectorAll('.stat-number');
@@ -99,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const step = (timestamp) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      // Ease out cubic
       const easedProgress = 1 - Math.pow(1 - progress, 3);
       const current = Math.floor(easedProgress * (end - start) + start);
       element.textContent = current.toLocaleString('es-AR');
@@ -143,14 +166,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const parentGroup = item.parentElement;
         const siblingItems = parentGroup ? parentGroup.querySelectorAll(itemSelector) : items;
 
-        // Close all items in the same container
+        // Cerrar todos los items del mismo contenedor
         siblingItems.forEach(otherItem => {
           otherItem.classList.remove('active');
           const otherHeader = otherItem.querySelector(headerSelector);
           if (otherHeader) otherHeader.setAttribute('aria-expanded', 'false');
         });
 
-        // If clicked item wasn't open, open it
+        // Abrir si estaba cerrado
         if (!isAlreadyActive) {
           item.classList.add('active');
           header.setAttribute('aria-expanded', 'true');
@@ -162,34 +185,47 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAccordionGroup('.service-accordion-item', '.service-accordion-header');
   setupAccordionGroup('.about-accordion-item', '.about-accordion-header');
 
-  // 5. Gallery Filtering
+  // 5. Gallery Filtering con Cancelación de Timeouts (Fix Race Condition)
   const filterBtns = document.querySelectorAll('.filter-btn');
-  const galleryItems = document.querySelectorAll('.gallery-item');
+  const galleryFilterTimeouts = new Map();
+
+  const handleGalleryFilter = (filterValue) => {
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    galleryItems.forEach(item => {
+      // Limpiar cualquier timeout pendiente para este elemento
+      if (galleryFilterTimeouts.has(item)) {
+        clearTimeout(galleryFilterTimeouts.get(item));
+        galleryFilterTimeouts.delete(item);
+      }
+
+      const itemCategory = item.getAttribute('data-category') || '';
+      const categories = itemCategory.toLowerCase().split(/\s+/);
+      const isMatch = filterValue === 'all' || categories.includes(filterValue.toLowerCase());
+
+      if (isMatch) {
+        item.style.display = 'block';
+        const t = setTimeout(() => {
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0) scale(1)';
+        }, 20);
+        galleryFilterTimeouts.set(item, t);
+      } else {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px) scale(0.95)';
+        const t = setTimeout(() => {
+          item.style.display = 'none';
+        }, 220);
+        galleryFilterTimeouts.set(item, t);
+      }
+    });
+  };
 
   filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
       const filterValue = btn.getAttribute('data-filter') || 'all';
-
-      galleryItems.forEach(item => {
-        const itemCategory = item.getAttribute('data-category') || '';
-        const categories = itemCategory.toLowerCase().split(/\s+/);
-        if (filterValue === 'all' || categories.includes(filterValue.toLowerCase())) {
-          item.style.display = 'block';
-          setTimeout(() => {
-            item.style.opacity = '1';
-            item.style.transform = 'translateY(0) scale(1)';
-          }, 30);
-        } else {
-          item.style.opacity = '0';
-          item.style.transform = 'translateY(20px) scale(0.95)';
-          setTimeout(() => {
-            item.style.display = 'none';
-          }, 250);
-        }
-      });
+      handleGalleryFilter(filterValue);
     });
   });
 
@@ -205,10 +241,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const lightboxIgText = document.getElementById('lightboxIgText');
 
   let currentGalleryIndex = 0;
-  const visibleGalleryItems = () => Array.from(document.querySelectorAll('.gallery-item')).filter(i => i.style.display !== 'none');
+  const getVisibleGalleryItems = () => Array.from(document.querySelectorAll('.gallery-item')).filter(i => i.style.display !== 'none');
 
   const updateLightboxContent = (index) => {
-    const items = visibleGalleryItems();
+    const items = getVisibleGalleryItems();
     if (!items.length) return;
     if (index < 0) index = items.length - 1;
     if (index >= items.length) index = 0;
@@ -222,10 +258,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const category = item.getAttribute('data-category-name') || 'Evento';
     const link = item.getAttribute('data-link') || 'https://www.instagram.com/fag.eventos/';
 
-    lightboxImg.src = imgSrc;
-    lightboxImg.alt = title;
-    lightboxTitle.textContent = title;
-    lightboxCategory.textContent = category;
+    if (lightboxImg) {
+      lightboxImg.src = imgSrc;
+      lightboxImg.alt = title;
+    }
+    if (lightboxTitle) lightboxTitle.textContent = title;
+    if (lightboxCategory) lightboxCategory.textContent = category;
 
     if (lightboxIgLink) {
       lightboxIgLink.href = link;
@@ -242,23 +280,31 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const openLightbox = (index) => {
+    if (!lightbox) return;
     updateLightboxContent(index);
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
   };
 
   const closeLightbox = () => {
+    if (!lightbox) return;
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
   };
 
-  galleryItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      const items = visibleGalleryItems();
-      const index = items.indexOf(item);
-      openLightbox(index !== -1 ? index : 0);
+  const bindGalleryLightbox = () => {
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    galleryItems.forEach((item) => {
+      // Evitar listeners duplicados
+      item.onclick = () => {
+        const items = getVisibleGalleryItems();
+        const index = items.indexOf(item);
+        openLightbox(index !== -1 ? index : 0);
+      };
     });
-  });
+  };
+
+  bindGalleryLightbox();
 
   if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
   if (lightboxPrev) {
@@ -274,16 +320,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Close when clicking modal backdrop
   if (lightbox) {
     lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) {
-        closeLightbox();
-      }
+      if (e.target === lightbox) closeLightbox();
     });
   }
 
-  // Keyboard navigation
   document.addEventListener('keydown', (e) => {
     if (!lightbox || !lightbox.classList.contains('active')) return;
     if (e.key === 'Escape') closeLightbox();
@@ -291,45 +333,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'ArrowRight') updateLightboxContent(currentGalleryIndex + 1);
   });
 
-  // 7. Contact Form Simulation & Toast
-  const contactForm = document.getElementById('contactForm');
-  const toastNotice = document.getElementById('toastNotice');
-  const toastMessage = document.getElementById('toastMessage');
-
-  const showToast = (message) => {
-    if (toastMessage) toastMessage.textContent = message;
-    if (toastNotice) {
-      toastNotice.classList.add('show');
-      setTimeout(() => {
-        toastNotice.classList.remove('show');
-      }, 4500);
-    }
+  // 7. Dynamic WhatsApp Buttons
+  const initWhatsAppListeners = () => {
+    const whatsappBtns = document.querySelectorAll('.dynamic-whatsapp-btn');
+    whatsappBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const contact = window.fagStore ? window.fagStore.getData().contact : null;
+        const phone = contact?.whatsapp || "5493517580045";
+        const msg = encodeURIComponent(contact?.whatsappMessage || "¡Hola FAG Eventos! Me comunico desde la web oficial para consultar por la organización y producción de un evento.");
+        window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+      });
+    });
   };
 
-  if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
+  initWhatsAppListeners();
 
-      const name = document.getElementById('nombre')?.value || 'Amigo/a';
-      const eventType = document.getElementById('tipoEvento')?.value || 'evento';
-
-      showToast(`¡Muchas gracias ${name}! Recibimos tu consulta para ${eventType}. Te contactaremos a la brevedad.`);
-      contactForm.reset();
-    });
-  }
-
-  // 8. Dynamic WhatsApp Link with Message
-  const whatsappBtns = document.querySelectorAll('.dynamic-whatsapp-btn');
-  whatsappBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const phone = "5493510000000"; // Número institucional de referencia
-      const msg = encodeURIComponent("¡Hola FAG Eventos! Me comunico desde la web oficial para consultar por la organización y producción de un evento.");
-      window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
-    });
-  });
-
-  // 9. Director Profile Modal (quienes-somos.html)
+  // 8. Director Profile Modal (quienes-somos.html)
   const directorChips = document.querySelectorAll('.summary-director-chip');
   const directorModal = document.getElementById('directorModal');
   const directorModalClose = document.getElementById('directorModalClose');
@@ -363,9 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     directorModal.addEventListener('click', (e) => {
-      if (e.target === directorModal) {
-        closeDirectorModal();
-      }
+      if (e.target === directorModal) closeDirectorModal();
     });
 
     document.addEventListener('keydown', (e) => {
