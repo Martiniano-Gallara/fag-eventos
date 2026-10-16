@@ -1989,22 +1989,37 @@ button {
   }
 }
 
+button.summary-director-chip,
 .summary-director-chip {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   background: var(--bg-light);
-  padding: 6px 14px 6px 6px;
+  padding: 8px 14px 8px 8px;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(20, 53, 107, 0.08);
+  border: 1px solid rgba(20, 53, 107, 0.1);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(20, 53, 107, 0.04);
+}
+
+button.summary-director-chip:hover,
+.summary-director-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-blue);
+  background: #FFFFFF;
+  box-shadow: 0 6px 16px rgba(20, 53, 107, 0.1);
 }
 
 .summary-chip-avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid #FFFFFF;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(20, 53, 107, 0.1);
 }
 
 .summary-chip-info {
@@ -2013,7 +2028,7 @@ button {
 }
 
 .summary-chip-info strong {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   color: var(--primary-dark);
   line-height: 1.15;
   white-space: nowrap;
@@ -2023,6 +2038,151 @@ button {
   font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 600;
+}
+
+.chip-action-hint {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(37, 117, 252, 0.08);
+  color: var(--accent-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  margin-left: 6px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+button.summary-director-chip:hover .chip-action-hint {
+  transform: scale(1.15);
+  background: var(--accent-blue);
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   MODAL DE PERFIL DE SOCIOS FUNDADORES (VENTANA FLOTANTE INTERACTIVA)
+   ========================================================================== */
+.director-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 20, 39, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 2500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.director-modal.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.director-modal-card {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  max-width: 580px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 24px 60px rgba(8, 20, 39, 0.35);
+  border: 1px solid rgba(20, 53, 107, 0.12);
+  transform: translateY(24px) scale(0.96);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 28px 24px 32px;
+}
+
+.director-modal.active .director-modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.director-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(20, 53, 107, 0.06);
+  color: var(--primary-dark);
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  z-index: 10;
+}
+
+.director-modal-close:hover {
+  background: rgba(20, 53, 107, 0.14);
+  transform: rotate(90deg);
+}
+
+.director-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(20, 53, 107, 0.08);
+}
+
+.director-modal-avatar {
+  width: 72px;
+  height: 72px;
+  min-width: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-blue);
+  box-shadow: 0 4px 16px rgba(20, 53, 107, 0.15);
+}
+
+.director-modal-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.director-modal-name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.director-modal-role {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+  margin-bottom: 6px;
+}
+
+.director-modal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(37, 117, 252, 0.08);
+  color: var(--primary-dark);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.director-modal-badge i {
+  color: var(--accent-blue);
 }
 
 .about-accordion-wrapper {
@@ -2412,16 +2572,17 @@ button {
 }
 
 /* Grid de 2 Columnas Compacto en Mobile */
+/* Grilla de Galería - Diseño Limpio, Moderno & Editorial */
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
 @media (min-width: 768px) {
   .gallery-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
   }
 }
 
@@ -2429,117 +2590,129 @@ button {
   position: relative;
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: #FFFFFF;
-  box-shadow: var(--shadow-sm);
+  background: #0B1A32;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   cursor: pointer;
-  transition: var(--transition);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
 }
 
 .gallery-item:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-5px);
+  box-shadow: 0 14px 32px rgba(11, 32, 66, 0.22);
 }
 
 .gallery-thumb-wrap {
   position: relative;
   width: 100%;
-  height: 140px;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
-}
-
-@media (min-width: 768px) {
-  .gallery-thumb-wrap {
-    height: 230px;
-  }
+  display: block;
 }
 
 .gallery-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: var(--transition-slow);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
 }
 
 .gallery-item:hover .gallery-img {
-  transform: scale(1.08);
+  transform: scale(1.06);
 }
 
+/* Badge de Categoría (Superior Izquierda) - Minimalista & Glassmorphism */
 .gallery-badge {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  background: rgba(11, 32, 66, 0.85);
+  top: 10px;
+  left: 10px;
+  background: rgba(11, 26, 50, 0.65);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #FFFFFF;
-  padding: 5px 12px;
+  padding: 4px 9px;
   border-radius: var(--radius-full);
-  font-size: 0.78rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  z-index: 2;
-}
-
-.video-play-indicator {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: rgba(20, 53, 107, 0.88);
-  backdrop-filter: blur(8px);
-  color: #FFFFFF;
-  display: flex;
+  letter-spacing: 0.02em;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  transition: var(--transition);
+  gap: 5px;
   z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
 }
 
-.gallery-item:hover .video-play-indicator {
+/* Badge de Video Reel (Superior Derecha) - Sutil & Elegante */
+.gallery-badge-reel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(225, 48, 108, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  padding: 4px 9px;
+  border-radius: var(--radius-full);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+  box-shadow: 0 2px 10px rgba(225, 48, 108, 0.35);
+  pointer-events: none;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.gallery-badge-reel i {
+  font-size: 0.58rem;
+}
+
+.gallery-item:hover .gallery-badge-reel {
+  transform: scale(1.06);
   background: #E1306C;
-  transform: translate(-50%, -50%) scale(1.15);
 }
 
+/* Overlay sutil solo en la parte inferior para máxima claridad */
 .gallery-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(11, 32, 66, 0.95) 100%);
+  background: linear-gradient(to top, rgba(8, 20, 39, 0.92) 0%, rgba(8, 20, 39, 0.45) 42%, transparent 72%);
   display: flex;
   align-items: flex-end;
-  padding: 24px;
-  opacity: 1;
-  transition: var(--transition);
+  padding: 14px 12px;
+  z-index: 1;
+  transition: opacity 0.3s ease;
 }
 
 .gallery-info {
-  color: #FFFFFF;
   width: 100%;
 }
 
 .gallery-title {
-  font-size: 1.22rem;
-  font-weight: 800;
+  font-size: 0.88rem;
+  font-weight: 700;
   color: #FFFFFF;
-  margin-bottom: 4px;
+  line-height: 1.22;
+  margin: 0 0 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.gallery-meta {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.gallery-meta span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+.gallery-subtitle {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.2;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ==========================================================================
@@ -3283,12 +3456,18 @@ textarea.form-control {
   align-items: center;
   gap: 14px;
   z-index: 3000;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   transform: translateY(120%);
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, visibility 0.3s;
   border-left: 5px solid #22C55E;
 }
 
 .toast-notice.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
   transform: translateY(0);
 }
 
@@ -3451,36 +3630,37 @@ textarea.form-control {
   }
 
   .gallery-thumb-wrap {
-    height: 140px;
+    aspect-ratio: 4 / 5;
+    height: auto;
   }
 
   .gallery-badge {
     top: 8px;
     left: 8px;
-    padding: 3px 8px;
-    font-size: 0.65rem;
+    padding: 3px 7px;
+    font-size: 0.62rem;
+  }
+
+  .gallery-badge-reel {
+    top: 8px;
+    right: 8px;
+    padding: 3px 7px;
+    font-size: 0.62rem;
   }
 
   .gallery-overlay {
-    padding: 8px 10px;
+    padding: 10px 9px;
   }
 
   .gallery-title {
-    font-size: 0.78rem;
-    line-height: 1.18;
+    font-size: 0.8rem;
+    line-height: 1.2;
     margin-bottom: 2px;
   }
 
-  .gallery-meta {
-    font-size: 0.65rem;
-    gap: 4px 8px;
-    flex-wrap: wrap;
-  }
-
-  .video-play-indicator {
-    width: 36px;
-    height: 36px;
-    font-size: 0.85rem;
+  .gallery-subtitle {
+    font-size: 0.67rem;
+    line-height: 1.2;
   }
   
   .founders-grid {

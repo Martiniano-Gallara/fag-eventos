@@ -328,4 +328,50 @@ document.addEventListener('DOMContentLoaded', () => {
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     });
   });
+
+  // 9. Director Profile Modal (quienes-somos.html)
+  const directorChips = document.querySelectorAll('.summary-director-chip');
+  const directorModal = document.getElementById('directorModal');
+  const directorModalClose = document.getElementById('directorModalClose');
+  const profileFernando = document.getElementById('profileFernando');
+  const profileFederico = document.getElementById('profileFederico');
+
+  if (directorChips.length && directorModal) {
+    const openDirectorModal = (directorId) => {
+      if (profileFernando) profileFernando.style.display = directorId === 'fernando-gigena' ? 'block' : 'none';
+      if (profileFederico) profileFederico.style.display = directorId === 'federico-pellizzon' ? 'block' : 'none';
+      directorModal.classList.add('active');
+      directorModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeDirectorModal = () => {
+      directorModal.classList.remove('active');
+      directorModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    };
+
+    directorChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const directorId = chip.getAttribute('data-director');
+        if (directorId) openDirectorModal(directorId);
+      });
+    });
+
+    if (directorModalClose) {
+      directorModalClose.addEventListener('click', closeDirectorModal);
+    }
+
+    directorModal.addEventListener('click', (e) => {
+      if (e.target === directorModal) {
+        closeDirectorModal();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && directorModal.classList.contains('active')) {
+        closeDirectorModal();
+      }
+    });
+  }
 });
