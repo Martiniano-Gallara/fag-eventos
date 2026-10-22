@@ -185,7 +185,7 @@ const DEFAULT_FAG_DATA = {
       badgeText: "Arroyito",
       badgeIcon: "fa-location-dot",
       isReel: true,
-      span: "mural-wide"
+      span: "mural-standard"
     }
   ],
   cloudConfig: {
@@ -219,7 +219,11 @@ class FagDataStore {
           hero: { ...DEFAULT_FAG_DATA.hero, ...(parsed.hero || {}) },
           gallery: (() => {
             if (Array.isArray(parsed.gallery) && parsed.gallery.length >= DEFAULT_FAG_DATA.gallery.length && parsed.gallery[0].span) {
-              return parsed.gallery;
+              const items = parsed.gallery;
+              if (items[11] && items[11].span === 'mural-wide') {
+                items[11].span = 'mural-standard';
+              }
+              return items;
             }
             return DEFAULT_FAG_DATA.gallery;
           })(),
