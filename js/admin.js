@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const itemBadgeText = document.getElementById('itemBadgeText');
   const itemBadgeIcon = document.getElementById('itemBadgeIcon');
   const itemIsReel = document.getElementById('itemIsReel');
+  const itemSpan = document.getElementById('itemSpan');
 
   // --- NOTIFICACIONES TOAST ---
   const showToast = (message, isError = false) => {
@@ -303,6 +304,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const spanLabels = {
+      'mural-hero': 'Hero 5x3',
+      'mural-wide': 'Panorámico 4x2',
+      'mural-tall': 'Vertical 3x3',
+      'mural-standard': 'Estándar 3x2'
+    };
+
     galleryAdminList.innerHTML = items.map((item, index) => `
       <div class="gallery-admin-card" data-id="${item.id}">
         <div class="admin-card-thumb-wrap">
@@ -315,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="admin-card-sub">${item.subtitle}</span>
           <div class="admin-card-meta">
             <span><i class="fa-solid fa-tag"></i> ${item.categoryName || item.category}</span>
+            <span><i class="fa-solid fa-shapes"></i> ${spanLabels[item.span] || 'Estándar 3x2'}</span>
           </div>
           <div class="admin-card-actions">
             <div class="actions-order-group">
@@ -413,6 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
       itemBadgeText.value = item.badgeText || '';
       itemBadgeIcon.value = item.badgeIcon || 'fa-camera';
       itemIsReel.checked = Boolean(item.isReel);
+      if (itemSpan) itemSpan.value = item.span || 'mural-standard';
     } else {
       itemModalTitle.textContent = "Nuevo Trabajo / Reel";
       itemEditId.value = '';
@@ -420,6 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
       itemCategory.value = 'festivales';
       itemBadgeIcon.value = 'fa-camera';
       itemIsReel.checked = false;
+      if (itemSpan) itemSpan.value = 'mural-standard';
     }
 
     itemModal.classList.add('active');
@@ -462,7 +473,8 @@ document.addEventListener('DOMContentLoaded', () => {
         link: itemLink.value.trim(),
         badgeText: itemBadgeText.value.trim() || 'Evento',
         badgeIcon: itemBadgeIcon.value,
-        isReel: itemIsReel.checked
+        isReel: itemIsReel.checked,
+        span: (itemSpan && itemSpan.value) || 'mural-standard'
       };
 
       if (isEditing) {
@@ -479,47 +491,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- SINCRONIZACIÓN EN LA NUBE (SUPABASE) ---
+  // --- SINCRONIZACIÓN EN LA NUBE (NEON / VERCEL & SUPABASE) ---
   const updateCloudStatus = () => {
     if (!cloudStatusBox) return;
     const isConfigured = store.isCloudConfigured();
-    const lastSync = store.getData().cloudConfig?.lastSynced;
+    const cfg = store.getData().cloudConfig || {};
+    const lastSync = cfg.lastSynced;
 
     if (isConfigured) {
       cloudStatusBox.className = "cloud-status-box connected";
-      cloudStatusTitle.textContent = "Base de Datos en la Nube Conectada";
-      const syncDate = lastSync ? new Date(lastSync).toLocaleString('es-AR') : 'Pendiente de sincronizar';
-      cloudStatusDesc.textContent = `Los cambios se guardan globalmente. Última sincronización: ${syncDate}`;
+      const isNeon = cfg.provider === 'neon' || !cfg.supabaseUrl;
+      cloudStatusTitle.textContent = isNeon ? "Base de Datos Neon (Vercel) Vinculada" : "Base de Datos Supabase Conectada";
+      const syncDate = lastSync ? new Date(lastSync).toLocaleString('es-AR') : 'Listo para sincronizar';
+      cloudStatusDesc.textContent = isNeon
+        ? `Sincronización Serverless activa vía /api/data. Última sincronización: ${syncDate}`
+        : `Los cambios se guardan globalmente. Última sincronización: ${syncDate}`;
     } else {
       cloudStatusBox.className = "cloud-status-box local";
       cloudStatusTitle.textContent = "Modo Local Activo";
-      cloudStatusDesc.textContent = "Los datos se guardan en el navegador. Configurá las claves de Supabase abajo para publicar para todo el mundo.";
+      cloudStatusDesc.textContent = "Los datos se guardan en el navegador. Conectá Neon en Vercel para publicar cambios globalmente.";
     }
   };
 
   if (btnSaveCloudConfig) {
     btnSaveCloudConfig.addEventListener('click', async () => {
-      const url = inputSupabaseUrl.value.trim();
-      const key = inputSupabaseKey.value.trim();
+      const url = inputSupabaseUrl ? inputSupabaseUrl.value.trim() : '';
+      const key = inputSupabaseKey ? inputSupabaseKey.value.trim() : '';
 
       const current = store.getData();
       current.cloudConfig.supabaseUrl = url;
       current.cloudConfig.supabaseKey = key;
+      current.cloudConfig.provider = url ? 'supabase' : 'neon';
       await store.saveData(current, false);
       updateCloudStatus();
-      showToast("Configuración de nube guardada.");
+      showToast("Configuración de base de datos actualizada.");
     });
   }
 
   if (btnTestCloud) {
     btnTestCloud.addEventListener('click', async () => {
-      const url = inputSupabaseUrl.value.trim();
-      const key = inputSupabaseKey.value.trim();
+      const url = inputSupabaseUrl ? inputSupabaseUrl.value.trim() : '';
+      const key = inputSupabaseKey ? inputSupabaseKey.value.trim() : '';
       try {
         btnTestCloud.disabled = true;
         btnTestCloud.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Probando...';
-        await store.testCloudConnection(url, key);
-        showToast("¡Conexión a Supabase exitosa!");
+        const res = await store.testCloudConnection(url, key);
+        const name = res.provider === 'neon' ? 'Neon en Vercel' : 'Supabase';
+        showToast(`¡Conexión a ${name} exitosa!`);
         updateCloudStatus();
       } catch (err) {
         showToast(`Fallo de conexión: ${err.message}`, true);
@@ -535,13 +553,16 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         btnPushCloud.disabled = true;
         btnPushCloud.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...';
-        const success = await store.pushToCloud();
-        if (success) {
-          showToast("¡Datos subidos a la nube! Ya son visibles para cualquier dispositivo.");
+        const res = await store.pushToCloud();
+        if (res && res.success) {
+          const prov = res.provider === 'neon' ? 'Neon (Vercel)' : 'Supabase';
+          showToast(`¡Datos subidos a ${prov}! Ya son visibles para cualquier dispositivo.`);
           updateCloudStatus();
         } else {
-          showToast("No se pudo subir a la nube. Verificá la tabla y claves.", true);
+          showToast("No se pudo subir a la nube. Si estás en local, desplegá en Vercel.", true);
         }
+      } catch (err) {
+        showToast(`Error al subir: ${err.message}`, true);
       } finally {
         btnPushCloud.disabled = false;
         btnPushCloud.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Subir Datos a la Nube';
@@ -561,8 +582,10 @@ document.addEventListener('DOMContentLoaded', () => {
           updateCloudStatus();
           showToast("¡Datos descargados desde la nube con éxito!");
         } else {
-          showToast("No se encontraron datos en la nube o las claves son inválidas.", true);
+          showToast("No se encontraron datos en la nube o aún no se han subido.", true);
         }
+      } catch (err) {
+        showToast(`Error al descargar: ${err.message}`, true);
       } finally {
         btnPullCloud.disabled = false;
         btnPullCloud.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> Descargar Datos de la Nube';
@@ -572,20 +595,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnSyncNow) {
     btnSyncNow.addEventListener('click', async () => {
-      if (!store.isCloudConfigured()) {
-        showToast("Primero ingresá la URL y Key de Supabase en la pestaña Nube.", true);
-        return;
-      }
       btnSyncNow.disabled = true;
       btnSyncNow.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando...';
-      const success = await store.pushToCloud();
-      btnSyncNow.disabled = false;
-      btnSyncNow.innerHTML = '<i class="fa-solid fa-rotate"></i> Sincronizar Ahora';
-      if (success) {
-        showToast("Sincronización global completada.");
-        updateCloudStatus();
-      } else {
-        showToast("Error al sincronizar con la nube.", true);
+      try {
+        const res = await store.pushToCloud();
+        if (res && res.success) {
+          showToast("Sincronización global completada con éxito.");
+          updateCloudStatus();
+        } else {
+          showToast("No se pudo sincronizar con la nube.", true);
+        }
+      } catch (err) {
+        showToast(`Error al sincronizar: ${err.message}`, true);
+      } finally {
+        btnSyncNow.disabled = false;
+        btnSyncNow.innerHTML = '<i class="fa-solid fa-rotate"></i> Sincronizar Ahora';
       }
     });
   }

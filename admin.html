@@ -288,9 +288,9 @@
           <div class="panel-header">
             <div>
               <h2 class="panel-title">Sincronización Global en la Nube</h2>
-              <p class="panel-desc">Configurá la base de datos para que los cambios se reflejen para cualquier persona desde cualquier dispositivo.</p>
+              <p class="panel-desc">Los cambios se publican para cualquier persona en cualquier dispositivo a través de Neon en Vercel.</p>
             </div>
-            <button id="btnSaveCloudConfig" class="btn-primary">
+            <button id="btnSaveCloudConfig" class="btn-primary" style="display: none;">
               <i class="fa-solid fa-cloud-arrow-up"></i> Guardar Conexión
             </button>
           </div>
@@ -301,7 +301,7 @@
               <div class="status-dot"></div>
               <div>
                 <strong id="cloudStatusTitle">Modo Local Activo</strong>
-                <p id="cloudStatusDesc" style="font-size: 0.85rem; margin: 0;">Los cambios se guardan en el navegador. Conectá Supabase para sincronizar globalmente.</p>
+                <p id="cloudStatusDesc" style="font-size: 0.85rem; margin: 0;">Los cambios se guardan en el navegador. Conectá Neon en Vercel para sincronizar globalmente.</p>
               </div>
             </div>
             <div id="cloudSyncActions">
@@ -311,10 +311,33 @@
             </div>
           </div>
 
+          <!-- Neon en Vercel (Recomendado) -->
           <div class="admin-card">
-            <h3 class="card-title"><i class="fa-solid fa-bolt"></i> Credenciales de Supabase (Gratis)</h3>
+            <h3 class="card-title"><i class="fa-solid fa-database"></i> Neon Postgres Serverless (Vercel)</h3>
             <p style="font-size: 0.88rem; color: var(--admin-muted); margin-bottom: 16px;">
-              Creá un proyecto gratuito en <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" style="color: var(--admin-accent); font-weight: 700;">supabase.com</a> y pegá tus claves de API para habilitar la persistencia global en tiempo real.
+              Tu base de datos está vinculada directamente en el panel de Vercel. La sincronización opera mediante la función serverless segura <code>/api/data</code> sin exponer contraseñas ni cadenas de conexión en el navegador.
+            </p>
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button type="button" id="btnTestCloud" class="btn-secondary">
+                <i class="fa-solid fa-vial"></i> Probar Conexión con Neon
+              </button>
+              <button type="button" id="btnPushCloud" class="btn-primary" style="background: var(--admin-navy);">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Subir Datos a Neon
+              </button>
+              <button type="button" id="btnPullCloud" class="btn-secondary">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Descargar Datos de Neon
+              </button>
+            </div>
+          </div>
+
+          <!-- Supabase Opcional -->
+          <details class="admin-card" style="cursor: pointer;">
+            <summary style="font-weight: 700; color: var(--admin-navy); font-size: 0.95rem; margin-bottom: 12px;">
+              <i class="fa-solid fa-bolt"></i> Configuración alternativa: Supabase REST (Opcional)
+            </summary>
+            <p style="font-size: 0.85rem; color: var(--admin-muted); margin-bottom: 16px;">
+              Si prefieres usar Supabase en lugar de Neon, puedes configurar tus claves directas abajo:
             </p>
 
             <div class="form-grid">
@@ -327,45 +350,7 @@
                 <input type="password" id="inputSupabaseKey" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
               </div>
             </div>
-
-            <div style="margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap;">
-              <button type="button" id="btnTestCloud" class="btn-secondary">
-                <i class="fa-solid fa-vial"></i> Probar Conexión
-              </button>
-              <button type="button" id="btnPushCloud" class="btn-primary" style="background: var(--admin-navy);">
-                <i class="fa-solid fa-cloud-arrow-up"></i> Subir Datos a la Nube
-              </button>
-              <button type="button" id="btnPullCloud" class="btn-secondary">
-                <i class="fa-solid fa-cloud-arrow-down"></i> Descargar Datos de la Nube
-              </button>
-            </div>
-          </div>
-
-          <!-- Instrucción SQL lista para 1 clic -->
-          <div class="admin-card">
-            <h3 class="card-title"><i class="fa-solid fa-database"></i> Script SQL para la Tabla en Supabase</h3>
-            <p style="font-size: 0.88rem; color: var(--admin-muted);">
-              En tu panel de Supabase, andá a <strong>SQL Editor</strong>, creá una <em>New query</em>, pegá este código y hacé clic en <strong>Run</strong>:
-            </p>
-
-            <div class="sql-snippet-box">
-              <button type="button" id="btnCopySql" class="btn-copy-code"><i class="fa-solid fa-copy"></i> Copiar SQL</button>
-              <pre id="sqlCode">CREATE TABLE IF NOT EXISTS public.fag_site_data (
-    id integer PRIMARY KEY,
-    payload jsonb NOT NULL,
-    updated_at timestamp with time zone DEFAULT now()
-);
-
--- Habilitar lectura y escritura pública para el frontend
-ALTER TABLE public.fag_site_data ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Lectura publica permitida" 
-ON public.fag_site_data FOR SELECT USING (true);
-
-CREATE POLICY "Escritura publica permitida" 
-ON public.fag_site_data FOR ALL USING (true);</pre>
-            </div>
-          </div>
+          </details>
 
           <!-- Copia de seguridad JSON -->
           <div class="admin-card">
@@ -499,6 +484,17 @@ ON public.fag_site_data FOR ALL USING (true);</pre>
               <option value="fa-camera">General (fa-camera)</option>
             </select>
           </div>
+        </div>
+
+        <div class="form-field" style="margin-top: 14px;">
+          <label class="form-label" for="itemSpan">Formato y Proporción en el Mural</label>
+          <select id="itemSpan" class="form-select">
+            <option value="mural-standard">Estándar (3 columnas x 2 filas)</option>
+            <option value="mural-hero">Hero Destacado Grande (5 columnas x 3 filas)</option>
+            <option value="mural-wide">Panorámico Horizontal (4 columnas x 2 filas)</option>
+            <option value="mural-tall">Vertical Alto (3 columnas x 3 filas)</option>
+          </select>
+          <span class="form-hint">Ajusta cómo encaja visualmente la fotografía en el mosaico de pared de la portada.</span>
         </div>
 
         <div class="form-field" style="margin-top: 16px;">

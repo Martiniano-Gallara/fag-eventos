@@ -365,11 +365,11 @@
       <div class="container">
         <div class="section-header">
           <span class="section-badge">
-            <i class="fa-solid fa-camera-retro"></i>
-            Portafolio & Cobertura
+            <i class="fa-solid fa-photo-film"></i>
+            Mural de Escenarios & Artistas
           </span>
-          <h2 class="section-title">Trabajos <span class="text-highlight">Realizados</span></h2>
-          <p class="section-subtitle">Energía, convocatoria y despliegue técnico en cada producción.</p>
+          <h2 class="section-title">Grandes <span class="text-highlight">Convocatorias</span></h2>
+          <p class="section-subtitle">Mural interactivo de mega festivales, recitales masivos y despliegue técnico de nivel mundial.</p>
         </div>
 
         <!-- Filtros por categoría (Desplazamiento horizontal fluido en móviles) -->
@@ -383,122 +383,254 @@
           </div>
         </div>
 
-        <!-- Grid de Galería con Trabajos Reales de FAG Eventos -->
-        <div class="gallery-grid" id="galleryGrid">
-          <!-- Item 1: Carnavales 2026 -->
-          <div class="gallery-item" data-category="festivales tecnica" data-category-name="Festivales & Montaje" data-img="assets/gallery/carnaval-2026-montaje.png" data-link="https://www.instagram.com/fag.eventos/">
-            <div class="gallery-thumb-wrap">
-              <span class="gallery-badge"><i class="fa-solid fa-layer-group"></i> Estructura</span>
-              <img src="assets/gallery/carnaval-2026-montaje.png" alt="Carnavales 2026 - Montaje de Escenario FAG" class="gallery-img">
-              <div class="gallery-overlay">
-                <div class="gallery-info">
-                  <h4 class="gallery-title">Carnavales 2026</h4>
-                  <span class="gallery-subtitle">Montaje de Escenario</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <!-- Marco del Mural Mosaico Artístico con Pentagrama y Notas Superpuestas -->
+        <div class="mural-mosaic-frame">
+          
+          <!-- Pentagrama y notas musicales transparentes (Inspirado fielmente en el mural de conciertos) -->
+          <svg class="mural-music-svg-overlay" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="musicGlowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85" />
+                <stop offset="50%" stop-color="#00D2FF" stop-opacity="0.9" />
+                <stop offset="100%" stop-color="#2575FC" stop-opacity="0.75" />
+              </linearGradient>
+              <filter id="musicStaffGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
 
-          <!-- Item 2: Festival Brocheriano - Predio & Platea -->
-          <div class="gallery-item" data-category="festivales tecnica" data-category-name="Festivales & Logística" data-img="assets/gallery/brocheriano-predio.png" data-link="https://www.instagram.com/fag.eventos/">
-            <div class="gallery-thumb-wrap">
-              <span class="gallery-badge"><i class="fa-solid fa-chair"></i> Predio</span>
-              <img src="assets/gallery/brocheriano-predio.png" alt="Festival Brocheriano - Armado de Predio y Plateas" class="gallery-img">
-              <div class="gallery-overlay">
-                <div class="gallery-info">
-                  <h4 class="gallery-title">Festival Brocheriano</h4>
-                  <span class="gallery-subtitle">Plateas & Logística</span>
-                </div>
-              </div>
-            </div>
-          </div>
+            <!-- 5 Líneas del Pentagrama Fluyendo Diagonalmente -->
+            <g filter="url(#musicStaffGlow)" stroke="url(#musicGlowGrad)" stroke-width="1.6" stroke-linecap="round" fill="none">
+              <path d="M 40,480 C 290,520 410,270 650,250 C 860,230 1010,380 1160,330" opacity="0.75" />
+              <path d="M 40,495 C 290,535 410,285 650,265 C 860,245 1010,395 1160,345" opacity="0.8" />
+              <path d="M 40,510 C 290,550 410,300 650,280 C 860,260 1010,410 1160,360" opacity="0.85" />
+              <path d="M 40,525 C 290,565 410,315 650,295 C 860,275 1010,425 1160,375" opacity="0.8" />
+              <path d="M 40,540 C 290,580 410,330 650,310 C 860,290 1010,440 1160,390" opacity="0.75" />
+            </g>
 
-          <!-- Item 3: Festival Brocheriano - Escenario Principal -->
-          <div class="gallery-item" data-category="festivales tecnica" data-category-name="Festivales & Shows" data-img="assets/gallery/brocheriano-escenario.png" data-link="https://www.instagram.com/fag.eventos/">
-            <div class="gallery-thumb-wrap">
-              <span class="gallery-badge"><i class="fa-solid fa-tv"></i> Escenario</span>
-              <img src="assets/gallery/brocheriano-escenario.png" alt="Festival Brocheriano - Escenario Cuna del Cura Gaucho" class="gallery-img">
-              <div class="gallery-overlay">
-                <div class="gallery-info">
-                  <h4 class="gallery-title">Festival Brocheriano</h4>
-                  <span class="gallery-subtitle">Pantallas LED & Luces</span>
-                </div>
-              </div>
-            </div>
-          </div>
+            <!-- Notas Musicales y Clave de Sol Flotante -->
+            <g fill="#FFFFFF" filter="url(#musicStaffGlow)">
+              <!-- Nota 1: Corchea -->
+              <ellipse cx="440" cy="320" rx="9" ry="6" transform="rotate(-25 440 320)" />
+              <line x1="447" y1="317" x2="447" y2="270" stroke="#FFFFFF" stroke-width="2.5" />
+              <path d="M 447,270 C 455,280 465,285 468,295" stroke="#FFFFFF" stroke-width="2" fill="none" />
 
-          <!-- Item 4: Día de San Patricio -->
-          <div class="gallery-item" data-category="festivales gastronomia" data-category-name="Fiestas Populares & Gastronomía" data-img="assets/gallery/san-patricio.jpg" data-link="https://www.instagram.com/stories/highlights/18098134006807828/">
-            <div class="gallery-thumb-wrap">
-              <span class="gallery-badge"><i class="fa-solid fa-beer-mug-empty"></i> Gastronomía</span>
-              <img src="assets/gallery/san-patricio.jpg" alt="Día de San Patricio - Santa Rosa de Calamuchita" class="gallery-img" style="object-position: center top;">
-              <div class="gallery-overlay">
-                <div class="gallery-info">
-                  <h4 class="gallery-title">Día de San Patricio</h4>
-                  <span class="gallery-subtitle">Santa Rosa de Calamuchita</span>
-                </div>
-              </div>
-            </div>
-          </div>
+              <!-- Nota 2: Corcheas unidas por barra -->
+              <ellipse cx="560" cy="275" rx="9" ry="6" transform="rotate(-25 560 275)" />
+              <line x1="567" y1="272" x2="567" y2="225" stroke="#FFFFFF" stroke-width="2.5" />
+              <ellipse cx="610" cy="265" rx="9" ry="6" transform="rotate(-25 610 265)" />
+              <line x1="617" y1="262" x2="617" y2="215" stroke="#FFFFFF" stroke-width="2.5" />
+              <polygon points="566,225 618,215 618,222 566,232" fill="#FFFFFF" />
 
-          <!-- Item 5: Sabores Serranos (26ª Edición) -->
-          <div class="gallery-item" data-category="festivales gastronomia videos" data-category-name="Festival Gastronómico" data-img="assets/gallery/sabores-serranos.jpg" data-link="https://www.instagram.com/p/DbBVlW5qEnr/">
-            <div class="gallery-thumb-wrap">
-              <span class="gallery-badge"><i class="fa-solid fa-utensils"></i> Festival</span>
-              <span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>
-              <img src="assets/gallery/sabores-serranos.jpg" alt="Sabores Serranos 26ª Edición" class="gallery-img" style="object-position: center 20%;">
-              <div class="gallery-overlay">
-                <div class="gallery-info">
-                  <h4 class="gallery-title">Sabores Serranos #26</h4>
-                  <span class="gallery-subtitle">Gastronomía & Danzas</span>
-                </div>
-              </div>
-            </div>
-          </div>
+              <!-- Nota 3: Negra con plica -->
+              <ellipse cx="730" cy="245" rx="9" ry="6" transform="rotate(-25 730 245)" />
+              <line x1="737" y1="242" x2="737" y2="195" stroke="#FFFFFF" stroke-width="2.5" />
 
-          <!-- Item 6: Delicias de Pascua 2026 (Marcianos) -->
-          <div class="gallery-item" data-category="festivales videos" data-category-name="Shows en Vivo & Streaming" data-img="assets/gallery/delicias-pascua-2026.jpg" data-link="https://www.instagram.com/p/DW7gcp5iEZD/">
-            <div class="gallery-thumb-wrap">
-              <span class="gallery-badge"><i class="fa-solid fa-music"></i> Shows</span>
-              <span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>
-              <img src="assets/gallery/delicias-pascua-2026.jpg" alt="Marcianos en Delicias de Pascua 2026" class="gallery-img">
-              <div class="gallery-overlay">
-                <div class="gallery-info">
-                  <h4 class="gallery-title">Delicias de Pascua</h4>
-                  <span class="gallery-subtitle">Marcianos en Vivo</span>
-                </div>
-              </div>
-            </div>
-          </div>
+              <!-- Nota 4: Semicorcheas dobles -->
+              <ellipse cx="840" cy="300" rx="9" ry="6" transform="rotate(-25 840 300)" />
+              <line x1="847" y1="297" x2="847" y2="250" stroke="#FFFFFF" stroke-width="2.5" />
+              <ellipse cx="885" cy="325" rx="9" ry="6" transform="rotate(-25 885 325)" />
+              <line x1="892" y1="322" x2="892" y2="275" stroke="#FFFFFF" stroke-width="2.5" />
+              <polygon points="846,250 893,275 893,281 846,256" fill="#FFFFFF" />
+              <polygon points="846,260 893,285 893,291 846,266" fill="#FFFFFF" />
 
-          <!-- Item 7: Carnaval Santa Rosa de Calamuchita -->
-          <div class="gallery-item" data-category="festivales videos" data-category-name="Festivales & Recap" data-img="assets/gallery/carnaval-santa-rosa.jpg" data-link="https://www.instagram.com/p/DU4Hs2egQWO/">
-            <div class="gallery-thumb-wrap">
-              <span class="gallery-badge"><i class="fa-solid fa-masks-theater"></i> Carnaval</span>
-              <span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>
-              <img src="assets/gallery/carnaval-santa-rosa.jpg" alt="Carnaval en Santa Rosa de Calamuchita" class="gallery-img">
-              <div class="gallery-overlay">
-                <div class="gallery-info">
-                  <h4 class="gallery-title">Carnaval Santa Rosa</h4>
-                  <span class="gallery-subtitle">Sonido, Luces & Escenario</span>
-                </div>
-              </div>
-            </div>
-          </div>
+              <!-- Nota 5: Aguda -->
+              <ellipse cx="1020" cy="360" rx="9" ry="6" transform="rotate(-25 1020 360)" />
+              <line x1="1027" y1="357" x2="1027" y2="310" stroke="#FFFFFF" stroke-width="2.5" />
+              <path d="M 1027,310 C 1035,320 1045,325 1048,335" stroke="#FFFFFF" stroke-width="2" fill="none" />
+            </g>
 
-          <!-- Item 8: Fiesta de la Dulce Ciudad del País -->
-          <div class="gallery-item" data-category="festivales gastronomia videos" data-category-name="Fiestas Nacionales & Experiencias" data-img="assets/gallery/dulce-ciudad.jpg" data-link="https://www.instagram.com/p/DJkI1Atpqr1/">
-            <div class="gallery-thumb-wrap">
-              <span class="gallery-badge"><i class="fa-solid fa-location-dot"></i> Arroyito</span>
-              <span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>
-              <img src="assets/gallery/dulce-ciudad.jpg" alt="Fiesta de la Dulce Ciudad del País" class="gallery-img" style="object-position: center;">
-              <div class="gallery-overlay">
-                <div class="gallery-info">
-                  <h4 class="gallery-title">Fiesta Dulce Ciudad</h4>
-                  <span class="gallery-subtitle">Arroyito, Córdoba</span>
+            <!-- Destellos y partículas de luz -->
+            <g fill="#FFFFFF" opacity="0.9">
+              <circle cx="360" cy="380" r="3" filter="url(#musicStaffGlow)" />
+              <circle cx="500" cy="290" r="2.5" />
+              <circle cx="670" cy="260" r="3.5" filter="url(#musicStaffGlow)" />
+              <circle cx="770" cy="245" r="2" />
+              <circle cx="940" cy="340" r="3" filter="url(#musicStaffGlow)" />
+              <circle cx="1080" cy="345" r="2.5" />
+            </g>
+          </svg>
+
+          <!-- Grid Mosaico Asimétrico de 12 Trabajos y Conciertos -->
+          <div class="gallery-grid mural-mosaic-grid" id="galleryGrid">
+            
+            <!-- Item 1: Grandes Conciertos (Hero Grande) -->
+            <div class="gallery-item mural-hero" data-category="festivales videos" data-category-name="Conciertos Internacionales" data-img="assets/gallery/mural-lead-singer.jpg" data-link="https://www.instagram.com/fag.eventos/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-microphone"></i> Mega Show</span>
+                <img src="assets/gallery/mural-lead-singer.jpg" alt="Grandes Conciertos - Estadios & Giras Mundiales" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Grandes Conciertos</h4>
+                    <span class="gallery-subtitle">Estadios & Giras Mundiales</span>
+                  </div>
                 </div>
               </div>
             </div>
+
+            <!-- Item 2: Carnavales 2026 (Ancho) -->
+            <div class="gallery-item mural-wide" data-category="festivales tecnica" data-category-name="Festivales & Montaje" data-img="assets/gallery/carnaval-2026-montaje.png" data-link="https://www.instagram.com/fag.eventos/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-layer-group"></i> Estructura</span>
+                <img src="assets/gallery/carnaval-2026-montaje.png" alt="Carnavales 2026 - Montaje de Escenario Layher" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Carnavales 2026</h4>
+                    <span class="gallery-subtitle">Montaje de Escenario Layher</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 3: Festival de Peñas (Vertical Alto) -->
+            <div class="gallery-item mural-tall" data-category="festivales" data-category-name="Festivales Nacionales" data-img="assets/gallery/mural-latin-artist.jpg" data-link="https://www.instagram.com/fag.eventos/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-guitar"></i> Festival</span>
+                <img src="assets/gallery/mural-latin-artist.jpg" alt="Festival de Peñas - Programación Artística & Hitos" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Festival de Peñas</h4>
+                    <span class="gallery-subtitle">Programación Artística</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 4: Festival Brocheriano - Escenario Principal (Estándar) -->
+            <div class="gallery-item mural-standard" data-category="festivales tecnica" data-category-name="Festivales & Shows" data-img="assets/gallery/brocheriano-escenario.png" data-link="https://www.instagram.com/fag.eventos/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-tv"></i> Escenario</span>
+                <img src="assets/gallery/brocheriano-escenario.png" alt="Festival Brocheriano - Pantallas LED & Luces" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Festival Brocheriano</h4>
+                    <span class="gallery-subtitle">Pantallas LED & Luces</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 5: Rock & Bandas en Vivo (Vertical Alto) -->
+            <div class="gallery-item mural-tall" data-category="festivales tecnica" data-category-name="Técnica & Sonido" data-img="assets/gallery/mural-guitar-solo.jpg" data-link="https://www.instagram.com/fag.eventos/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-bolt"></i> Técnica 360°</span>
+                <img src="assets/gallery/mural-guitar-solo.jpg" alt="Rock & Bandas en Vivo - Sonido Line-Array 360°" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Rock & Bandas en Vivo</h4>
+                    <span class="gallery-subtitle">Sonido Line-Array 360°</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 6: Shows Masivos & Pop (Ancho) -->
+            <div class="gallery-item mural-wide" data-category="festivales videos" data-category-name="Shows en Vivo" data-img="assets/gallery/mural-female-star.jpg" data-link="https://www.instagram.com/fag.eventos/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-star"></i> En Vivo</span>
+                <span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>
+                <img src="assets/gallery/mural-female-star.jpg" alt="Shows Masivos & Pop - Iluminación & Puesta en Escena" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Shows Masivos & Pop</h4>
+                    <span class="gallery-subtitle">Iluminación & Puesta en Escena</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 7: Festival Brocheriano - Predio & Platea (Estándar) -->
+            <div class="gallery-item mural-standard" data-category="festivales tecnica" data-category-name="Festivales & Logística" data-img="assets/gallery/brocheriano-predio.png" data-link="https://www.instagram.com/fag.eventos/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-chair"></i> Predio</span>
+                <img src="assets/gallery/brocheriano-predio.png" alt="Festival Brocheriano - Plateas & Logística" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Festival Brocheriano</h4>
+                    <span class="gallery-subtitle">Plateas & Logística</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 8: Día de San Patricio (Estándar) -->
+            <div class="gallery-item mural-standard" data-category="festivales gastronomia" data-category-name="Fiestas Populares & Gastronomía" data-img="assets/gallery/san-patricio.jpg" data-link="https://www.instagram.com/stories/highlights/18098134006807828/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-beer-mug-empty"></i> Gastronomía</span>
+                <img src="assets/gallery/san-patricio.jpg" alt="Día de San Patricio - Santa Rosa de Calamuchita" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Día de San Patricio</h4>
+                    <span class="gallery-subtitle">Santa Rosa de Calamuchita</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 9: Sabores Serranos (Estándar) -->
+            <div class="gallery-item mural-standard" data-category="festivales gastronomia videos" data-category-name="Festival Gastronómico" data-img="assets/gallery/sabores-serranos.jpg" data-link="https://www.instagram.com/p/DbBVlW5qEnr/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-utensils"></i> Festival</span>
+                <span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>
+                <img src="assets/gallery/sabores-serranos.jpg" alt="Sabores Serranos 26ª Edición" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Sabores Serranos #26</h4>
+                    <span class="gallery-subtitle">Gastronomía & Danzas</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 10: Delicias de Pascua (Ancho) -->
+            <div class="gallery-item mural-wide" data-category="festivales videos" data-category-name="Shows en Vivo & Streaming" data-img="assets/gallery/delicias-pascua-2026.jpg" data-link="https://www.instagram.com/p/DW7gcp5iEZD/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-music"></i> Shows</span>
+                <span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>
+                <img src="assets/gallery/delicias-pascua-2026.jpg" alt="Marcianos en Vivo - Delicias de Pascua" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Delicias de Pascua</h4>
+                    <span class="gallery-subtitle">Marcianos en Vivo</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 11: Carnaval Santa Rosa (Estándar) -->
+            <div class="gallery-item mural-standard" data-category="festivales videos" data-category-name="Festivales & Recap" data-img="assets/gallery/carnaval-santa-rosa.jpg" data-link="https://www.instagram.com/p/DU4Hs2egQWO/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-masks-theater"></i> Carnaval</span>
+                <span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>
+                <img src="assets/gallery/carnaval-santa-rosa.jpg" alt="Carnaval en Santa Rosa de Calamuchita" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Carnaval Santa Rosa</h4>
+                    <span class="gallery-subtitle">Sonido, Luces & Escenario</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 12: Fiesta de la Dulce Ciudad (Ancho) -->
+            <div class="gallery-item mural-wide" data-category="festivales gastronomia videos" data-category-name="Fiestas Nacionales & Experiencias" data-img="assets/gallery/dulce-ciudad.jpg" data-link="https://www.instagram.com/p/DJkI1Atpqr1/">
+              <div class="gallery-thumb-wrap">
+                <span class="gallery-badge"><i class="fa-solid fa-location-dot"></i> Arroyito</span>
+                <span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>
+                <img src="assets/gallery/dulce-ciudad.jpg" alt="Fiesta de la Dulce Ciudad del País" class="gallery-img" loading="lazy" decoding="async">
+                <div class="gallery-overlay">
+                  <div class="gallery-info">
+                    <h4 class="gallery-title">Fiesta Dulce Ciudad</h4>
+                    <span class="gallery-subtitle">Arroyito, Córdoba</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

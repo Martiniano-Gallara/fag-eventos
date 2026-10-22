@@ -293,15 +293,17 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const bindGalleryLightbox = () => {
-    const galleryItems = document.querySelectorAll('.gallery-item');
-    galleryItems.forEach((item) => {
-      // Evitar listeners duplicados
-      item.onclick = () => {
+    const galleryGridEl = document.getElementById('galleryGrid');
+    if (galleryGridEl && !galleryGridEl.dataset.lightboxBound) {
+      galleryGridEl.dataset.lightboxBound = "true";
+      galleryGridEl.addEventListener('click', (e) => {
+        const item = e.target.closest('.gallery-item');
+        if (!item) return;
         const items = getVisibleGalleryItems();
         const index = items.indexOf(item);
         openLightbox(index !== -1 ? index : 0);
-      };
-    });
+      });
+    }
   };
 
   bindGalleryLightbox();

@@ -33,30 +33,45 @@ const DEFAULT_FAG_DATA = {
   gallery: [
     {
       id: "item-1",
+      title: "Grandes Conciertos",
+      subtitle: "Estadios & Giras Mundiales",
+      category: "festivales videos",
+      categoryName: "Conciertos Internacionales",
+      img: "assets/gallery/mural-lead-singer.jpg",
+      link: "https://www.instagram.com/fag.eventos/",
+      badgeText: "Mega Show",
+      badgeIcon: "fa-microphone",
+      isReel: false,
+      span: "mural-hero"
+    },
+    {
+      id: "item-2",
       title: "Carnavales 2026",
-      subtitle: "Montaje de Escenario",
+      subtitle: "Montaje de Escenario Layher",
       category: "festivales tecnica",
       categoryName: "Festivales & Montaje",
       img: "assets/gallery/carnaval-2026-montaje.png",
       link: "https://www.instagram.com/fag.eventos/",
       badgeText: "Estructura",
       badgeIcon: "fa-layer-group",
-      isReel: false
-    },
-    {
-      id: "item-2",
-      title: "Festival Brocheriano",
-      subtitle: "Plateas & Logística",
-      category: "festivales tecnica",
-      categoryName: "Festivales & Logística",
-      img: "assets/gallery/brocheriano-predio.png",
-      link: "https://www.instagram.com/fag.eventos/",
-      badgeText: "Predio",
-      badgeIcon: "fa-chair",
-      isReel: false
+      isReel: false,
+      span: "mural-wide"
     },
     {
       id: "item-3",
+      title: "Festival de Peñas",
+      subtitle: "Programación Artística & Hitos",
+      category: "festivales",
+      categoryName: "Festivales Nacionales",
+      img: "assets/gallery/mural-latin-artist.jpg",
+      link: "https://www.instagram.com/fag.eventos/",
+      badgeText: "Festival",
+      badgeIcon: "fa-guitar",
+      isReel: false,
+      span: "mural-tall"
+    },
+    {
+      id: "item-4",
       title: "Festival Brocheriano",
       subtitle: "Pantallas LED & Luces",
       category: "festivales tecnica",
@@ -65,10 +80,50 @@ const DEFAULT_FAG_DATA = {
       link: "https://www.instagram.com/fag.eventos/",
       badgeText: "Escenario",
       badgeIcon: "fa-tv",
-      isReel: false
+      isReel: false,
+      span: "mural-standard"
     },
     {
-      id: "item-4",
+      id: "item-5",
+      title: "Rock & Bandas en Vivo",
+      subtitle: "Sonido Line-Array 360°",
+      category: "festivales tecnica",
+      categoryName: "Técnica & Sonido",
+      img: "assets/gallery/mural-guitar-solo.jpg",
+      link: "https://www.instagram.com/fag.eventos/",
+      badgeText: "Técnica 360°",
+      badgeIcon: "fa-bolt",
+      isReel: false,
+      span: "mural-tall"
+    },
+    {
+      id: "item-6",
+      title: "Shows Masivos & Pop",
+      subtitle: "Iluminación & Puesta en Escena",
+      category: "festivales videos",
+      categoryName: "Shows en Vivo",
+      img: "assets/gallery/mural-female-star.jpg",
+      link: "https://www.instagram.com/fag.eventos/",
+      badgeText: "En Vivo",
+      badgeIcon: "fa-star",
+      isReel: true,
+      span: "mural-wide"
+    },
+    {
+      id: "item-7",
+      title: "Festival Brocheriano",
+      subtitle: "Plateas & Logística",
+      category: "festivales tecnica",
+      categoryName: "Festivales & Logística",
+      img: "assets/gallery/brocheriano-predio.png",
+      link: "https://www.instagram.com/fag.eventos/",
+      badgeText: "Predio",
+      badgeIcon: "fa-chair",
+      isReel: false,
+      span: "mural-standard"
+    },
+    {
+      id: "item-8",
       title: "Día de San Patricio",
       subtitle: "Santa Rosa de Calamuchita",
       category: "festivales gastronomia",
@@ -77,10 +132,11 @@ const DEFAULT_FAG_DATA = {
       link: "https://www.instagram.com/stories/highlights/18098134006807828/",
       badgeText: "Gastronomía",
       badgeIcon: "fa-beer-mug-empty",
-      isReel: false
+      isReel: false,
+      span: "mural-standard"
     },
     {
-      id: "item-5",
+      id: "item-9",
       title: "Sabores Serranos #26",
       subtitle: "Gastronomía & Danzas",
       category: "festivales gastronomia videos",
@@ -89,10 +145,11 @@ const DEFAULT_FAG_DATA = {
       link: "https://www.instagram.com/p/DbBVlW5qEnr/",
       badgeText: "Festival",
       badgeIcon: "fa-utensils",
-      isReel: true
+      isReel: true,
+      span: "mural-standard"
     },
     {
-      id: "item-6",
+      id: "item-10",
       title: "Delicias de Pascua",
       subtitle: "Marcianos en Vivo",
       category: "festivales videos",
@@ -101,10 +158,11 @@ const DEFAULT_FAG_DATA = {
       link: "https://www.instagram.com/p/DW7gcp5iEZD/",
       badgeText: "Shows",
       badgeIcon: "fa-music",
-      isReel: true
+      isReel: true,
+      span: "mural-wide"
     },
     {
-      id: "item-7",
+      id: "item-11",
       title: "Carnaval Santa Rosa",
       subtitle: "Sonido, Luces & Escenario",
       category: "festivales videos",
@@ -113,10 +171,11 @@ const DEFAULT_FAG_DATA = {
       link: "https://www.instagram.com/p/DU4Hs2egQWO/",
       badgeText: "Carnaval",
       badgeIcon: "fa-masks-theater",
-      isReel: true
+      isReel: true,
+      span: "mural-standard"
     },
     {
-      id: "item-8",
+      id: "item-12",
       title: "Fiesta Dulce Ciudad",
       subtitle: "Arroyito, Córdoba",
       category: "festivales gastronomia videos",
@@ -125,7 +184,8 @@ const DEFAULT_FAG_DATA = {
       link: "https://www.instagram.com/p/DJkI1Atpqr1/",
       badgeText: "Arroyito",
       badgeIcon: "fa-location-dot",
-      isReel: true
+      isReel: true,
+      span: "mural-wide"
     }
   ],
   cloudConfig: {
@@ -157,8 +217,12 @@ class FagDataStore {
           ...parsed,
           contact: { ...DEFAULT_FAG_DATA.contact, ...(parsed.contact || {}) },
           hero: { ...DEFAULT_FAG_DATA.hero, ...(parsed.hero || {}) },
-          stats: { ...DEFAULT_FAG_DATA.stats, ...(parsed.stats || {}) },
-          gallery: Array.isArray(parsed.gallery) && parsed.gallery.length > 0 ? parsed.gallery : DEFAULT_FAG_DATA.gallery,
+          gallery: (() => {
+            if (Array.isArray(parsed.gallery) && parsed.gallery.length >= DEFAULT_FAG_DATA.gallery.length && parsed.gallery[0].span) {
+              return parsed.gallery;
+            }
+            return DEFAULT_FAG_DATA.gallery;
+          })(),
           cloudConfig: { ...DEFAULT_FAG_DATA.cloudConfig, ...(parsed.cloudConfig || {}) },
           security: { ...DEFAULT_FAG_DATA.security, ...(parsed.security || {}) }
         };
@@ -223,124 +287,180 @@ class FagDataStore {
     sessionStorage.removeItem(FAG_AUTH_KEY);
   }
 
-  // --- SINCRONIZACIÓN EN LA NUBE (SUPABASE REST / CUALQUIER REST) ---
+  // --- SINCRONIZACIÓN EN LA NUBE (NEON / VERCEL & SUPABASE) ---
   isCloudConfigured() {
-    const { supabaseUrl, supabaseKey } = this.data.cloudConfig || {};
-    return Boolean(supabaseUrl && supabaseKey && supabaseUrl.startsWith('http'));
+    const cfg = this.data.cloudConfig || {};
+    // Neon en Vercel funciona de forma nativa a través de /api/data
+    if (cfg.provider === 'neon' || !cfg.provider) return true;
+    return Boolean(cfg.supabaseUrl && cfg.supabaseKey && cfg.supabaseUrl.startsWith('http'));
   }
 
   async testCloudConnection(url, key) {
-    const targetUrl = (url || this.data.cloudConfig.supabaseUrl || '').replace(/\/$/, '');
-    const targetKey = key || this.data.cloudConfig.supabaseKey;
-    const tableName = this.data.cloudConfig.tableName || 'fag_site_data';
-
-    if (!targetUrl || !targetKey) {
-      throw new Error("Debes ingresar la URL y el API Key de Supabase.");
+    // Si no se pasaron credenciales de Supabase, probar el endpoint de Neon en Vercel
+    if (!url && !key) {
+      const response = await fetch('/api/data', { method: 'GET' });
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error || `Error ${response.status}: No se pudo conectar con /api/data (Neon).`);
+      }
+      return { provider: 'neon' };
     }
+
+    const targetUrl = url.replace(/\/$/, '');
+    const tableName = this.data.cloudConfig.tableName || 'fag_site_data';
 
     const endpoint = `${targetUrl}/rest/v1/${tableName}?select=*&limit=1`;
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        'apikey': targetKey,
-        'Authorization': `Bearer ${targetKey}`
+        'apikey': key,
+        'Authorization': `Bearer ${key}`
       }
     });
 
     if (!response.ok) {
       const errText = await response.text();
-      throw new Error(`Error ${response.status}: ${errText || 'No se pudo conectar a la tabla'}`);
+      throw new Error(`Error ${response.status}: ${errText || 'No se pudo conectar a la tabla de Supabase'}`);
     }
 
-    return true;
+    return { provider: 'supabase' };
   }
 
   async fetchFromCloud() {
-    if (!this.isCloudConfigured()) return null;
-
-    const { supabaseUrl, supabaseKey, tableName } = this.data.cloudConfig;
-    const cleanUrl = supabaseUrl.replace(/\/$/, '');
-    const endpoint = `${cleanUrl}/rest/v1/${tableName}?id=eq.1&select=*`;
-
+    // 1. Intentar primero con el endpoint serverless de Neon (/api/data)
     try {
-      const res = await fetch(endpoint, {
-        method: 'GET',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`
+      const res = await fetch('/api/data', { method: 'GET' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.status === 'success' && json.data) {
+          const merged = {
+            ...this.data,
+            ...json.data,
+            cloudConfig: {
+              ...this.data.cloudConfig,
+              provider: 'neon',
+              lastSynced: json.updated_at || new Date().toISOString()
+            }
+          };
+          await this.saveData(merged, false);
+          return merged;
         }
-      });
-
-      if (!res.ok) {
-        console.warn("FagDataStore: No se pudo obtener datos de Supabase", res.status);
-        return null;
-      }
-
-      const rows = await res.json();
-      if (rows && rows.length > 0 && rows[0].payload) {
-        const cloudData = typeof rows[0].payload === 'string' ? JSON.parse(rows[0].payload) : rows[0].payload;
-        // Preservar cloudConfig local y mezclar datos
-        const merged = {
-          ...this.data,
-          ...cloudData,
-          cloudConfig: {
-            ...this.data.cloudConfig,
-            lastSynced: new Date().toISOString()
-          }
-        };
-        await this.saveData(merged, false);
-        return merged;
       }
     } catch (e) {
-      console.warn("FagDataStore: Error al sincronizar desde la nube:", e);
+      // Ignorar si estamos en local sin Vercel dev
     }
+
+    // 2. Fallback a Supabase si está configurado
+    const { supabaseUrl, supabaseKey, tableName } = this.data.cloudConfig || {};
+    if (supabaseUrl && supabaseKey && supabaseUrl.startsWith('http')) {
+      const cleanUrl = supabaseUrl.replace(/\/$/, '');
+      const endpoint = `${cleanUrl}/rest/v1/${tableName || 'fag_site_data'}?id=eq.1&select=*`;
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'GET',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`
+          }
+        });
+
+        if (res.ok) {
+          const rows = await res.json();
+          if (rows && rows.length > 0 && rows[0].payload) {
+            const cloudData = typeof rows[0].payload === 'string' ? JSON.parse(rows[0].payload) : rows[0].payload;
+            const merged = {
+              ...this.data,
+              ...cloudData,
+              cloudConfig: {
+                ...this.data.cloudConfig,
+                provider: 'supabase',
+                lastSynced: new Date().toISOString()
+              }
+            };
+            await this.saveData(merged, false);
+            return merged;
+          }
+        }
+      } catch (e) {
+        console.warn("FagDataStore: Error al sincronizar desde Supabase:", e);
+      }
+    }
+
     return null;
   }
 
-  async pushToCloud() {
-    if (!this.isCloudConfigured()) return false;
-
-    const { supabaseUrl, supabaseKey, tableName } = this.data.cloudConfig;
-    const cleanUrl = supabaseUrl.replace(/\/$/, '');
-    const endpoint = `${cleanUrl}/rest/v1/${tableName}`;
-
+  async pushToCloud(customPin = null) {
     const payloadToSave = {
-      id: 1,
-      payload: {
-        contact: this.data.contact,
-        hero: this.data.hero,
-        stats: this.data.stats,
-        gallery: this.data.gallery,
-        security: this.data.security
-      },
-      updated_at: new Date().toISOString()
+      contact: this.data.contact,
+      hero: this.data.hero,
+      stats: this.data.stats,
+      gallery: this.data.gallery,
+      security: this.data.security
     };
 
+    const activePin = customPin || (this.data.security && this.data.security.masterPin) || 'fag2026';
+
+    // 1. Intentar subir primero a Neon en Vercel (/api/data)
     try {
-      const res = await fetch(endpoint, {
+      const res = await fetch('/api/data', {
         method: 'POST',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates'
-        },
-        body: JSON.stringify(payloadToSave)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payload: payloadToSave, pin: activePin })
       });
 
       if (res.ok) {
+        this.data.cloudConfig.provider = 'neon';
         this.data.cloudConfig.lastSynced = new Date().toISOString();
         localStorage.setItem(FAG_STORAGE_KEY, JSON.stringify(this.data));
-        return true;
-      } else {
-        const err = await res.text();
-        console.error("FagDataStore: Error al subir a la nube", err);
-        return false;
+        return { success: true, provider: 'neon' };
+      } else if (res.status === 401) {
+        throw new Error("PIN de seguridad no válido.");
       }
     } catch (e) {
-      console.error("FagDataStore: Error de red al subir a la nube", e);
-      return false;
+      if (e.message && e.message.includes("PIN")) throw e;
+      // Continuar al fallback de Supabase si aplica
     }
+
+    // 2. Fallback a Supabase si está configurado
+    const { supabaseUrl, supabaseKey, tableName } = this.data.cloudConfig || {};
+    if (supabaseUrl && supabaseKey && supabaseUrl.startsWith('http')) {
+      const cleanUrl = supabaseUrl.replace(/\/$/, '');
+      const endpoint = `${cleanUrl}/rest/v1/${tableName || 'fag_site_data'}`;
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates'
+          },
+          body: JSON.stringify({
+            id: 1,
+            payload: payloadToSave,
+            updated_at: new Date().toISOString()
+          })
+        });
+
+        if (res.ok) {
+          this.data.cloudConfig.provider = 'supabase';
+          this.data.cloudConfig.lastSynced = new Date().toISOString();
+          localStorage.setItem(FAG_STORAGE_KEY, JSON.stringify(this.data));
+          return { success: true, provider: 'supabase' };
+        } else {
+          const err = await res.text();
+          console.error("FagDataStore: Error al subir a Supabase", err);
+          return false;
+        }
+      } catch (e) {
+        console.error("FagDataStore: Error de red al subir a Supabase", e);
+        return false;
+      }
+    }
+
+    return false;
   }
 
   // --- EXPORTAR E IMPORTAR COPIA DE SEGURIDAD ---
@@ -433,7 +553,7 @@ class FagDataStore {
     const galleryGrid = document.getElementById('galleryGrid');
     if (galleryGrid && Array.isArray(d.gallery) && d.gallery.length > 0) {
       galleryGrid.innerHTML = d.gallery.map(item => `
-        <div class="gallery-item" data-category="${item.category}" data-category-name="${item.categoryName || item.title}" data-img="${item.img}" data-link="${item.link}">
+        <div class="gallery-item ${item.span || 'mural-standard'}" data-category="${item.category}" data-category-name="${item.categoryName || item.title}" data-img="${item.img}" data-link="${item.link}">
           <div class="gallery-thumb-wrap">
             <span class="gallery-badge"><i class="fa-solid ${item.badgeIcon || 'fa-camera'}"></i> ${item.badgeText || 'Evento'}</span>
             ${item.isReel ? '<span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>' : ''}
