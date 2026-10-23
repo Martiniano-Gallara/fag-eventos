@@ -129,10 +129,41 @@ document.addEventListener('DOMContentLoaded', () => {
         checkAuth();
         showToast("¡Bienvenido al Panel de Control de FAG Eventos!");
       } else {
+        const loginCard = document.querySelector('.login-card');
+        if (loginCard) {
+          loginCard.classList.remove('shake');
+          void loginCard.offsetWidth; // trigger reflow
+          loginCard.classList.add('shake');
+        }
         showToast("PIN incorrecto. Intentá nuevamente.", true);
         pinInput.focus();
         pinInput.select();
       }
+    });
+  }
+
+  // Toggle visibilidad del PIN
+  const btnTogglePin = document.getElementById('btnTogglePin');
+  const togglePinIcon = document.getElementById('togglePinIcon');
+  if (btnTogglePin && pinInput) {
+    btnTogglePin.addEventListener('click', () => {
+      const isPassword = pinInput.type === 'password';
+      pinInput.type = isPassword ? 'text' : 'password';
+      if (togglePinIcon) {
+        togglePinIcon.className = isPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+      }
+      btnTogglePin.setAttribute('title', isPassword ? 'Ocultar contraseña' : 'Ver contraseña');
+    });
+  }
+
+  // Chip para auto-completar el PIN por defecto
+  const btnCopyDefaultPin = document.getElementById('btnCopyDefaultPin');
+  if (btnCopyDefaultPin && pinInput) {
+    btnCopyDefaultPin.addEventListener('click', () => {
+      const activePin = (store.data && store.data.security && store.data.security.masterPin) || 'fag2026';
+      pinInput.value = activePin;
+      pinInput.focus();
+      showToast("PIN cargado. Presioná 'Ingresar al Panel'.");
     });
   }
 

@@ -23,25 +23,57 @@
        PANTALLA DE ACCESO (LOGIN CON PIN MAESTRO)
        ========================================================================== -->
   <section id="loginScreen" class="admin-login-screen">
+    <!-- Luces y esferas ambientales de fondo -->
+    <div class="login-ambient-glow glow-1" aria-hidden="true"></div>
+    <div class="login-ambient-glow glow-2" aria-hidden="true"></div>
+    <div class="login-ambient-grid" aria-hidden="true"></div>
+
     <div class="login-card">
-      <img src="assets/fag-logo.png" alt="FAG Eventos" class="login-logo">
+      <div class="login-card-top-bar" aria-hidden="true"></div>
+
+      <div class="login-brand-header">
+        <div class="login-logo-wrap">
+          <img src="assets/fag-logo.png" alt="FAG Eventos" class="login-logo">
+        </div>
+        <div class="login-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Suite Administrativa</span>
+        </div>
+      </div>
+
       <h1 class="login-title">Panel de Control</h1>
-      <p class="login-subtitle">Ingresá el PIN maestro para gestionar el sitio web.</p>
+      <p class="login-subtitle">Ingresá el PIN maestro para gestionar el sitio web de FAG Eventos.</p>
 
       <form id="loginForm" class="login-form">
         <div class="pin-input-wrap">
-          <i class="fa-solid fa-lock pin-icon"></i>
-          <input type="password" id="pinInput" class="pin-input" placeholder="PIN" autocomplete="current-password" autofocus required>
+          <div class="pin-icon-box">
+            <i class="fa-solid fa-lock pin-icon"></i>
+          </div>
+          <input type="password" id="pinInput" class="pin-input" placeholder="Ingresá el PIN" autocomplete="current-password" autofocus required>
+          <button type="button" id="btnTogglePin" class="btn-toggle-pin" aria-label="Mostrar u ocultar PIN" title="Ver contraseña">
+            <i class="fa-solid fa-eye" id="togglePinIcon"></i>
+          </button>
         </div>
+
         <button type="submit" class="btn-login">
           <span>Ingresar al Panel</span>
           <i class="fa-solid fa-arrow-right"></i>
         </button>
       </form>
 
-      <a href="index.html" class="login-back-home">
-        <i class="fa-solid fa-arrow-left"></i> Volver a la portada
-      </a>
+      <!-- Chip informativo del PIN con un clic para auto-completar -->
+      <button type="button" id="btnCopyDefaultPin" class="login-credential-chip" title="Clic para ingresar automáticamente el PIN por defecto">
+        <i class="fa-solid fa-key"></i>
+        <span>PIN por defecto: <strong>fag2026</strong></span>
+        <span class="chip-action-pill">Usar</span>
+      </button>
+
+      <div class="login-footer-nav">
+        <a href="index.html" class="login-back-home">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Volver al sitio web</span>
+        </a>
+      </div>
     </div>
   </section>
 
