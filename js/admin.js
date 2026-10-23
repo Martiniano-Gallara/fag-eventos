@@ -107,6 +107,146 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // --- AUTENTICACIÓN / SESIÓN ---
+  // --- BLINDAJE DE SEGURIDAD: RATE LIMITING & ANTI-FUERZA BRUTA ---
+  const LOCKOUT_STORAGE_KEY = 'fag_sec_lockout_v1';
+  const loginLockoutBanner = document.getElementById('loginLockoutBanner');
+  const lockoutTimerMsg = document.getElementById('lockoutTimerMsg');
+  const loginAttemptsWarn = document.getElementById('loginAttemptsWarn');
+  const btnLoginSubmit = document.getElementById('btnLoginSubmit');
+  let lockoutInterval = null;
+
+  const getLockoutState = () => {
+    try {
+      const stored = localStorage.getItem(LOCKOUT_STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    return { attempts: 0, lockedUntil: 0 };
+  };
+
+  const saveLockoutState = (state) => {
+    try {
+      localStorage.setItem(LOCKOUT_STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn("FagAdmin: Error al guardar estado de seguridad", e);
+    }
+  };
+
+  const resetLockout = () => {
+    if (lockoutInterval) {
+      clearInterval(lockoutInterval);
+      lockoutInterval = null;
+    }
+    localStorage.removeItem(LOCKOUT_STORAGE_KEY);
+    if (loginLockoutBanner) loginLockoutBanner.style.display = 'none';
+    if (loginAttemptsWarn) {
+      loginAttemptsWarn.style.display = 'none';
+      loginAttemptsWarn.textContent = '';
+    }
+    if (pinInput) pinInput.disabled = false;
+    if (btnLoginSubmit) btnLoginSubmit.disabled = false;
+  };
+
+  const checkLockoutStatus = () => {
+    const state = getLockoutState();
+    const now = Date.now();
+
+    if (state.lockedUntil && state.lockedUntil > now) {
+      // Usuario temporalmente bloqueado
+      if (pinInput) pinInput.disabled = true;
+      if (btnLoginSubmit) btnLoginSubmit.disabled = true;
+      if (loginLockoutBanner) loginLockoutBanner.style.display = 'flex';
+      if (loginAttemptsWarn) loginAttemptsWarn.style.display = 'none';
+
+      const updateTimer = () => {
+        const remainingMs = state.lockedUntil - Date.now();
+        if (remainingMs <= 0) {
+          resetLockout();
+          showToast("Bloqueo de seguridad finalizado. Podés volver a intentar.");
+          if (pinInput) pinInput.focus();
+        } else {
+          const totalSec = Math.ceil(remainingMs / 1000);
+          const mins = Math.floor(totalSec / 60);
+          const secs = totalSec % 60;
+          const fmt = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}s`;
+          if (lockoutTimerMsg) {
+            lockoutTimerMsg.textContent = `Demasiados intentos fallidos. Reintentá en ${fmt}`;
+          }
+        }
+      };
+
+      updateTimer();
+      if (!lockoutInterval) {
+        lockoutInterval = setInterval(updateTimer, 1000);
+      }
+      return true;
+    } else {
+      // No está bloqueado
+      if (lockoutInterval) {
+        clearInterval(lockoutInterval);
+        lockoutInterval = null;
+      }
+      if (loginLockoutBanner) loginLockoutBanner.style.display = 'none';
+      if (pinInput) pinInput.disabled = false;
+      if (btnLoginSubmit) btnLoginSubmit.disabled = false;
+
+      // Advertencia preventiva si tiene al menos 2 intentos fallidos
+      if (state.attempts >= 2) {
+        if (loginAttemptsWarn) {
+          loginAttemptsWarn.style.display = 'block';
+          loginAttemptsWarn.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <strong>Atención:</strong> ${state.attempts} intentos fallidos detectados. Al 3er intento se bloqueará temporalmente el acceso.`;
+        }
+      } else {
+        if (loginAttemptsWarn) loginAttemptsWarn.style.display = 'none';
+      }
+      return false;
+    }
+  };
+
+  const recordFailedAttempt = () => {
+    const state = getLockoutState();
+    state.attempts = (state.attempts || 0) + 1;
+
+    // Escalonamiento de bloqueo anti fuerza bruta:
+    // 3 intentos -> 30s
+    // 5 intentos -> 2 minutos
+    // 8+ intentos -> 15 minutos
+    let lockSeconds = 0;
+    if (state.attempts >= 8) {
+      lockSeconds = 15 * 60;
+    } else if (state.attempts >= 5) {
+      lockSeconds = 2 * 60;
+    } else if (state.attempts >= 3) {
+      lockSeconds = 30;
+    }
+
+    if (lockSeconds > 0) {
+      state.lockedUntil = Date.now() + (lockSeconds * 1000);
+    }
+
+    saveLockoutState(state);
+    checkLockoutStatus();
+  };
+
+  // --- CIERRE DE SESIÓN AUTOMÁTICO POR INACTIVIDAD (20 MINUTOS) ---
+  const INACTIVITY_TIMEOUT_MS = 20 * 60 * 1000;
+  let inactivityTimer = null;
+
+  const resetInactivityTimer = () => {
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+    if (store.isAuthenticated()) {
+      inactivityTimer = setTimeout(() => {
+        store.logout();
+        checkAuth();
+        showToast("Sesión cerrada automáticamente por inactividad de 20 min.", true);
+      }, INACTIVITY_TIMEOUT_MS);
+    }
+  };
+
+  ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evt => {
+    window.addEventListener(evt, resetInactivityTimer, { passive: true });
+  });
+
+  // --- AUTENTICACIÓN / SESIÓN ---
   const checkAuth = () => {
     if (store.isAuthenticated()) {
       loginScreen.style.display = 'none';
@@ -114,30 +254,53 @@ document.addEventListener('DOMContentLoaded', () => {
       populateAllFields();
       renderGalleryAdmin();
       updateCloudStatus();
+      resetInactivityTimer();
     } else {
       loginScreen.style.display = 'flex';
       adminDashboard.style.display = 'none';
+      checkLockoutStatus();
     }
   };
 
   if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      if (checkLockoutStatus()) {
+        showToast("Acceso bloqueado por reiterados intentos fallidos.", true);
+        return;
+      }
+
       const pin = pinInput.value;
-      if (store.login(pin)) {
-        pinInput.value = '';
-        checkAuth();
-        showToast("¡Bienvenido al Panel de Control de FAG Eventos!");
-      } else {
-        const loginCard = document.querySelector('.login-card');
-        if (loginCard) {
-          loginCard.classList.remove('shake');
-          void loginCard.offsetWidth; // trigger reflow
-          loginCard.classList.add('shake');
+      if (!pin) return;
+
+      if (btnLoginSubmit) btnLoginSubmit.disabled = true;
+
+      try {
+        const success = await store.login(pin);
+        if (success) {
+          resetLockout();
+          pinInput.value = '';
+          checkAuth();
+          showToast("¡Bienvenido al Panel de Control de FAG Eventos!");
+        } else {
+          recordFailedAttempt();
+          const loginCard = document.querySelector('.login-card');
+          if (loginCard) {
+            loginCard.classList.remove('shake');
+            void loginCard.offsetWidth; // trigger reflow
+            loginCard.classList.add('shake');
+          }
+          showToast("PIN incorrecto. Acceso denegado.", true);
+          pinInput.focus();
+          pinInput.select();
         }
-        showToast("PIN incorrecto. Intentá nuevamente.", true);
-        pinInput.focus();
-        pinInput.select();
+      } catch (err) {
+        showToast("Error de autenticación: " + err.message, true);
+      } finally {
+        if (!checkLockoutStatus() && btnLoginSubmit) {
+          btnLoginSubmit.disabled = false;
+        }
       }
     });
   }
@@ -153,17 +316,6 @@ document.addEventListener('DOMContentLoaded', () => {
         togglePinIcon.className = isPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
       }
       btnTogglePin.setAttribute('title', isPassword ? 'Ocultar contraseña' : 'Ver contraseña');
-    });
-  }
-
-  // Chip para auto-completar el PIN por defecto
-  const btnCopyDefaultPin = document.getElementById('btnCopyDefaultPin');
-  if (btnCopyDefaultPin && pinInput) {
-    btnCopyDefaultPin.addEventListener('click', () => {
-      const activePin = (store.data && store.data.security && store.data.security.masterPin) || 'fag2026';
-      pinInput.value = activePin;
-      pinInput.focus();
-      showToast("PIN cargado. Presioná 'Ingresar al Panel'.");
     });
   }
 
@@ -207,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (d.hero) {
       if (inputHero1) inputHero1.value = d.hero.titleLine1 || '';
       if (inputHero2) inputHero2.value = d.hero.titleLine2 || '';
+      updateHeroPreview();
     }
 
     // Estadísticas
@@ -242,6 +395,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // --- VISTA PREVIA EN VIVO DEL HERO ---
+  const updateHeroPreview = () => {
+    const prevLine1 = document.getElementById('prevLine1');
+    const prevLine2 = document.getElementById('prevLine2');
+    if (prevLine1 && inputHero1) prevLine1.textContent = inputHero1.value.trim() || 'Grandes Convocatorias.';
+    if (prevLine2 && inputHero2) prevLine2.textContent = inputHero2.value.trim() || 'Espectáculos de Nivel Mundial.';
+  };
+
+  if (inputHero1) inputHero1.addEventListener('input', updateHeroPreview);
+  if (inputHero2) inputHero2.addEventListener('input', updateHeroPreview);
+
   // --- GUARDAR CONTACTO ---
   const saveContactData = () => {
     const current = store.getData();
@@ -256,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
       instagramFede: inputInstagramFede.value.trim()
     };
     store.saveData(current);
-    showToast("Datos de contacto actualizados con éxito.");
+    showToast("¡Contacto guardado! Sincronizado en vivo con el Sitio Web.");
   };
 
   // --- GUARDAR ESTADÍSTICAS & TITULARES ---
@@ -291,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
     store.saveData(current);
-    showToast("Métricas y titulares actualizados con éxito.");
+    showToast("¡Cifras y Portada guardadas! Vinculadas con el Inicio.");
   };
 
   // Listeners de botones de guardado
@@ -307,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnHeaderSave.addEventListener('click', () => {
       saveContactData();
       saveStatsData();
-      showToast("¡Todos los cambios han sido guardados correctamente!");
+      showToast("¡Todos los cambios guardados y vinculados con el Inicio!");
     });
   }
 
@@ -702,13 +866,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- CAMBIO DE PIN DE SEGURIDAD ---
   if (formChangePin) {
-    formChangePin.addEventListener('submit', (e) => {
+    formChangePin.addEventListener('submit', async (e) => {
       e.preventDefault();
       const current = inputCurrentPin.value;
       const newPin = inputNewPin.value;
       const confirmPin = inputConfirmPin.value;
 
-      if (!store.verifyPin(current)) {
+      const isValid = await store.verifyPin(current);
+      if (!isValid) {
         showToast("El PIN actual no es correcto.", true);
         inputCurrentPin.focus();
         return;
@@ -721,9 +886,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
-        store.setMasterPin(newPin);
+        await store.setMasterPin(newPin);
         formChangePin.reset();
-        showToast("¡PIN maestro actualizado exitosamente!");
+        showToast("¡PIN maestro actualizado exitosamente con cifrado SHA-256!");
       } catch (err) {
         showToast(err.message, true);
       }

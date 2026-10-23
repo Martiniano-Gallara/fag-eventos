@@ -3,9 +3,20 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 0. Cargar y Aplicar Datos Dinámicos Centrales
+  // 0. Cargar y Aplicar Datos Dinámicos Centrales (100% Vinculado con el Admin)
   if (window.fagStore) {
     window.fagStore.applyToDOM();
+    // Sincronización en tiempo real: si el admin guarda cambios en otra pestaña, se aplican al instante
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'fag_eventos_site_data' && window.fagStore) {
+        window.fagStore.data = window.fagStore.loadFromStorage();
+        window.fagStore.applyToDOM();
+        if (typeof bindGalleryLightbox === 'function') {
+          bindGalleryLightbox();
+        }
+      }
+    });
+
     // Intento de sincronización en segundo plano si la nube está configurada
     if (window.fagStore.isCloudConfigured()) {
       window.fagStore.fetchFromCloud().then(cloudData => {

@@ -37,36 +37,40 @@
         </div>
         <div class="login-badge">
           <i class="fa-solid fa-shield-halved"></i>
-          <span>Suite Administrativa</span>
+          <span>Acceso Protegido</span>
         </div>
       </div>
 
       <h1 class="login-title">Panel de Control</h1>
       <p class="login-subtitle">Ingresá el PIN maestro para gestionar el sitio web de FAG Eventos.</p>
 
+      <!-- Banner de Alerta por Bloqueo Anti-Fuerza Bruta -->
+      <div id="loginLockoutBanner" class="login-lockout-banner" style="display: none;" role="alert">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="lockout-text">
+          <strong>Acceso Bloqueado por Seguridad</strong>
+          <span id="lockoutTimerMsg">Demasiados intentos fallidos. Reintentá en 00:30s</span>
+        </div>
+      </div>
+
       <form id="loginForm" class="login-form">
         <div class="pin-input-wrap">
           <div class="pin-icon-box">
             <i class="fa-solid fa-lock pin-icon"></i>
           </div>
-          <input type="password" id="pinInput" class="pin-input" placeholder="Ingresá el PIN" autocomplete="current-password" autofocus required>
+          <input type="password" id="pinInput" class="pin-input" placeholder="Ingresá el PIN maestro" autocomplete="current-password" autofocus required>
           <button type="button" id="btnTogglePin" class="btn-toggle-pin" aria-label="Mostrar u ocultar PIN" title="Ver contraseña">
             <i class="fa-solid fa-eye" id="togglePinIcon"></i>
           </button>
         </div>
 
-        <button type="submit" class="btn-login">
+        <div id="loginAttemptsWarn" class="login-attempts-warn" style="display: none;"></div>
+
+        <button type="submit" id="btnLoginSubmit" class="btn-login">
           <span>Ingresar al Panel</span>
           <i class="fa-solid fa-arrow-right"></i>
         </button>
       </form>
-
-      <!-- Chip informativo del PIN con un clic para auto-completar -->
-      <button type="button" id="btnCopyDefaultPin" class="login-credential-chip" title="Clic para ingresar automáticamente el PIN por defecto">
-        <i class="fa-solid fa-key"></i>
-        <span>PIN por defecto: <strong>fag2026</strong></span>
-        <span class="chip-action-pill">Usar</span>
-      </button>
 
       <div class="login-footer-nav">
         <a href="index.html" class="login-back-home">
@@ -82,22 +86,21 @@
        ========================================================================== -->
   <div id="adminDashboard" class="admin-dashboard" style="display: none;">
     
-    <!-- Top Header -->
+    <!-- Top Header Premium -->
     <header class="admin-header">
       <div class="header-container">
-        <a href="index.html" class="header-brand" title="Ir al sitio público">
+        <a href="index.html" class="header-brand" title="Ir al sitio público de FAG Eventos">
           <img src="assets/fag-logo.png" alt="Logo FAG" class="header-logo">
-          <span class="header-badge">Admin Suite</span>
         </a>
 
         <div class="header-actions">
-          <a href="index.html" target="_blank" class="btn-header-action" title="Abrir la web en pestaña nueva">
+          <a href="index.html" target="_blank" class="btn-header-action btn-header-web" title="Ver la web pública en pestaña nueva">
             <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            <span>Ver Web</span>
+            <span>Ver Sitio Web</span>
           </a>
-          <button id="btnHeaderSave" class="btn-header-action" style="background: var(--admin-accent); border-color: transparent;" title="Guardar cambios">
+          <button id="btnHeaderSave" class="btn-header-action btn-header-save" title="Guardar todos los cambios">
             <i class="fa-solid fa-floppy-disk"></i>
-            <span>Guardar</span>
+            <span>Guardar Cambios</span>
           </button>
           <button id="btnLogout" class="btn-header-action btn-logout" title="Cerrar sesión">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -133,63 +136,91 @@
       <div class="main-container">
 
         <!-- ====================================================================
-             TAB 1: CONTACTO & REDES SOCIALES
+             TAB 1: CONTACTO & REDES SOCIALES (COMPRIMIDO EN 2 SECCIONES SEPARADAS)
              ==================================================================== -->
         <section id="tab-contacto" class="tab-panel active">
           <div class="panel-header">
             <div>
+              <div class="panel-header-badge">
+                <i class="fa-solid fa-link"></i> 100% Sincronizado con el Inicio
+              </div>
               <h2 class="panel-title">Información de Contacto y Redes</h2>
-              <p class="panel-desc">Estos datos impactan inmediatamente en los botones de WhatsApp, email y perfiles de toda la web.</p>
+              <p class="panel-desc">Los cambios modifican al instante los botones de WhatsApp, email y redes de la web principal.</p>
             </div>
             <button class="btn-primary btn-save-section" data-section="contact">
               <i class="fa-solid fa-check"></i> Guardar Contacto
             </button>
           </div>
 
-          <div class="admin-card">
-            <h3 class="card-title"><i class="fa-brands fa-whatsapp"></i> WhatsApp Directo</h3>
-            <div class="form-grid">
-              <div class="form-field">
-                <label class="form-label" for="inputWhatsapp">Número Internacional (sin símbolos)</label>
-                <input type="text" id="inputWhatsapp" class="form-input" placeholder="Ej: 5493517580045">
-                <span class="form-hint">Para Argentina: código país (54) + 9 + característica (351) + número.</span>
+          <div class="admin-cards-stack">
+            <!-- Sección 1: Canal WhatsApp -->
+            <div class="admin-card">
+              <div class="card-header-flex">
+                <div class="card-header-left">
+                  <span class="card-icon-badge whatsapp"><i class="fa-brands fa-whatsapp"></i></span>
+                  <div>
+                    <h3 class="card-title">WhatsApp Directo</h3>
+                    <p class="card-subtitle">Canal principal de cotizaciones y consultas instantáneas</p>
+                  </div>
+                </div>
+                <span class="card-status-pill green"><i class="fa-solid fa-circle-dot"></i> Activo en la Web</span>
               </div>
-              <div class="form-field">
-                <label class="form-label" for="inputWhatsappDisplay">Número visible para el usuario</label>
-                <input type="text" id="inputWhatsappDisplay" class="form-input" placeholder="+54 9 351 758-0045">
+
+              <div class="form-grid compact-grid-2">
+                <div class="form-field">
+                  <label class="form-label" for="inputWhatsapp">Número Internacional (sin símbolos)</label>
+                  <input type="text" id="inputWhatsapp" class="form-input" placeholder="Ej: 5493517580045">
+                  <span class="form-hint">Para Argentina: 54 + 9 + característica (351) + número.</span>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="inputWhatsappDisplay">Número visible para el usuario</label>
+                  <input type="text" id="inputWhatsappDisplay" class="form-input" placeholder="+54 9 351 758-0045">
+                  <span class="form-hint">Texto que ve el visitante en pantalla.</span>
+                </div>
+              </div>
+
+              <div class="form-field" style="margin-top: 14px;">
+                <label class="form-label" for="inputWhatsappMsg">Mensaje predeterminado de consulta</label>
+                <textarea id="inputWhatsappMsg" class="form-textarea" rows="2" placeholder="¡Hola FAG Eventos! Me comunico desde la web oficial para consultar por la organización y producción de un evento."></textarea>
+              </div>
+
+              <div style="margin-top: 14px; display: flex; align-items: center; justify-content: flex-start;">
+                <button type="button" id="btnTestWa" class="btn-secondary btn-compact">
+                  <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Probar enlace WhatsApp ahora
+                </button>
               </div>
             </div>
 
-            <div class="form-field" style="margin-top: 16px;">
-              <label class="form-label" for="inputWhatsappMsg">Mensaje predeterminado de consulta</label>
-              <textarea id="inputWhatsappMsg" class="form-textarea" rows="2" placeholder="¡Hola FAG Eventos! Me comunico desde la web oficial..."></textarea>
-            </div>
+            <!-- Sección 2: Correo Electrónico & Perfiles de Redes -->
+            <div class="admin-card">
+              <div class="card-header-flex">
+                <div class="card-header-left">
+                  <span class="card-icon-badge social"><i class="fa-solid fa-at"></i></span>
+                  <div>
+                    <h3 class="card-title">Correo Electrónico & Redes Sociales</h3>
+                    <p class="card-subtitle">Dirección institucional y enlaces directos a perfiles oficiales</p>
+                  </div>
+                </div>
+                <span class="card-status-pill blue"><i class="fa-solid fa-circle-dot"></i> Vinculado</span>
+              </div>
 
-            <div style="margin-top: 14px;">
-              <button type="button" id="btnTestWa" class="btn-secondary">
-                <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Probar enlace de WhatsApp ahora
-              </button>
-            </div>
-          </div>
-
-          <div class="admin-card">
-            <h3 class="card-title"><i class="fa-solid fa-envelope"></i> Correo Electrónico & Redes</h3>
-            <div class="form-grid">
-              <div class="form-field">
-                <label class="form-label" for="inputEmail">Correo Institucional</label>
-                <input type="email" id="inputEmail" class="form-input" placeholder="fgigena@gmail.com">
-              </div>
-              <div class="form-field">
-                <label class="form-label" for="inputInstagram">Instagram FAG Eventos</label>
-                <input type="url" id="inputInstagram" class="form-input" placeholder="https://www.instagram.com/fag.eventos/">
-              </div>
-              <div class="form-field">
-                <label class="form-label" for="inputInstagramFer">Instagram Fernando Gigena</label>
-                <input type="url" id="inputInstagramFer" class="form-input" placeholder="https://www.instagram.com/fergigena/">
-              </div>
-              <div class="form-field">
-                <label class="form-label" for="inputInstagramFede">Instagram Federico Pellizzon</label>
-                <input type="url" id="inputInstagramFede" class="form-input" placeholder="https://www.instagram.com/fedepellizzon/">
+              <div class="form-grid compact-grid-2">
+                <div class="form-field">
+                  <label class="form-label" for="inputEmail">Correo Institucional</label>
+                  <input type="email" id="inputEmail" class="form-input" placeholder="fgigena@gmail.com">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="inputInstagram">Instagram Oficial (@fag.eventos)</label>
+                  <input type="url" id="inputInstagram" class="form-input" placeholder="https://www.instagram.com/fag.eventos/">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="inputInstagramFer">Instagram Fernando Gigena</label>
+                  <input type="url" id="inputInstagramFer" class="form-input" placeholder="https://www.instagram.com/fergigena/">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="inputInstagramFede">Instagram Federico Pellizzon</label>
+                  <input type="url" id="inputInstagramFede" class="form-input" placeholder="https://www.instagram.com/fedepellizzon/">
+                </div>
               </div>
             </div>
           </div>
@@ -201,6 +232,9 @@
         <section id="tab-galeria" class="tab-panel">
           <div class="panel-header">
             <div>
+              <div class="panel-header-badge">
+                <i class="fa-solid fa-images"></i> Mosaico Dinámico
+              </div>
               <h2 class="panel-title">Portafolio, Trabajos & Reels</h2>
               <p class="panel-desc">Agregá, editá, eliminá y reordená los eventos y reels que se muestran en la galería.</p>
             </div>
@@ -215,99 +249,153 @@
         </section>
 
         <!-- ====================================================================
-             TAB 3: ESTADÍSTICAS & PORTADA
+             TAB 3: ESTADÍSTICAS & PORTADA (COMPRIMIDO EN SECCIONES HORIZONTALES)
              ==================================================================== -->
         <section id="tab-estadisticas" class="tab-panel">
           <div class="panel-header">
             <div>
+              <div class="panel-header-badge">
+                <i class="fa-solid fa-bolt"></i> Reflejo Directo en Portada
+              </div>
               <h2 class="panel-title">Métricas de Impacto & Titulares</h2>
-              <p class="panel-desc">Modificá las cifras clave de trayectoria y los titulares del hero.</p>
+              <p class="panel-desc">Modificá las cifras clave de trayectoria y los titulares del hero principal.</p>
             </div>
             <button class="btn-primary btn-save-section" data-section="stats">
               <i class="fa-solid fa-check"></i> Guardar Cifras
             </button>
           </div>
 
-          <div class="admin-card">
-            <h3 class="card-title"><i class="fa-solid fa-award"></i> Las 3 Cifras de Impacto</h3>
-            <div class="form-grid">
-              
-              <!-- Métrica 1 -->
-              <div class="admin-card" style="padding: 16px; margin-bottom: 0;">
-                <h4 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--admin-navy);">Cifra #1 (Trayectoria)</h4>
-                <div class="form-field" style="margin-bottom: 10px;">
-                  <label class="form-label">Número</label>
-                  <input type="number" id="stat1Target" class="form-input" value="30">
+          <div class="admin-cards-stack">
+            <!-- Sección 1: Las 3 Cifras de Impacto (Comprimidas en Grid Horizontal) -->
+            <div class="admin-card">
+              <div class="card-header-flex">
+                <div class="card-header-left">
+                  <span class="card-icon-badge stats"><i class="fa-solid fa-chart-simple"></i></span>
+                  <div>
+                    <h3 class="card-title">Las 3 Cifras de Impacto</h3>
+                    <p class="card-subtitle">Contadores animados destacados de trayectoria, países y solvencia</p>
+                  </div>
                 </div>
-                <div class="form-field" style="margin-bottom: 10px;">
-                  <label class="form-label">Prefijo (ej: +)</label>
-                  <input type="text" id="stat1Prefix" class="form-input" value="+">
-                </div>
-                <div class="form-field" style="margin-bottom: 10px;">
-                  <label class="form-label">Texto Renglón 1</label>
-                  <input type="text" id="stat1Label1" class="form-input" value="Años de">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">Texto Renglón 2</label>
-                  <input type="text" id="stat1Label2" class="form-input" value="Trayectoria">
-                </div>
+                <span class="card-status-pill amber"><i class="fa-solid fa-circle-dot"></i> Sección Cifras</span>
               </div>
 
-              <!-- Métrica 2 -->
-              <div class="admin-card" style="padding: 16px; margin-bottom: 0;">
-                <h4 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--admin-navy);">Cifra #2 (Países)</h4>
-                <div class="form-field" style="margin-bottom: 10px;">
-                  <label class="form-label">Número</label>
-                  <input type="number" id="stat2Target" class="form-input" value="10">
+              <div class="metrics-horizontal-grid">
+                <!-- Cifra 1 -->
+                <div class="metric-compact-block">
+                  <div class="metric-block-top">
+                    <span class="metric-chip">Cifra #1</span>
+                    <strong class="metric-name">Trayectoria</strong>
+                  </div>
+                  <div class="metric-mini-grid">
+                    <div class="form-field">
+                      <label class="form-label">Número</label>
+                      <input type="number" id="stat1Target" class="form-input" value="30">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Prefijo (ej: +)</label>
+                      <input type="text" id="stat1Prefix" class="form-input" value="+">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Texto Renglón 1</label>
+                      <input type="text" id="stat1Label1" class="form-input" value="Años de">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Texto Renglón 2</label>
+                      <input type="text" id="stat1Label2" class="form-input" value="Trayectoria">
+                    </div>
+                  </div>
                 </div>
-                <div class="form-field" style="margin-bottom: 10px;">
-                  <label class="form-label">Prefijo (ej: +)</label>
-                  <input type="text" id="stat2Prefix" class="form-input" value="+">
+
+                <!-- Cifra 2 -->
+                <div class="metric-compact-block">
+                  <div class="metric-block-top">
+                    <span class="metric-chip">Cifra #2</span>
+                    <strong class="metric-name">Producciones</strong>
+                  </div>
+                  <div class="metric-mini-grid">
+                    <div class="form-field">
+                      <label class="form-label">Número</label>
+                      <input type="number" id="stat2Target" class="form-input" value="10">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Prefijo (ej: +)</label>
+                      <input type="text" id="stat2Prefix" class="form-input" value="+">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Texto Renglón 1</label>
+                      <input type="text" id="stat2Label1" class="form-input" value="Países con">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Texto Renglón 2</label>
+                      <input type="text" id="stat2Label2" class="form-input" value="Producciones">
+                    </div>
+                  </div>
                 </div>
-                <div class="form-field" style="margin-bottom: 10px;">
-                  <label class="form-label">Texto Renglón 1</label>
-                  <input type="text" id="stat2Label1" class="form-input" value="Países con">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">Texto Renglón 2</label>
-                  <input type="text" id="stat2Label2" class="form-input" value="Producciones">
+
+                <!-- Cifra 3 -->
+                <div class="metric-compact-block">
+                  <div class="metric-block-top">
+                    <span class="metric-chip">Cifra #3</span>
+                    <strong class="metric-name">Financiamiento</strong>
+                  </div>
+                  <div class="metric-mini-grid">
+                    <div class="form-field">
+                      <label class="form-label">Número</label>
+                      <input type="number" id="stat3Target" class="form-input" value="100">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Sufijo (ej: %)</label>
+                      <input type="text" id="stat3Suffix" class="form-input" value="%">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Texto Renglón 1</label>
+                      <input type="text" id="stat3Label1" class="form-input" value="Gestión Propia">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Texto Renglón 2</label>
+                      <input type="text" id="stat3Label2" class="form-input" value="& Financiamiento">
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <!-- Métrica 3 -->
-              <div class="admin-card" style="padding: 16px; margin-bottom: 0;">
-                <h4 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--admin-navy);">Cifra #3 (Financiamiento)</h4>
-                <div class="form-field" style="margin-bottom: 10px;">
-                  <label class="form-label">Número</label>
-                  <input type="number" id="stat3Target" class="form-input" value="100">
-                </div>
-                <div class="form-field" style="margin-bottom: 10px;">
-                  <label class="form-label">Sufijo (ej: %)</label>
-                  <input type="text" id="stat3Suffix" class="form-input" value="%">
-                </div>
-                <div class="form-field" style="margin-bottom: 10px;">
-                  <label class="form-label">Texto Renglón 1</label>
-                  <input type="text" id="stat3Label1" class="form-input" value="Gestión Propia">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">Texto Renglón 2</label>
-                  <input type="text" id="stat3Label2" class="form-input" value="& Financiamiento">
-                </div>
-              </div>
-
             </div>
-          </div>
 
-          <div class="admin-card">
-            <h3 class="card-title"><i class="fa-solid fa-heading"></i> Titular de la Portada</h3>
-            <div class="form-grid">
-              <div class="form-field">
-                <label class="form-label" for="inputHero1">Línea 1 del Título</label>
-                <input type="text" id="inputHero1" class="form-input" value="Grandes Convocatorias.">
+            <!-- Sección 2: Titular Principal de la Portada con Live Preview -->
+            <div class="admin-card">
+              <div class="card-header-flex">
+                <div class="card-header-left">
+                  <span class="card-icon-badge hero"><i class="fa-solid fa-heading"></i></span>
+                  <div>
+                    <h3 class="card-title">Titular Principal del Hero</h3>
+                    <p class="card-subtitle">Encabezado principal visible al ingresar al sitio web oficial</p>
+                  </div>
+                </div>
+                <span class="card-status-pill purple"><i class="fa-solid fa-circle-dot"></i> Portada Principal</span>
               </div>
-              <div class="form-field">
-                <label class="form-label" for="inputHero2">Línea 2 (Acento Azul)</label>
-                <input type="text" id="inputHero2" class="form-input" value="Espectáculos de Nivel Mundial.">
+
+              <div class="form-grid compact-grid-2">
+                <div class="form-field">
+                  <label class="form-label" for="inputHero1">Línea 1 del Título</label>
+                  <input type="text" id="inputHero1" class="form-input" value="Grandes Convocatorias.">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="inputHero2">Línea 2 (Acento Azul)</label>
+                  <input type="text" id="inputHero2" class="form-input" value="Espectáculos de Nivel Mundial.">
+                </div>
+              </div>
+
+              <!-- Live Preview Box -->
+              <div class="hero-live-preview-box">
+                <div class="preview-badge-row">
+                  <span class="preview-tag"><i class="fa-solid fa-eye"></i> Vista Previa en Vivo (Portada)</span>
+                </div>
+                <div class="preview-hero-content">
+                  <img src="assets/fag-logo.png" alt="FAG" class="preview-mini-logo">
+                  <h4 class="preview-hero-title">
+                    <span id="prevLine1">Grandes Convocatorias.</span><br>
+                    <span id="prevLine2" class="preview-hero-accent">Espectáculos de Nivel Mundial.</span>
+                  </h4>
+                </div>
               </div>
             </div>
           </div>

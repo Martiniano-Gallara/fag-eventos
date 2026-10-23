@@ -196,7 +196,7 @@ const DEFAULT_FAG_DATA = {
     autoSync: true
   },
   security: {
-    masterPin: "fag2026"
+    pinHash: "da7c3232b0167aa67ab9627ff7a7ef504863a2d2e5636cbaa956db05aab71a0f"
   }
 };
 
@@ -210,8 +210,18 @@ class FagDataStore {
       const stored = localStorage.getItem(FAG_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
+
+        // Blindaje: eliminar cualquier rastro de PIN en texto plano de versiones anteriores
+        let pinHash = DEFAULT_FAG_DATA.security.pinHash;
+        if (parsed.security) {
+          if (parsed.security.pinHash) {
+            pinHash = parsed.security.pinHash;
+          }
+          delete parsed.security.masterPin;
+        }
+
         // Mezcla profunda para preservar nuevos campos por defecto si faltan
-        return {
+        const merged = {
           ...DEFAULT_FAG_DATA,
           ...parsed,
           contact: { ...DEFAULT_FAG_DATA.contact, ...(parsed.contact || {}) },
@@ -227,8 +237,14 @@ class FagDataStore {
             return DEFAULT_FAG_DATA.gallery;
           })(),
           cloudConfig: { ...DEFAULT_FAG_DATA.cloudConfig, ...(parsed.cloudConfig || {}) },
-          security: { ...DEFAULT_FAG_DATA.security, ...(parsed.security || {}) }
+          security: { pinHash }
         };
+
+        if (parsed.security && parsed.security.masterPin) {
+          localStorage.setItem(FAG_STORAGE_KEY, JSON.stringify(merged));
+        }
+
+        return merged;
       }
     } catch (e) {
       console.warn("FagDataStore: Error al cargar localStorage, usando valores por defecto", e);
@@ -260,26 +276,46 @@ class FagDataStore {
     return this.data;
   }
 
-  // --- AUTENTICACIÓN / PIN MAESTRO ---
-  verifyPin(inputPin) {
-    const currentPin = this.data.security?.masterPin || "fag2026";
-    return String(inputPin).trim() === String(currentPin).trim();
+  // --- AUTENTICACIÓN / PIN MAESTRO BLINDADO (SHA-256) ---
+  async hashPin(pin) {
+    const raw = String(pin || '').trim();
+    if (window.crypto && window.crypto.subtle) {
+      try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(raw);
+        const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      } catch (e) {
+        console.warn("FagDataStore: Error en SubtleCrypto", e);
+      }
+    }
+    return raw;
   }
 
-  setMasterPin(newPin) {
-    if (!newPin || newPin.length < 4) {
+  async verifyPin(inputPin) {
+    if (!inputPin) return false;
+    const inputHash = await this.hashPin(inputPin);
+    const storedHash = (this.data.security && this.data.security.pinHash) || DEFAULT_FAG_DATA.security.pinHash;
+    return inputHash === storedHash;
+  }
+
+  async setMasterPin(newPin) {
+    if (!newPin || String(newPin).trim().length < 4) {
       throw new Error("El PIN debe tener al menos 4 caracteres.");
     }
-    this.data.security.masterPin = String(newPin).trim();
-    this.saveData(this.data, false);
+    const newHash = await this.hashPin(newPin);
+    this.data.security = { pinHash: newHash };
+    await this.saveData(this.data, false);
   }
 
   isAuthenticated() {
     return sessionStorage.getItem(FAG_AUTH_KEY) === 'true';
   }
 
-  login(pin) {
-    if (this.verifyPin(pin)) {
+  async login(pin) {
+    const isValid = await this.verifyPin(pin);
+    if (isValid) {
       sessionStorage.setItem(FAG_AUTH_KEY, 'true');
       return true;
     }
@@ -394,15 +430,15 @@ class FagDataStore {
   }
 
   async pushToCloud(customPin = null) {
+    // Sanitización: excluir 'security' para evitar almacenar credenciales o hashes en bases públicas
     const payloadToSave = {
       contact: this.data.contact,
       hero: this.data.hero,
       stats: this.data.stats,
-      gallery: this.data.gallery,
-      security: this.data.security
+      gallery: this.data.gallery
     };
 
-    const activePin = customPin || (this.data.security && this.data.security.masterPin) || 'fag2026';
+    const activePin = customPin || (this.data.security && this.data.security.pinHash) || DEFAULT_FAG_DATA.security.pinHash;
 
     // 1. Intentar subir primero a Neon en Vercel (/api/data)
     try {
@@ -468,7 +504,9 @@ class FagDataStore {
 
   // --- EXPORTAR E IMPORTAR COPIA DE SEGURIDAD ---
   exportBackup() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.data, null, 2));
+    const safeData = { ...this.data };
+    delete safeData.security; // Nunca exportar hashes ni PIN en el JSON descargable
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(safeData, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
     downloadAnchor.setAttribute("download", `fag-eventos-datos-${new Date().toISOString().slice(0, 10)}.json`);
@@ -493,39 +531,50 @@ class FagDataStore {
   // --- APLICAR DATOS DINÁMICOS AL DOM (INDEX / QUIÉNES SOMOS) ---
   applyToDOM() {
     const d = this.data;
+    if (!d) return;
 
-    // 1. WhatsApp Buttons
-    const cleanPhone = (d.contact.whatsapp || "5493517580045").replace(/[^0-9]/g, '');
-    const waMsg = encodeURIComponent(d.contact.whatsappMessage || "¡Hola FAG Eventos! Me comunico desde la web oficial.");
+    // 1. WhatsApp: Enlaces directos y botones
+    const cleanPhone = (d.contact?.whatsapp || "5493517580045").replace(/[^0-9]/g, '');
+    const waMsg = encodeURIComponent(d.contact?.whatsappMessage || "¡Hola FAG Eventos! Me comunico desde la web oficial para consultar por la organización y producción de un evento.");
     const waUrl = `https://wa.me/${cleanPhone}?text=${waMsg}`;
 
-    document.querySelectorAll('.dynamic-whatsapp-btn').forEach(btn => {
+    document.querySelectorAll('.dynamic-whatsapp-btn, a[href*="wa.me"]').forEach(btn => {
       btn.setAttribute('href', waUrl);
       btn.setAttribute('target', '_blank');
       btn.setAttribute('rel', 'noopener noreferrer');
     });
 
-    // 2. Email
-    if (d.contact.email) {
+    // 2. Correo Electrónico
+    if (d.contact?.email) {
       document.querySelectorAll('a[href^="mailto:"]').forEach(btn => {
         btn.setAttribute('href', `mailto:${d.contact.email}`);
       });
     }
 
-    // 3. Instagram Oficial
-    if (d.contact.instagram) {
+    // 3. Instagram Oficial FAG y Socios
+    if (d.contact?.instagram) {
       document.querySelectorAll('a[href*="instagram.com/fag.eventos"]').forEach(btn => {
         btn.setAttribute('href', d.contact.instagram);
       });
     }
+    if (d.contact?.instagramFer) {
+      document.querySelectorAll('a[href*="instagram.com/fergigena"]').forEach(btn => {
+        btn.setAttribute('href', d.contact.instagramFer);
+      });
+    }
+    if (d.contact?.instagramFede) {
+      document.querySelectorAll('a[href*="instagram.com/fedepellizzon"]').forEach(btn => {
+        btn.setAttribute('href', d.contact.instagramFede);
+      });
+    }
 
-    // 4. Hero Titles (si existen en el documento actual)
+    // 4. Hero Titles (Titulares en portada)
     const heroTitle = document.querySelector('.hero-main-title');
     if (heroTitle && d.hero) {
       heroTitle.innerHTML = `${d.hero.titleLine1 || 'Grandes Convocatorias.'}<br><span class="hero-title-accent">${d.hero.titleLine2 || 'Espectáculos de Nivel Mundial.'}</span>`;
     }
 
-    // 5. Estadísticas
+    // 5. Estadísticas de Impacto (Número, Prefijo/Sufijo y Renglones)
     const statCards = document.querySelectorAll('.stat-card');
     if (statCards.length >= 3 && d.stats) {
       const s1 = d.stats.stat1;
@@ -533,20 +582,40 @@ class FagDataStore {
       const s3 = d.stats.stat3;
 
       if (statCards[0] && s1) {
+        const wrap = statCards[0].querySelector('.stat-number-wrap');
         const num = statCards[0].querySelector('.stat-number');
-        if (num) num.setAttribute('data-target', s1.target);
+        if (wrap) {
+          wrap.innerHTML = `${s1.prefix ? `<span class="stat-plus">${s1.prefix}</span>` : ''}<span class="stat-number" data-target="${s1.target}">${s1.target}</span>${s1.suffix ? `<span class="stat-plus">${s1.suffix}</span>` : ''}`;
+        } else if (num) {
+          num.setAttribute('data-target', s1.target);
+          num.textContent = s1.target;
+        }
         const lbl = statCards[0].querySelector('.stat-label');
         if (lbl) lbl.innerHTML = `<span>${s1.label1}</span><span>${s1.label2}</span>`;
       }
+
       if (statCards[1] && s2) {
+        const wrap = statCards[1].querySelector('.stat-number-wrap');
         const num = statCards[1].querySelector('.stat-number');
-        if (num) num.setAttribute('data-target', s2.target);
+        if (wrap) {
+          wrap.innerHTML = `${s2.prefix ? `<span class="stat-plus">${s2.prefix}</span>` : ''}<span class="stat-number" data-target="${s2.target}">${s2.target}</span>${s2.suffix ? `<span class="stat-plus">${s2.suffix}</span>` : ''}`;
+        } else if (num) {
+          num.setAttribute('data-target', s2.target);
+          num.textContent = s2.target;
+        }
         const lbl = statCards[1].querySelector('.stat-label');
         if (lbl) lbl.innerHTML = `<span>${s2.label1}</span><span>${s2.label2}</span>`;
       }
+
       if (statCards[2] && s3) {
+        const wrap = statCards[2].querySelector('.stat-number-wrap');
         const num = statCards[2].querySelector('.stat-number');
-        if (num) num.setAttribute('data-target', s3.target);
+        if (wrap) {
+          wrap.innerHTML = `${s3.prefix ? `<span class="stat-plus">${s3.prefix}</span>` : ''}<span class="stat-number" data-target="${s3.target}">${s3.target}</span>${s3.suffix ? `<span class="stat-plus">${s3.suffix}</span>` : ''}`;
+        } else if (num) {
+          num.setAttribute('data-target', s3.target);
+          num.textContent = s3.target;
+        }
         const lbl = statCards[2].querySelector('.stat-label');
         if (lbl) lbl.innerHTML = `<span>${s3.label1}</span><span>${s3.label2}</span>`;
       }
@@ -568,6 +637,9 @@ class FagDataStore {
         </div>
       `).join('');
     }
+
+    // Despachar evento para sincronización reactiva
+    window.dispatchEvent(new CustomEvent('fagStoreUpdated', { detail: d }));
   }
 }
 
