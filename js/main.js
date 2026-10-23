@@ -269,7 +269,8 @@ document.addEventListener('DOMContentLoaded', () => {
       lightboxIgLink.href = link;
       if (lightboxIgText) {
         if (link.includes('/reel/') || link.includes('/p/')) {
-          lightboxIgText.textContent = item.querySelector('.video-play-indicator') ? 'Ver Reel en Instagram' : 'Ver Publicación';
+          const isVideo = link.includes('/reel/') || item.getAttribute('data-category')?.includes('videos') || !!item.querySelector('.video-play-indicator');
+          lightboxIgText.textContent = isVideo ? 'Ver Reel en Instagram' : 'Ver Publicación';
         } else if (link.includes('highlights')) {
           lightboxIgText.textContent = 'Ver Historia Destacada';
         } else {

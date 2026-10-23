@@ -21,9 +21,8 @@ const DEFAULT_FAG_DATA = {
   hero: {
     titleLine1: "Grandes Convocatorias.",
     titleLine2: "Espectáculos de Nivel Mundial.",
-    pill1: "+30 Años",
-    pill2: "Financiamiento Propio",
-    pill3: "Internacional"
+    pill1: "Financiamiento Propio",
+    pill2: "Internacional"
   },
   stats: {
     stat1: { target: 30, prefix: "+", suffix: "", label1: "Años de", label2: "Trayectoria" },
@@ -559,13 +558,10 @@ class FagDataStore {
       galleryGrid.innerHTML = d.gallery.map(item => `
         <div class="gallery-item ${item.span || 'mural-standard'}" data-category="${item.category}" data-category-name="${item.categoryName || item.title}" data-img="${item.img}" data-link="${item.link}">
           <div class="gallery-thumb-wrap">
-            <span class="gallery-badge"><i class="fa-solid ${item.badgeIcon || 'fa-camera'}"></i> ${item.badgeText || 'Evento'}</span>
-            ${item.isReel ? '<span class="gallery-badge-reel video-play-indicator"><i class="fa-solid fa-play"></i> Reel</span>' : ''}
-            <img src="${item.img}" alt="${item.title} - ${item.subtitle}" class="gallery-img" loading="lazy" decoding="async">
+            <img src="${item.img}" alt="${item.title}" class="gallery-img" loading="lazy" decoding="async">
             <div class="gallery-overlay">
               <div class="gallery-info">
                 <h4 class="gallery-title">${item.title}</h4>
-                <span class="gallery-subtitle">${item.subtitle}</span>
               </div>
             </div>
           </div>
