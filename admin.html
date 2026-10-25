@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
   <title>Panel de Administración | FAG Eventos</title>
   <link rel="icon" type="image/png" href="assets/fag-logo.png">
 
@@ -11,8 +12,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Font Awesome 6 Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Font Awesome 6 Icons con SRI -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
 
   <!-- Admin Stylesheet -->
   <link rel="stylesheet" href="css/admin.css">
@@ -20,7 +21,7 @@
 <body>
 
   <!-- ==========================================================================
-       PANTALLA DE ACCESO (LOGIN CON PIN MAESTRO)
+       PANTALLA DE ACCESO (LOGIN CON CONTRASEÑA)
        ========================================================================== -->
   <section id="loginScreen" class="admin-login-screen">
     <!-- Luces y esferas ambientales de fondo -->
@@ -42,9 +43,9 @@
       </div>
 
       <h1 class="login-title">Panel de Control</h1>
-      <p class="login-subtitle">Ingresá el PIN maestro para gestionar el sitio web de FAG Eventos.</p>
+      <p class="login-subtitle">Ingresá la contraseña de administración para gestionar el sitio web de FAG Eventos.</p>
 
-      <!-- Banner de Alerta por Bloqueo Anti-Fuerza Bruta -->
+      <!-- Banner de Alerta por Bloqueo Anti-Fuerza Bruta del Servidor -->
       <div id="loginLockoutBanner" class="login-lockout-banner" style="display: none;" role="alert">
         <i class="fa-solid fa-shield-halved"></i>
         <div class="lockout-text">
@@ -58,8 +59,8 @@
           <div class="pin-icon-box">
             <i class="fa-solid fa-lock pin-icon"></i>
           </div>
-          <input type="password" id="pinInput" class="pin-input" placeholder="Ingresá el PIN maestro" autocomplete="current-password" autofocus required>
-          <button type="button" id="btnTogglePin" class="btn-toggle-pin" aria-label="Mostrar u ocultar PIN" title="Ver contraseña">
+          <input type="password" id="pinInput" class="pin-input" placeholder="Ingresá la contraseña de administración" autocomplete="current-password" autofocus required>
+          <button type="button" id="btnTogglePin" class="btn-toggle-pin" aria-label="Mostrar u ocultar contraseña" title="Ver contraseña">
             <i class="fa-solid fa-eye" id="togglePinIcon"></i>
           </button>
         </div>
@@ -98,9 +99,10 @@
             <i class="fa-solid fa-arrow-up-right-from-square"></i>
             <span>Ver Sitio Web</span>
           </a>
-          <button id="btnHeaderSave" class="btn-header-action btn-header-save" title="Guardar todos los cambios">
-            <i class="fa-solid fa-floppy-disk"></i>
-            <span>Guardar Cambios</span>
+          <span id="publishStatus" class="publish-status status-clean">Sin cambios</span>
+          <button id="btnPublish" class="btn-header-action btn-header-save" title="Publicar cambios en el servidor">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Publicar cambios</span>
           </button>
           <button id="btnLogout" class="btn-header-action btn-logout" title="Cerrar sesión">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -110,7 +112,7 @@
       </div>
     </header>
 
-    <!-- Tabs Bar -->
+    <!-- Tabs Bar (Pestaña Cloud eliminada) -->
     <nav class="admin-tabs-bar">
       <div class="tabs-container">
         <button class="tab-btn active" data-tab="tab-contacto">
@@ -121,9 +123,6 @@
         </button>
         <button class="tab-btn" data-tab="tab-estadisticas">
           <i class="fa-solid fa-chart-line"></i> Estadísticas & Portada
-        </button>
-        <button class="tab-btn" data-tab="tab-cloud">
-          <i class="fa-solid fa-cloud"></i> Nube & Sincronización
         </button>
         <button class="tab-btn" data-tab="tab-seguridad">
           <i class="fa-solid fa-shield-halved"></i> Seguridad
@@ -136,16 +135,16 @@
       <div class="main-container">
 
         <!-- ====================================================================
-             TAB 1: CONTACTO & REDES SOCIALES (COMPRIMIDO EN 2 SECCIONES SEPARADAS)
+             TAB 1: CONTACTO & REDES SOCIALES
              ==================================================================== -->
         <section id="tab-contacto" class="tab-panel active">
           <div class="panel-header">
             <div>
               <div class="panel-header-badge">
-                <i class="fa-solid fa-link"></i> 100% Sincronizado con el Inicio
+                <i class="fa-solid fa-link"></i> Sincronizado con la Portada
               </div>
               <h2 class="panel-title">Información de Contacto y Redes</h2>
-              <p class="panel-desc">Los cambios modifican al instante los botones de WhatsApp, email y redes de la web principal.</p>
+              <p class="panel-desc">Los cambios modifican los botones de WhatsApp, email y redes de la web principal al publicar.</p>
             </div>
             <button class="btn-primary btn-save-section" data-section="contact">
               <i class="fa-solid fa-check"></i> Guardar Contacto
@@ -168,9 +167,9 @@
 
               <div class="form-grid compact-grid-2">
                 <div class="form-field">
-                  <label class="form-label" for="inputWhatsapp">Número Internacional (sin símbolos)</label>
+                  <label class="form-label" for="inputWhatsapp">Número Internacional (solo dígitos)</label>
                   <input type="text" id="inputWhatsapp" class="form-input" placeholder="Ej: 5493517580045">
-                  <span class="form-hint">Para Argentina: 54 + 9 + característica (351) + número.</span>
+                  <span class="form-hint">Para Argentina: 54 + 9 + característica (351) + número (8 a 15 dígitos).</span>
                 </div>
                 <div class="form-field">
                   <label class="form-label" for="inputWhatsappDisplay">Número visible para el usuario</label>
@@ -198,20 +197,26 @@
                   <span class="card-icon-badge social"><i class="fa-solid fa-at"></i></span>
                   <div>
                     <h3 class="card-title">Correo Electrónico & Redes Sociales</h3>
-                    <p class="card-subtitle">Dirección institucional y enlaces directos a perfiles oficiales</p>
+                    <p class="card-subtitle">Dirección de correo institucional y perfiles oficiales</p>
                   </div>
                 </div>
-                <span class="card-status-pill blue"><i class="fa-solid fa-circle-dot"></i> Vinculado</span>
               </div>
 
               <div class="form-grid compact-grid-2">
                 <div class="form-field">
-                  <label class="form-label" for="inputEmail">Correo Institucional</label>
+                  <label class="form-label" for="inputEmail">Correo Electrónico de Contacto</label>
                   <input type="email" id="inputEmail" class="form-input" placeholder="fgigena@gmail.com">
                 </div>
                 <div class="form-field">
-                  <label class="form-label" for="inputInstagram">Instagram Oficial (@fag.eventos)</label>
+                  <label class="form-label" for="inputInstagram">Instagram Oficial FAG (URL HTTPS)</label>
                   <input type="url" id="inputInstagram" class="form-input" placeholder="https://www.instagram.com/fag.eventos/">
+                </div>
+              </div>
+
+              <div class="form-grid compact-grid-3" style="margin-top: 14px;">
+                <div class="form-field">
+                  <label class="form-label" for="inputInstagramDisplay">Usuario visible Instagram</label>
+                  <input type="text" id="inputInstagramDisplay" class="form-input" placeholder="@fag.eventos">
                 </div>
                 <div class="form-field">
                   <label class="form-label" for="inputInstagramFer">Instagram Fernando Gigena</label>
@@ -227,302 +232,183 @@
         </section>
 
         <!-- ====================================================================
-             TAB 2: GALERÍA & REELS
+             TAB 2: GALERÍA DE TRABAJOS & REELS DE INSTAGRAM
              ==================================================================== -->
         <section id="tab-galeria" class="tab-panel">
           <div class="panel-header">
             <div>
-              <div class="panel-header-badge">
-                <i class="fa-solid fa-images"></i> Mosaico Dinámico
-              </div>
-              <h2 class="panel-title">Portafolio, Trabajos & Reels</h2>
-              <p class="panel-desc">Agregá, editá, eliminá y reordená los eventos y reels que se muestran en la galería.</p>
+              <h2 class="panel-title">Mural de Trabajos & Conciertos</h2>
+              <p class="panel-desc">Gestioná los elementos fotográficos y videos que componen el mosaico artístico de la portada.</p>
             </div>
             <button id="btnNewGalleryItem" class="btn-primary">
-              <i class="fa-solid fa-plus"></i> Nuevo Trabajo / Reel
+              <i class="fa-solid fa-plus"></i> Agregar Nuevo Trabajo
             </button>
           </div>
 
-          <div id="galleryAdminList" class="gallery-admin-list">
-            <!-- Renderizado dinámicamente vía admin.js -->
+          <div id="galleryAdminList" class="gallery-admin-grid">
+            <!-- Cargado dinámicamente vía JavaScript -->
           </div>
         </section>
 
         <!-- ====================================================================
-             TAB 3: ESTADÍSTICAS & PORTADA (COMPRIMIDO EN SECCIONES HORIZONTALES)
+             TAB 3: ESTADÍSTICAS & TITULARES
              ==================================================================== -->
         <section id="tab-estadisticas" class="tab-panel">
           <div class="panel-header">
             <div>
-              <div class="panel-header-badge">
-                <i class="fa-solid fa-bolt"></i> Reflejo Directo en Portada
-              </div>
-              <h2 class="panel-title">Métricas de Impacto & Titulares</h2>
-              <p class="panel-desc">Modificá las cifras clave de trayectoria y los titulares del hero principal.</p>
+              <h2 class="panel-title">Estadísticas & Mensajes Principales</h2>
+              <p class="panel-desc">Editá las métricas de impacto y las dos líneas del titular principal de la portada.</p>
             </div>
             <button class="btn-primary btn-save-section" data-section="stats">
-              <i class="fa-solid fa-check"></i> Guardar Cifras
+              <i class="fa-solid fa-check"></i> Guardar Estadísticas
             </button>
           </div>
 
-          <div class="admin-cards-stack">
-            <!-- Sección 1: Las 3 Cifras de Impacto (Comprimidas en Grid Horizontal) -->
-            <div class="admin-card">
-              <div class="card-header-flex">
-                <div class="card-header-left">
-                  <span class="card-icon-badge stats"><i class="fa-solid fa-chart-simple"></i></span>
-                  <div>
-                    <h3 class="card-title">Las 3 Cifras de Impacto</h3>
-                    <p class="card-subtitle">Contadores animados destacados de trayectoria, países y solvencia</p>
-                  </div>
-                </div>
-                <span class="card-status-pill amber"><i class="fa-solid fa-circle-dot"></i> Sección Cifras</span>
-              </div>
-
-              <div class="metrics-horizontal-grid">
-                <!-- Cifra 1 -->
-                <div class="metric-compact-block">
-                  <div class="metric-block-top">
-                    <span class="metric-chip">Cifra #1</span>
-                    <strong class="metric-name">Trayectoria</strong>
-                  </div>
-                  <div class="metric-mini-grid">
-                    <div class="form-field">
-                      <label class="form-label">Número</label>
-                      <input type="number" id="stat1Target" class="form-input" value="30">
-                    </div>
-                    <div class="form-field">
-                      <label class="form-label">Prefijo (ej: +)</label>
-                      <input type="text" id="stat1Prefix" class="form-input" value="+">
-                    </div>
-                    <div class="form-field">
-                      <label class="form-label">Texto Renglón 1</label>
-                      <input type="text" id="stat1Label1" class="form-input" value="Años de">
-                    </div>
-                    <div class="form-field">
-                      <label class="form-label">Texto Renglón 2</label>
-                      <input type="text" id="stat1Label2" class="form-input" value="Trayectoria">
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Cifra 2 -->
-                <div class="metric-compact-block">
-                  <div class="metric-block-top">
-                    <span class="metric-chip">Cifra #2</span>
-                    <strong class="metric-name">Producciones</strong>
-                  </div>
-                  <div class="metric-mini-grid">
-                    <div class="form-field">
-                      <label class="form-label">Número</label>
-                      <input type="number" id="stat2Target" class="form-input" value="10">
-                    </div>
-                    <div class="form-field">
-                      <label class="form-label">Prefijo (ej: +)</label>
-                      <input type="text" id="stat2Prefix" class="form-input" value="+">
-                    </div>
-                    <div class="form-field">
-                      <label class="form-label">Texto Renglón 1</label>
-                      <input type="text" id="stat2Label1" class="form-input" value="Países con">
-                    </div>
-                    <div class="form-field">
-                      <label class="form-label">Texto Renglón 2</label>
-                      <input type="text" id="stat2Label2" class="form-input" value="Producciones">
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Cifra 3 -->
-                <div class="metric-compact-block">
-                  <div class="metric-block-top">
-                    <span class="metric-chip">Cifra #3</span>
-                    <strong class="metric-name">Financiamiento</strong>
-                  </div>
-                  <div class="metric-mini-grid">
-                    <div class="form-field">
-                      <label class="form-label">Número</label>
-                      <input type="number" id="stat3Target" class="form-input" value="100">
-                    </div>
-                    <div class="form-field">
-                      <label class="form-label">Sufijo (ej: %)</label>
-                      <input type="text" id="stat3Suffix" class="form-input" value="%">
-                    </div>
-                    <div class="form-field">
-                      <label class="form-label">Texto Renglón 1</label>
-                      <input type="text" id="stat3Label1" class="form-input" value="Gestión Propia">
-                    </div>
-                    <div class="form-field">
-                      <label class="form-label">Texto Renglón 2</label>
-                      <input type="text" id="stat3Label2" class="form-input" value="& Financiamiento">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Sección 2: Titular Principal de la Portada con Live Preview -->
-            <div class="admin-card">
-              <div class="card-header-flex">
-                <div class="card-header-left">
-                  <span class="card-icon-badge hero"><i class="fa-solid fa-heading"></i></span>
-                  <div>
-                    <h3 class="card-title">Titular Principal del Hero</h3>
-                    <p class="card-subtitle">Encabezado principal visible al ingresar al sitio web oficial</p>
-                  </div>
-                </div>
-                <span class="card-status-pill purple"><i class="fa-solid fa-circle-dot"></i> Portada Principal</span>
-              </div>
-
-              <div class="form-grid compact-grid-2">
-                <div class="form-field">
-                  <label class="form-label" for="inputHero1">Línea 1 del Título</label>
-                  <input type="text" id="inputHero1" class="form-input" value="Grandes Convocatorias.">
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="inputHero2">Línea 2 (Acento Azul)</label>
-                  <input type="text" id="inputHero2" class="form-input" value="Espectáculos de Nivel Mundial.">
-                </div>
-              </div>
-
-              <!-- Live Preview Box -->
-              <div class="hero-live-preview-box">
-                <div class="preview-badge-row">
-                  <span class="preview-tag"><i class="fa-solid fa-eye"></i> Vista Previa en Vivo (Portada)</span>
-                </div>
-                <div class="preview-hero-content">
-                  <img src="assets/fag-logo.png" alt="FAG" class="preview-mini-logo">
-                  <h4 class="preview-hero-title">
-                    <span id="prevLine1">Grandes Convocatorias.</span><br>
-                    <span id="prevLine2" class="preview-hero-accent">Espectáculos de Nivel Mundial.</span>
-                  </h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ====================================================================
-             TAB 4: BASE DE DATOS & NUBE
-             ==================================================================== -->
-        <section id="tab-cloud" class="tab-panel">
-          <div class="panel-header">
-            <div>
-              <h2 class="panel-title">Sincronización Global en la Nube</h2>
-              <p class="panel-desc">Los cambios se publican para cualquier persona en cualquier dispositivo a través de Neon en Vercel.</p>
-            </div>
-            <button id="btnSaveCloudConfig" class="btn-primary" style="display: none;">
-              <i class="fa-solid fa-cloud-arrow-up"></i> Guardar Conexión
-            </button>
-          </div>
-
-          <!-- Estado actual de la nube -->
-          <div id="cloudStatusBox" class="cloud-status-box local">
-            <div class="status-indicator">
-              <div class="status-dot"></div>
-              <div>
-                <strong id="cloudStatusTitle">Modo Local Activo</strong>
-                <p id="cloudStatusDesc" style="font-size: 0.85rem; margin: 0;">Los cambios se guardan en el navegador. Conectá Neon en Vercel para sincronizar globalmente.</p>
-              </div>
-            </div>
-            <div id="cloudSyncActions">
-              <button id="btnSyncNow" class="btn-secondary" style="font-size: 0.82rem;">
-                <i class="fa-solid fa-rotate"></i> Sincronizar Ahora
-              </button>
-            </div>
-          </div>
-
-          <!-- Neon en Vercel (Recomendado) -->
-          <div class="admin-card">
-            <h3 class="card-title"><i class="fa-solid fa-database"></i> Neon Postgres Serverless (Vercel)</h3>
+          <!-- Titular Principal Hero -->
+          <div class="admin-card" style="margin-bottom: 24px;">
+            <h3 class="card-title"><i class="fa-solid fa-heading"></i> Titular Principal de Portada (Hero)</h3>
             <p style="font-size: 0.88rem; color: var(--admin-muted); margin-bottom: 16px;">
-              Tu base de datos está vinculada directamente en el panel de Vercel. La sincronización opera mediante la función serverless segura <code>/api/data</code> sin exponer contraseñas ni cadenas de conexión en el navegador.
-            </p>
-
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-              <button type="button" id="btnTestCloud" class="btn-secondary">
-                <i class="fa-solid fa-vial"></i> Probar Conexión con Neon
-              </button>
-              <button type="button" id="btnPushCloud" class="btn-primary" style="background: var(--admin-navy);">
-                <i class="fa-solid fa-cloud-arrow-up"></i> Subir Datos a Neon
-              </button>
-              <button type="button" id="btnPullCloud" class="btn-secondary">
-                <i class="fa-solid fa-cloud-arrow-down"></i> Descargar Datos de Neon
-              </button>
-            </div>
-          </div>
-
-          <!-- Supabase Opcional -->
-          <details class="admin-card" style="cursor: pointer;">
-            <summary style="font-weight: 700; color: var(--admin-navy); font-size: 0.95rem; margin-bottom: 12px;">
-              <i class="fa-solid fa-bolt"></i> Configuración alternativa: Supabase REST (Opcional)
-            </summary>
-            <p style="font-size: 0.85rem; color: var(--admin-muted); margin-bottom: 16px;">
-              Si prefieres usar Supabase en lugar de Neon, puedes configurar tus claves directas abajo:
+              Este es el texto de gran tamaño visible inmediatamente al entrar al sitio web.
             </p>
 
             <div class="form-grid">
               <div class="form-field">
-                <label class="form-label" for="inputSupabaseUrl">Supabase Project URL</label>
-                <input type="url" id="inputSupabaseUrl" class="form-input" placeholder="https://xyzcompany.supabase.co">
+                <label class="form-label" for="inputHero1">Línea 1 (Blanca)</label>
+                <input type="text" id="inputHero1" class="form-input" placeholder="Grandes Convocatorias.">
               </div>
               <div class="form-field">
-                <label class="form-label" for="inputSupabaseKey">Supabase Anon Public Key</label>
-                <input type="password" id="inputSupabaseKey" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                <label class="form-label" for="inputHero2">Línea 2 (Acento Azul)</label>
+                <input type="text" id="inputHero2" class="form-input" placeholder="Espectáculos de Nivel Mundial.">
               </div>
             </div>
-          </details>
+          </div>
 
-          <!-- Copia de seguridad JSON -->
-          <div class="admin-card">
-            <h3 class="card-title"><i class="fa-solid fa-file-export"></i> Respaldo Manual en Archivo JSON</h3>
-            <p style="font-size: 0.88rem; color: var(--admin-muted); margin-bottom: 14px;">
-              Descargá una copia de todos los datos o restaurá un archivo guardado previamente.
-            </p>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-              <button type="button" id="btnExportJson" class="btn-secondary">
-                <i class="fa-solid fa-download"></i> Descargar Copia de Seguridad (JSON)
-              </button>
-              <label class="btn-secondary" style="cursor: pointer;">
-                <i class="fa-solid fa-upload"></i> Restaurar Copia (JSON)
-                <input type="file" id="fileImportJson" accept=".json" style="display: none;">
-              </label>
-              <button type="button" id="btnResetDefaults" class="btn-secondary btn-danger">
-                <i class="fa-solid fa-rotate-left"></i> Restaurar Valores Originales
-              </button>
+          <!-- Tres Métricas de Impacto -->
+          <div class="admin-cards-stack">
+            <div class="admin-card">
+              <h3 class="card-title"><i class="fa-solid fa-chart-simple"></i> Cifra de Impacto 1</h3>
+              <div class="form-grid compact-grid-4">
+                <div class="form-field">
+                  <label class="form-label" for="stat1Target">Número Objetivo</label>
+                  <input type="number" id="stat1Target" class="form-input" placeholder="30">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="stat1Prefix">Prefijo (+, %, x, etc.)</label>
+                  <input type="text" id="stat1Prefix" class="form-input" placeholder="+">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="stat1Label1">Renglón 1</label>
+                  <input type="text" id="stat1Label1" class="form-input" placeholder="Años de">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="stat1Label2">Renglón 2</label>
+                  <input type="text" id="stat1Label2" class="form-input" placeholder="Trayectoria">
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <h3 class="card-title"><i class="fa-solid fa-chart-simple"></i> Cifra de Impacto 2</h3>
+              <div class="form-grid compact-grid-4">
+                <div class="form-field">
+                  <label class="form-label" for="stat2Target">Número Objetivo</label>
+                  <input type="number" id="stat2Target" class="form-input" placeholder="10">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="stat2Prefix">Prefijo (+, %, x, etc.)</label>
+                  <input type="text" id="stat2Prefix" class="form-input" placeholder="+">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="stat2Label1">Renglón 1</label>
+                  <input type="text" id="stat2Label1" class="form-input" placeholder="Países con">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="stat2Label2">Renglón 2</label>
+                  <input type="text" id="stat2Label2" class="form-input" placeholder="Producciones">
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <h3 class="card-title"><i class="fa-solid fa-chart-simple"></i> Cifra de Impacto 3</h3>
+              <div class="form-grid compact-grid-4">
+                <div class="form-field">
+                  <label class="form-label" for="stat3Target">Número Objetivo</label>
+                  <input type="number" id="stat3Target" class="form-input" placeholder="100">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="stat3Suffix">Sufijo (%, +, etc.)</label>
+                  <input type="text" id="stat3Suffix" class="form-input" placeholder="%">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="stat3Label1">Renglón 1</label>
+                  <input type="text" id="stat3Label1" class="form-input" placeholder="Gestión Propia">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="stat3Label2">Renglón 2</label>
+                  <input type="text" id="stat3Label2" class="form-input" placeholder="& Financiamiento">
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
         <!-- ====================================================================
-             TAB 5: SEGURIDAD & PIN
+             TAB 4: SEGURIDAD & COPIAS DE SEGURIDAD
              ==================================================================== -->
         <section id="tab-seguridad" class="tab-panel">
           <div class="panel-header">
             <div>
-              <h2 class="panel-title">Seguridad y PIN de Acceso</h2>
-              <p class="panel-desc">Cambiá el PIN requerido para acceder al panel de administración.</p>
+              <h2 class="panel-title">Seguridad y Copias de Respaldo</h2>
+              <p class="panel-desc">Gestioná la contraseña de acceso al panel y las copias de seguridad de los datos.</p>
             </div>
           </div>
 
-          <div class="admin-card" style="max-width: 500px;">
-            <h3 class="card-title"><i class="fa-solid fa-key"></i> Cambiar PIN Maestro</h3>
-            <form id="formChangePin">
-              <div class="form-field" style="margin-bottom: 14px;">
-                <label class="form-label" for="inputCurrentPin">PIN Actual</label>
-                <input type="password" id="inputCurrentPin" class="form-input" required>
+          <div class="admin-cards-stack">
+            <!-- Cambio de Contraseña de Administración -->
+            <div class="admin-card" style="max-width: 540px;">
+              <h3 class="card-title"><i class="fa-solid fa-key"></i> Cambiar Contraseña de Administración</h3>
+              <p style="font-size: 0.88rem; color: var(--admin-muted); margin-bottom: 16px;">
+                La contraseña debe tener al menos 12 caracteres. Al cambiarla, tu sesión se cerrará y deberás iniciar sesión nuevamente.
+              </p>
+              <form id="formChangePassword">
+                <div class="form-field" style="margin-bottom: 14px;">
+                  <label class="form-label" for="inputCurrentPassword">Contraseña Actual</label>
+                  <input type="password" id="inputCurrentPassword" class="form-input" autocomplete="current-password" required>
+                </div>
+                <div class="form-field" style="margin-bottom: 14px;">
+                  <label class="form-label" for="inputNewPassword">Nueva Contraseña (mínimo 12 caracteres)</label>
+                  <input type="password" id="inputNewPassword" class="form-input" minlength="12" autocomplete="new-password" required>
+                </div>
+                <div class="form-field" style="margin-bottom: 20px;">
+                  <label class="form-label" for="inputConfirmPassword">Confirmar Nueva Contraseña</label>
+                  <input type="password" id="inputConfirmPassword" class="form-input" minlength="12" autocomplete="new-password" required>
+                </div>
+                <button type="submit" id="btnSubmitPassword" class="btn-primary">
+                  <i class="fa-solid fa-lock"></i> Actualizar Contraseña
+                </button>
+              </form>
+            </div>
+
+            <!-- Copias de Seguridad JSON -->
+            <div class="admin-card">
+              <h3 class="card-title"><i class="fa-solid fa-file-export"></i> Copias de Seguridad</h3>
+              <p style="font-size: 0.88rem; color: var(--admin-muted); margin-bottom: 14px;">
+                Descargá una copia de todos los datos en archivo JSON o restaurá un archivo guardado previamente.
+              </p>
+              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button type="button" id="btnExportJson" class="btn-secondary">
+                  <i class="fa-solid fa-download"></i> Descargar Copia de Seguridad (JSON)
+                </button>
+                <label class="btn-secondary" style="cursor: pointer;">
+                  <i class="fa-solid fa-upload"></i> Restaurar Copia (JSON)
+                  <input type="file" id="fileImportJson" accept=".json" style="display: none;">
+                </label>
+                <button type="button" id="btnResetDefaults" class="btn-secondary btn-danger">
+                  <i class="fa-solid fa-rotate-left"></i> Restaurar Valores de Fábrica
+                </button>
               </div>
-              <div class="form-field" style="margin-bottom: 14px;">
-                <label class="form-label" for="inputNewPin">Nuevo PIN (mínimo 4 caracteres)</label>
-                <input type="password" id="inputNewPin" class="form-input" required>
-              </div>
-              <div class="form-field" style="margin-bottom: 20px;">
-                <label class="form-label" for="inputConfirmPin">Confirmar Nuevo PIN</label>
-                <input type="password" id="inputConfirmPin" class="form-input" required>
-              </div>
-              <button type="submit" class="btn-primary">
-                <i class="fa-solid fa-lock"></i> Actualizar PIN
-              </button>
-            </form>
+            </div>
           </div>
         </section>
 
@@ -550,7 +436,7 @@
           </div>
           <div class="form-field">
             <label class="form-label" for="itemSubtitle">Subtítulo Descriptivo</label>
-            <input type="text" id="itemSubtitle" class="form-input" placeholder="Ej: Montaje de Escenario" required>
+            <input type="text" id="itemSubtitle" class="form-input" placeholder="Ej: Montaje de Escenario Layher" required>
           </div>
         </div>
 
@@ -576,7 +462,7 @@
 
         <div class="form-field" style="margin-top: 14px;">
           <label class="form-label" for="itemImg">Ruta o URL de la Imagen</label>
-          <input type="text" id="itemImg" class="form-input" placeholder="assets/gallery/ejemplo.jpg o https://..." required>
+          <input type="text" id="itemImg" class="form-input" placeholder="assets/gallery/ejemplo.webp o https://..." required>
           <span class="form-hint">Podés usar imágenes de la carpeta assets/gallery/ o cualquier URL externa HTTPS.</span>
         </div>
 
@@ -601,6 +487,10 @@
               <option value="fa-beer-mug-empty">Bebidas (fa-beer-mug-empty)</option>
               <option value="fa-masks-theater">Carnaval (fa-masks-theater)</option>
               <option value="fa-location-dot">Ubicación (fa-location-dot)</option>
+              <option value="fa-microphone">Micrófono (fa-microphone)</option>
+              <option value="fa-guitar">Guitarra (fa-guitar)</option>
+              <option value="fa-bolt">Rayo / Sonido (fa-bolt)</option>
+              <option value="fa-star">Estrella (fa-star)</option>
               <option value="fa-camera">General (fa-camera)</option>
             </select>
           </div>

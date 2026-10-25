@@ -1332,3 +1332,44 @@ body {
     padding: 20px 14px 40px;
   }
 }
+
+/* ==========================================================================
+   ESTADO DE PUBLICACIÓN (HEADER BADGE)
+   ========================================================================== */
+.publish-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #94A3B8;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.publish-status.status-clean {
+  color: #94A3B8;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.publish-status.status-dirty {
+  color: #FBBF24;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.publish-status.status-published {
+  color: #34D399;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.publish-status.status-error {
+  color: #F87171;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+

@@ -10,7 +10,8 @@
   <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="Quiénes Somos & Historia | FAG Eventos S.A.S.">
   <meta property="og:description" content="Liderazgo con trayectoria probada en más de 10 países y los espectáculos más convocantes del planeta.">
-  <meta property="og:image" content="assets/fag-logo.png">
+  <meta property="og:url" content="https://REEMPLAZAR-DOMINIO/quienes-somos.html">
+  <meta property="og:image" content="https://REEMPLAZAR-DOMINIO/assets/fag-logo.png">
   <meta property="og:type" content="website">
 
   <!-- Favicon -->
@@ -21,8 +22,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Font Awesome 6 Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Font Awesome 6 Icons con SRI -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
 
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
@@ -35,7 +36,7 @@
   <header class="navbar">
     <div class="container navbar-container">
       <a href="index.html" class="nav-brand" aria-label="FAG Eventos Inicio">
-        <img src="assets/fag-logo.png" alt="Logo FAG Eventos" class="brand-logo-img">
+        <img src="assets/fag-logo.png" alt="Logo FAG Eventos" class="brand-logo-img" width="625" height="168">
       </a>
 
       <nav class="desktop-nav">
@@ -69,7 +70,7 @@
 
   <aside class="mobile-drawer" id="mobileDrawer" aria-label="Menú lateral móvil">
     <div class="drawer-header">
-      <img src="assets/fag-logo.png" alt="Logo FAG Eventos" class="drawer-logo">
+      <img src="assets/fag-logo.png" alt="Logo FAG Eventos" class="drawer-logo" width="625" height="168">
       <button class="drawer-close" id="mobileDrawerClose" aria-label="Cerrar menú">&times;</button>
     </div>
 
@@ -92,10 +93,6 @@
           <i class="fa-brands fa-whatsapp"></i>
         </a>
       </div>
-      <a href="admin.html" class="drawer-admin-link" title="Panel de Administración">
-        <i class="fa-solid fa-lock"></i>
-        <span>Acceso Administrador</span>
-      </a>
     </div>
   </aside>
 
@@ -137,7 +134,7 @@
 
           <div class="about-summary-directors">
             <button type="button" class="summary-director-chip" data-director="fernando-gigena" aria-haspopup="dialog" aria-label="Ver información de Fernando Gigena">
-              <img src="assets/team/fernando-gigena.png" alt="Fernando Gigena" class="summary-chip-avatar">
+              <img src="assets/team/fernando-gigena.png" alt="Fernando Gigena" class="summary-chip-avatar" width="180" height="180">
               <div class="summary-chip-info">
                 <strong>Fernando Gigena</strong>
                 <span>Socio Fundador &bull; Producción (+30 Años)</span>
@@ -145,7 +142,7 @@
               <span class="chip-action-hint"><i class="fa-solid fa-arrow-up-right-from-square"></i></span>
             </button>
             <button type="button" class="summary-director-chip" data-director="federico-pellizzon" aria-haspopup="dialog" aria-label="Ver información de Federico Pellizzon">
-              <img src="assets/team/federico-pellizzon.png" alt="Federico Pellizzon" class="summary-chip-avatar">
+              <img src="assets/team/federico-pellizzon.png" alt="Federico Pellizzon" class="summary-chip-avatar" width="168" height="168">
               <div class="summary-chip-info">
                 <strong>Federico Pellizzon</strong>
                 <span>Socio Fundador &bull; Finanzas (+20 Años)</span>
@@ -290,8 +287,6 @@
     <div class="container footer-simple-container">
       <p class="footer-developer">
         Desarrollado por <a href="https://www.instagram.com/mgh.software/" target="_blank" rel="noopener noreferrer" class="developer-link">MGH</a>
-        <span style="opacity: 0.35; margin: 0 6px;">&bull;</span>
-        <a href="admin.html" class="developer-link" style="opacity: 0.85;" title="Panel de Gestión Administrativa"><i class="fa-solid fa-lock" style="font-size: 0.75rem; margin-right: 3px;"></i>Gestión</a>
       </p>
     </div>
   </footer>
@@ -308,7 +303,7 @@
       <!-- Perfil: Fernando Gigena -->
       <div id="profileFernando" class="director-profile-view">
         <div class="director-modal-header">
-          <img src="assets/team/fernando-gigena.png" alt="Fernando Gigena" class="director-modal-avatar">
+          <img src="assets/team/fernando-gigena.png" alt="Fernando Gigena" class="director-modal-avatar" width="180" height="180">
           <div class="director-modal-titles">
             <h3 class="director-modal-name">Fernando Gigena</h3>
             <span class="director-modal-role">Socio Fundador &bull; Director de Producción</span>
@@ -361,7 +356,7 @@
       <!-- Perfil: Federico Pellizzon -->
       <div id="profileFederico" class="director-profile-view" style="display: none;">
         <div class="director-modal-header">
-          <img src="assets/team/federico-pellizzon.png" alt="Federico Pellizzon" class="director-modal-avatar">
+          <img src="assets/team/federico-pellizzon.png" alt="Federico Pellizzon" class="director-modal-avatar" width="168" height="168">
           <div class="director-modal-titles">
             <h3 class="director-modal-name">Federico Pellizzon</h3>
             <span class="director-modal-role">Socio Fundador &bull; Director Financiero</span>

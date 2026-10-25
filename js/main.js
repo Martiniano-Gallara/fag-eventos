@@ -3,31 +3,6 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 0. Cargar y Aplicar Datos Dinámicos Centrales (100% Vinculado con el Admin)
-  if (window.fagStore) {
-    window.fagStore.applyToDOM();
-    // Sincronización en tiempo real: si el admin guarda cambios en otra pestaña, se aplican al instante
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'fag_eventos_site_data' && window.fagStore) {
-        window.fagStore.data = window.fagStore.loadFromStorage();
-        window.fagStore.applyToDOM();
-        if (typeof bindGalleryLightbox === 'function') {
-          bindGalleryLightbox();
-        }
-      }
-    });
-
-    // Intento de sincronización en segundo plano si la nube está configurada
-    if (window.fagStore.isCloudConfigured()) {
-      window.fagStore.fetchFromCloud().then(cloudData => {
-        if (cloudData) {
-          window.fagStore.applyToDOM();
-          bindGalleryLightbox();
-        }
-      });
-    }
-  }
-
   // 1. Navigation Scroll Effect (Passive Listener)
   const navbar = document.querySelector('.navbar');
   const handleScroll = () => {
@@ -126,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 4. Stats Counter Animation
-  const statNumbers = document.querySelectorAll('.stat-number');
   let statsCounted = false;
 
   const animateValue = (element, start, end, duration) => {
@@ -150,7 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
     entries.forEach(entry => {
       if (entry.isIntersecting && !statsCounted) {
         statsCounted = true;
-        statNumbers.forEach(stat => {
+        // Volver a consultar los nodos actuales dentro del observer
+        const currentStatNumbers = document.querySelectorAll('.stat-number');
+        currentStatNumbers.forEach(stat => {
           const target = parseInt(stat.getAttribute('data-target'), 10);
           if (!isNaN(target)) {
             animateValue(stat, 0, target, 2000);
@@ -164,6 +140,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (statsSection) {
     statsObserver.observe(statsSection);
   }
+
+  // Si los datos de la nube llegan después de que corrió la animación, mostrar directamente el valor final
+  window.addEventListener('fagStoreUpdated', () => {
+    if (statsCounted) {
+      document.querySelectorAll('.stat-number').forEach(stat => {
+        const target = parseInt(stat.getAttribute('data-target'), 10);
+        if (!isNaN(target)) {
+          stat.textContent = target.toLocaleString('es-AR');
+        }
+      });
+    }
+  });
 
   // 4.1 Accordion Logic (Servicios & Quiénes Somos)
   const setupAccordionGroup = (itemSelector, headerSelector) => {
@@ -203,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const handleGalleryFilter = (filterValue) => {
     const galleryItems = document.querySelectorAll('.gallery-item');
     galleryItems.forEach(item => {
-      // Limpiar cualquier timeout pendiente para este elemento
       if (galleryFilterTimeouts.has(item)) {
         clearTimeout(galleryFilterTimeouts.get(item));
         galleryFilterTimeouts.delete(item);
@@ -264,12 +251,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const item = items[currentGalleryIndex];
     if (!item) return;
 
-    const imgSrc = item.getAttribute('data-img') || item.querySelector('.gallery-img')?.src;
+    const rawImg = item.getAttribute('data-img') || item.querySelector('.gallery-img')?.src;
+    const imgSrc = window.fagStore ? window.fagStore.safeUrl(rawImg, { allowRelativeAssets: true }) : rawImg;
     const title = item.querySelector('.gallery-title')?.textContent || 'FAG Eventos';
     const category = item.getAttribute('data-category-name') || 'Evento';
-    const link = item.getAttribute('data-link') || 'https://www.instagram.com/fag.eventos/';
+    const rawLink = item.getAttribute('data-link') || 'https://www.instagram.com/fag.eventos/';
+    const link = (window.fagStore ? window.fagStore.safeUrl(rawLink) : null) || 'https://www.instagram.com/fag.eventos/';
 
-    if (lightboxImg) {
+    if (lightboxImg && imgSrc) {
       lightboxImg.src = imgSrc;
       lightboxImg.alt = title;
     }
@@ -304,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = '';
   };
 
-  const bindGalleryLightbox = () => {
+  function bindGalleryLightbox() {
     const galleryGridEl = document.getElementById('galleryGrid');
     if (galleryGridEl && !galleryGridEl.dataset.lightboxBound) {
       galleryGridEl.dataset.lightboxBound = "true";
@@ -316,36 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
         openLightbox(index !== -1 ? index : 0);
       });
     }
-  };
-
-  bindGalleryLightbox();
-
-  if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
-  if (lightboxPrev) {
-    lightboxPrev.addEventListener('click', (e) => {
-      e.stopPropagation();
-      updateLightboxContent(currentGalleryIndex - 1);
-    });
   }
-  if (lightboxNext) {
-    lightboxNext.addEventListener('click', (e) => {
-      e.stopPropagation();
-      updateLightboxContent(currentGalleryIndex + 1);
-    });
-  }
-
-  if (lightbox) {
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox();
-    });
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (!lightbox || !lightbox.classList.contains('active')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') updateLightboxContent(currentGalleryIndex - 1);
-    if (e.key === 'ArrowRight') updateLightboxContent(currentGalleryIndex + 1);
-  });
 
   // 7. Dynamic WhatsApp Buttons
   const initWhatsAppListeners = () => {
@@ -354,7 +314,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         const contact = window.fagStore ? window.fagStore.getData().contact : null;
-        const phone = contact?.whatsapp || "5493517580045";
+        const rawPhone = contact?.whatsapp || "5493517580045";
+        const phone = window.fagStore ? window.fagStore.onlyDigits(rawPhone) : rawPhone.replace(/\D/g, '');
         const msg = encodeURIComponent(contact?.whatsappMessage || "¡Hola FAG Eventos! Me comunico desde la web oficial para consultar por la organización y producción de un evento.");
         window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
       });
@@ -406,4 +367,44 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // 9. Cargar y Aplicar Datos Dinámicos Centrales
+  if (window.fagStore) {
+    // 1) Renderizar de inmediato caché local o datos por defecto sin parpadeo
+    window.fagStore.applyToDOM();
+    bindGalleryLightbox();
+
+    // 2) Siempre consultar al servidor en segundo plano
+    window.fagStore.fetchFromCloud().then(() => {
+      window.fagStore.applyToDOM();
+      bindGalleryLightbox();
+    });
+  }
+
+  if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+  if (lightboxPrev) {
+    lightboxPrev.addEventListener('click', (e) => {
+      e.stopPropagation();
+      updateLightboxContent(currentGalleryIndex - 1);
+    });
+  }
+  if (lightboxNext) {
+    lightboxNext.addEventListener('click', (e) => {
+      e.stopPropagation();
+      updateLightboxContent(currentGalleryIndex + 1);
+    });
+  }
+
+  if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox || !lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') updateLightboxContent(currentGalleryIndex - 1);
+    if (e.key === 'ArrowRight') updateLightboxContent(currentGalleryIndex + 1);
+  });
 });

@@ -3,10 +3,17 @@
   "version": "1.0.0",
   "description": "FAG Eventos - Fernando Gigena - Producción Integral de Grandes Espectáculos",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "serve ."
   },
   "dependencies": {
-    "@neondatabase/serverless": "^0.10.4"
+    "@neondatabase/serverless": "^1.2.0"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4",
+    "sharp": "^0.33.5"
   }
 }

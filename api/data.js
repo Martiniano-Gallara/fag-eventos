@@ -1,120 +1,140 @@
-import { neon } from '@neondatabase/serverless';
+import { getSql, ensureSchema } from './_lib/db.js';
+import { requireSession, getClientIp } from './_lib/auth.js';
+import { validatePayload } from './_lib/validate.js';
 
 export default async function handler(req, res) {
-  // Configuración de encabezados CORS
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  // Vercel y Neon inyectan STORAGE_URL, DATABASE_URL o POSTGRES_URL automáticamente
-  const databaseUrl = 
-    process.env.STORAGE_URL || 
-    process.env.DATABASE_URL || 
-    process.env.POSTGRES_URL ||
-    process.env.POSTGRES_PRISMA_URL;
-
-  if (!databaseUrl) {
-    return res.status(500).json({
-      error: 'DATABASE_URL no está configurada en las variables de entorno de Vercel.',
-      hint: 'Asegúrate de vincular la base de datos Neon desde la pestaña Storage del proyecto en Vercel.'
-    });
-  }
-
-  const sql = neon(databaseUrl);
-
   try {
-    // Inicialización automática de la tabla si aún no existe
-    await sql`
-      CREATE TABLE IF NOT EXISTS fag_site_data (
-        id INTEGER PRIMARY KEY DEFAULT 1,
-        payload JSONB NOT NULL,
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-      );
-    `;
-
-    // 1. OBTENER DATOS (GET) - Blindado contra filtración de credenciales
     if (req.method === 'GET') {
+      const sql = getSql();
+      await ensureSchema(sql);
+
       const rows = await sql`
-        SELECT payload, updated_at 
-        FROM fag_site_data 
-        WHERE id = 1 
+        SELECT payload, version, updated_at
+        FROM fag_site_data
+        WHERE id = 1
         LIMIT 1;
       `;
+
+      res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
 
       if (!rows || rows.length === 0) {
         return res.status(200).json({
           status: 'empty',
           data: null,
-          message: 'Base de datos conectada correctamente. No hay registros previos.'
+          version: 0,
+          updated_at: null
         });
       }
 
-      // Blindaje de seguridad: sanitizar el objeto para que NUNCA filtre credenciales o PIN
-      const safeData = { ...(rows[0].payload || {}) };
-      delete safeData.security;
+      const row = rows[0];
+      const valid = validatePayload(row.payload);
 
       return res.status(200).json({
         status: 'success',
-        data: safeData,
-        updated_at: rows[0].updated_at
+        data: valid.ok ? valid.value : null,
+        version: row.version || 1,
+        updated_at: row.updated_at
       });
     }
 
-    // 2. GUARDAR / ACTUALIZAR DATOS (POST) - Autenticación blindada
     if (req.method === 'POST') {
-      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      const { payload, pin } = body || {};
-
-      // Validación del PIN maestro (soporta env ADMIN_MASTER_PIN, PIN plano 'fag2026', o hash SHA-256)
-      const expectedPin = (process.env.ADMIN_MASTER_PIN || 'fag2026').trim();
-      const DEFAULT_PIN_HASH = 'da7c3232b0167aa67ab9627ff7a7ef504863a2d2e5636cbaa956db05aab71a0f';
-      const providedPin = String(pin || '').trim();
-
-      const isValidPin = (providedPin === expectedPin) || (providedPin === DEFAULT_PIN_HASH);
-      if (!isValidPin) {
-        return res.status(401).json({
-          status: 'error',
-          error: 'PIN de seguridad no válido o no autorizado.'
-        });
+      // 1. Verificar sesión activa
+      if (!requireSession(req)) {
+        return res.status(401).json({ error: 'No autorizado' });
       }
 
+      // 2. Verificar Content-Type y tamaño máximo del cuerpo (<= 100 KB)
+      const contentType = req.headers?.['content-type'] || '';
+      if (!contentType.toLowerCase().includes('application/json')) {
+        return res.status(400).json({ error: 'El encabezado Content-Type debe ser application/json.' });
+      }
+
+      let body = req.body;
+      if (typeof body === 'string') {
+        if (Buffer.byteLength(body, 'utf8') > 100 * 1024) {
+          return res.status(400).json({ error: 'El tamaño de la solicitud excede los 100 KB.' });
+        }
+        try {
+          body = JSON.parse(body);
+        } catch {
+          return res.status(400).json({ error: 'Formato JSON inválido.' });
+        }
+      } else if (body && typeof body === 'object') {
+        const serialized = JSON.stringify(body);
+        if (Buffer.byteLength(serialized, 'utf8') > 100 * 1024) {
+          return res.status(400).json({ error: 'El tamaño de la solicitud excede los 100 KB.' });
+        }
+      } else {
+        return res.status(400).json({ error: 'Cuerpo de solicitud inválido.' });
+      }
+
+      // 3. Validar payload esperado
+      const { payload, baseVersion } = body || {};
       if (!payload || typeof payload !== 'object') {
-        return res.status(400).json({
-          status: 'error',
-          error: 'El cuerpo de la solicitud no contiene un payload válido.'
-        });
+        return res.status(400).json({ error: 'El campo payload es obligatorio.' });
       }
 
-      // Blindaje de almacenamiento: no persistir llaves de seguridad en la BD pública
-      const payloadToSave = { ...payload };
-      delete payloadToSave.security;
+      const valid = validatePayload(payload);
+      if (!valid.ok) {
+        return res.status(400).json({ error: valid.error });
+      }
 
-      // Upsert: si existe el id 1 lo actualiza, si no lo inserta
-      await sql`
-        INSERT INTO fag_site_data (id, payload, updated_at)
-        VALUES (1, ${JSON.stringify(payloadToSave)}, NOW())
-        ON CONFLICT (id) DO UPDATE
-        SET payload = EXCLUDED.payload,
-            updated_at = NOW();
+      const sql = getSql();
+      await ensureSchema(sql);
+
+      // 4. Control de concurrencia optimista
+      const baseVer = (baseVersion === undefined || baseVersion === null || baseVersion === 0) ? 0 : Number(baseVersion);
+
+      const updated = await sql`
+        UPDATE fag_site_data
+        SET payload = ${JSON.stringify(valid.value)},
+            version = version + 1,
+            updated_at = NOW()
+        WHERE id = 1 AND version = ${baseVer}
+        RETURNING version;
       `;
 
-      return res.status(200).json({
-        status: 'success',
-        message: 'Datos de FAG Eventos sincronizados exitosamente en Neon.'
-      });
+      let newVersion;
+      if (updated && updated.length > 0) {
+        newVersion = updated[0].version;
+      } else {
+        const existing = await sql`SELECT id FROM fag_site_data WHERE id = 1 LIMIT 1;`;
+        if (existing.length === 0 && baseVer === 0) {
+          const inserted = await sql`
+            INSERT INTO fag_site_data (id, payload, version, updated_at)
+            VALUES (1, ${JSON.stringify(valid.value)}, 1, NOW())
+            RETURNING version;
+          `;
+          newVersion = inserted[0].version;
+        } else {
+          return res.status(409).json({
+            error: 'El contenido fue modificado desde otra sesión. Recargá antes de guardar.'
+          });
+        }
+      }
+
+      // 5. Historial: conservar solo las últimas 50 versiones
+      const ip = getClientIp(req);
+      await sql`
+        INSERT INTO fag_site_data_history (payload, version, saved_at, saved_ip)
+        VALUES (${JSON.stringify(valid.value)}, ${newVersion}, NOW(), ${ip});
+      `;
+      await sql`
+        DELETE FROM fag_site_data_history
+        WHERE id NOT IN (
+          SELECT id FROM fag_site_data_history
+          ORDER BY id DESC
+          LIMIT 50
+        );
+      `;
+
+      // 6. Éxito
+      return res.status(200).json({ status: 'success', version: newVersion });
     }
 
     return res.status(405).json({ error: `Método ${req.method} no permitido.` });
   } catch (error) {
     console.error('Error en /api/data:', error);
-    return res.status(500).json({
-      status: 'error',
-      error: error.message || 'Error interno al comunicarse con Neon.'
-    });
+    return res.status(500).json({ error: 'Error interno.' });
   }
 }

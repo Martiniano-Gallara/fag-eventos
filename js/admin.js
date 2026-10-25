@@ -1,5 +1,6 @@
 /**
  * FAG EVENTOS - LÓGICA DEL PANEL DE ADMINISTRACIÓN (ADMIN JS)
+ * Autenticación centralizada en el servidor, validación estricta y sin credenciales en el cliente.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,8 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const adminDashboard = document.getElementById('adminDashboard');
   const loginForm = document.getElementById('loginForm');
   const pinInput = document.getElementById('pinInput');
+  const btnTogglePin = document.getElementById('btnTogglePin');
+  const togglePinIcon = document.getElementById('togglePinIcon');
+  const loginLockoutBanner = document.getElementById('loginLockoutBanner');
+  const lockoutTimerMsg = document.getElementById('lockoutTimerMsg');
+  const btnLoginSubmit = document.getElementById('btnLoginSubmit');
   const btnLogout = document.getElementById('btnLogout');
-  const btnHeaderSave = document.getElementById('btnHeaderSave');
+  const btnPublish = document.getElementById('btnPublish');
+  const publishStatus = document.getElementById('publishStatus');
   const adminToast = document.getElementById('adminToast');
   const adminToastMsg = document.getElementById('adminToastMsg');
 
@@ -52,27 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputHero1 = document.getElementById('inputHero1');
   const inputHero2 = document.getElementById('inputHero2');
 
-  // Cloud Inputs
-  const cloudStatusBox = document.getElementById('cloudStatusBox');
-  const cloudStatusTitle = document.getElementById('cloudStatusTitle');
-  const cloudStatusDesc = document.getElementById('cloudStatusDesc');
-  const inputSupabaseUrl = document.getElementById('inputSupabaseUrl');
-  const inputSupabaseKey = document.getElementById('inputSupabaseKey');
-  const btnTestCloud = document.getElementById('btnTestCloud');
-  const btnPushCloud = document.getElementById('btnPushCloud');
-  const btnPullCloud = document.getElementById('btnPullCloud');
-  const btnSaveCloudConfig = document.getElementById('btnSaveCloudConfig');
-  const btnSyncNow = document.getElementById('btnSyncNow');
-  const btnCopySql = document.getElementById('btnCopySql');
+  // Backup & Reset Buttons
   const btnExportJson = document.getElementById('btnExportJson');
   const fileImportJson = document.getElementById('fileImportJson');
   const btnResetDefaults = document.getElementById('btnResetDefaults');
 
-  // Security Form
-  const formChangePin = document.getElementById('formChangePin');
-  const inputCurrentPin = document.getElementById('inputCurrentPin');
-  const inputNewPin = document.getElementById('inputNewPin');
-  const inputConfirmPin = document.getElementById('inputConfirmPin');
+  // Change Password Form
+  const formChangePassword = document.getElementById('formChangePassword');
+  const inputCurrentPassword = document.getElementById('inputCurrentPassword');
+  const inputNewPassword = document.getElementById('inputNewPassword');
+  const inputConfirmPassword = document.getElementById('inputConfirmPassword');
+  const btnSubmitPassword = document.getElementById('btnSubmitPassword');
 
   // Gallery Elements
   const galleryAdminList = document.getElementById('galleryAdminList');
@@ -94,6 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const itemIsReel = document.getElementById('itemIsReel');
   const itemSpan = document.getElementById('itemSpan');
 
+  let hasUnsavedChanges = false;
+  let lockoutInterval = null;
+
   // --- NOTIFICACIONES TOAST ---
   const showToast = (message, isError = false) => {
     if (adminToastMsg) adminToastMsg.textContent = message;
@@ -106,208 +106,119 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // --- AUTENTICACIÓN / SESIÓN ---
-  // --- BLINDAJE DE SEGURIDAD: RATE LIMITING & ANTI-FUERZA BRUTA ---
-  const LOCKOUT_STORAGE_KEY = 'fag_sec_lockout_v1';
-  const loginLockoutBanner = document.getElementById('loginLockoutBanner');
-  const lockoutTimerMsg = document.getElementById('lockoutTimerMsg');
-  const loginAttemptsWarn = document.getElementById('loginAttemptsWarn');
-  const btnLoginSubmit = document.getElementById('btnLoginSubmit');
-  let lockoutInterval = null;
-
-  const getLockoutState = () => {
-    try {
-      const stored = localStorage.getItem(LOCKOUT_STORAGE_KEY);
-      if (stored) return JSON.parse(stored);
-    } catch (e) {}
-    return { attempts: 0, lockedUntil: 0 };
-  };
-
-  const saveLockoutState = (state) => {
-    try {
-      localStorage.setItem(LOCKOUT_STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      console.warn("FagAdmin: Error al guardar estado de seguridad", e);
-    }
-  };
-
-  const resetLockout = () => {
-    if (lockoutInterval) {
-      clearInterval(lockoutInterval);
-      lockoutInterval = null;
-    }
-    localStorage.removeItem(LOCKOUT_STORAGE_KEY);
-    if (loginLockoutBanner) loginLockoutBanner.style.display = 'none';
-    if (loginAttemptsWarn) {
-      loginAttemptsWarn.style.display = 'none';
-      loginAttemptsWarn.textContent = '';
-    }
-    if (pinInput) pinInput.disabled = false;
-    if (btnLoginSubmit) btnLoginSubmit.disabled = false;
-  };
-
-  const checkLockoutStatus = () => {
-    const state = getLockoutState();
-    const now = Date.now();
-
-    if (state.lockedUntil && state.lockedUntil > now) {
-      // Usuario temporalmente bloqueado
-      if (pinInput) pinInput.disabled = true;
-      if (btnLoginSubmit) btnLoginSubmit.disabled = true;
-      if (loginLockoutBanner) loginLockoutBanner.style.display = 'flex';
-      if (loginAttemptsWarn) loginAttemptsWarn.style.display = 'none';
-
-      const updateTimer = () => {
-        const remainingMs = state.lockedUntil - Date.now();
-        if (remainingMs <= 0) {
-          resetLockout();
-          showToast("Bloqueo de seguridad finalizado. Podés volver a intentar.");
-          if (pinInput) pinInput.focus();
-        } else {
-          const totalSec = Math.ceil(remainingMs / 1000);
-          const mins = Math.floor(totalSec / 60);
-          const secs = totalSec % 60;
-          const fmt = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}s`;
-          if (lockoutTimerMsg) {
-            lockoutTimerMsg.textContent = `Demasiados intentos fallidos. Reintentá en ${fmt}`;
-          }
-        }
-      };
-
-      updateTimer();
-      if (!lockoutInterval) {
-        lockoutInterval = setInterval(updateTimer, 1000);
-      }
-      return true;
+  const setUnsavedChanges = (dirty) => {
+    hasUnsavedChanges = dirty;
+    if (!publishStatus) return;
+    if (dirty) {
+      publishStatus.textContent = 'Cambios sin publicar';
+      publishStatus.className = 'publish-status status-dirty';
     } else {
-      // No está bloqueado
-      if (lockoutInterval) {
+      publishStatus.textContent = store.version > 0 ? `Publicado (versión ${store.version})` : 'Sin cambios';
+      publishStatus.className = 'publish-status status-clean';
+    }
+  };
+
+  // Advertir antes de salir con cambios sin publicar
+  window.addEventListener('beforeunload', (e) => {
+    if (hasUnsavedChanges) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
+  // --- MANEJO DE BLOQUEO POR RATE LIMITING (SERVIDOR) ---
+  const handleLockout = (retryAfterSeconds) => {
+    if (lockoutInterval) clearInterval(lockoutInterval);
+    let remaining = Math.max(1, Math.ceil(retryAfterSeconds));
+
+    if (loginLockoutBanner) loginLockoutBanner.style.display = 'flex';
+    if (pinInput) pinInput.disabled = true;
+    if (btnLoginSubmit) btnLoginSubmit.disabled = true;
+
+    const updateTimer = () => {
+      const mins = Math.floor(remaining / 60);
+      const secs = remaining % 60;
+      const fmt = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}s`;
+      if (lockoutTimerMsg) {
+        lockoutTimerMsg.textContent = `Demasiados intentos fallidos. Reintentá en ${fmt}`;
+      }
+      if (remaining <= 0) {
         clearInterval(lockoutInterval);
         lockoutInterval = null;
-      }
-      if (loginLockoutBanner) loginLockoutBanner.style.display = 'none';
-      if (pinInput) pinInput.disabled = false;
-      if (btnLoginSubmit) btnLoginSubmit.disabled = false;
-
-      // Advertencia preventiva si tiene al menos 2 intentos fallidos
-      if (state.attempts >= 2) {
-        if (loginAttemptsWarn) {
-          loginAttemptsWarn.style.display = 'block';
-          loginAttemptsWarn.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <strong>Atención:</strong> ${state.attempts} intentos fallidos detectados. Al 3er intento se bloqueará temporalmente el acceso.`;
+        if (loginLockoutBanner) loginLockoutBanner.style.display = 'none';
+        if (pinInput) {
+          pinInput.disabled = false;
+          pinInput.focus();
         }
-      } else {
-        if (loginAttemptsWarn) loginAttemptsWarn.style.display = 'none';
+        if (btnLoginSubmit) btnLoginSubmit.disabled = false;
+        showToast("Podés intentar ingresar nuevamente.");
       }
-      return false;
-    }
+      remaining--;
+    };
+
+    updateTimer();
+    lockoutInterval = setInterval(updateTimer, 1000);
   };
 
-  const recordFailedAttempt = () => {
-    const state = getLockoutState();
-    state.attempts = (state.attempts || 0) + 1;
-
-    // Escalonamiento de bloqueo anti fuerza bruta:
-    // 3 intentos -> 30s
-    // 5 intentos -> 2 minutos
-    // 8+ intentos -> 15 minutos
-    let lockSeconds = 0;
-    if (state.attempts >= 8) {
-      lockSeconds = 15 * 60;
-    } else if (state.attempts >= 5) {
-      lockSeconds = 2 * 60;
-    } else if (state.attempts >= 3) {
-      lockSeconds = 30;
-    }
-
-    if (lockSeconds > 0) {
-      state.lockedUntil = Date.now() + (lockSeconds * 1000);
-    }
-
-    saveLockoutState(state);
-    checkLockoutStatus();
-  };
-
-  // --- CIERRE DE SESIÓN AUTOMÁTICO POR INACTIVIDAD (20 MINUTOS) ---
+  // --- CIERRE DE SESIÓN POR INACTIVIDAD (20 MIN) ---
   const INACTIVITY_TIMEOUT_MS = 20 * 60 * 1000;
   let inactivityTimer = null;
 
+  const performLogout = async () => {
+    try {
+      await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+    } catch {}
+    loginScreen.style.display = 'flex';
+    adminDashboard.style.display = 'none';
+    if (pinInput) {
+      pinInput.value = '';
+      pinInput.focus();
+    }
+  };
+
   const resetInactivityTimer = () => {
     if (inactivityTimer) clearTimeout(inactivityTimer);
-    if (store.isAuthenticated()) {
-      inactivityTimer = setTimeout(() => {
-        store.logout();
-        checkAuth();
-        showToast("Sesión cerrada automáticamente por inactividad de 20 min.", true);
-      }, INACTIVITY_TIMEOUT_MS);
-    }
+    inactivityTimer = setTimeout(async () => {
+      await performLogout();
+      showToast("Sesión cerrada automáticamente por inactividad (20 min).", true);
+    }, INACTIVITY_TIMEOUT_MS);
   };
 
   ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evt => {
     window.addEventListener(evt, resetInactivityTimer, { passive: true });
   });
 
-  // --- AUTENTICACIÓN / SESIÓN ---
-  const checkAuth = () => {
-    if (store.isAuthenticated()) {
-      loginScreen.style.display = 'none';
-      adminDashboard.style.display = 'flex';
-      populateAllFields();
-      renderGalleryAdmin();
-      updateCloudStatus();
-      resetInactivityTimer();
-    } else {
-      loginScreen.style.display = 'flex';
-      adminDashboard.style.display = 'none';
-      checkLockoutStatus();
-    }
-  };
-
-  if (loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      if (checkLockoutStatus()) {
-        showToast("Acceso bloqueado por reiterados intentos fallidos.", true);
+  // --- VERIFICACIÓN DE SESIÓN AL CARGAR ---
+  const checkSession = async () => {
+    try {
+      const res = await fetch('/api/session', {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin'
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.authenticated) {
+        // Cargar SIEMPRE datos de la nube antes de llenar formularios y renderizar
+        await store.fetchFromCloud();
+        loginScreen.style.display = 'none';
+        adminDashboard.style.display = 'flex';
+        populateAllFields();
+        renderGalleryAdmin();
+        setUnsavedChanges(false);
+        resetInactivityTimer();
         return;
       }
+    } catch (e) {
+      console.warn("FagAdmin: Error al verificar sesión.", e);
+    }
 
-      const pin = pinInput.value;
-      if (!pin) return;
+    loginScreen.style.display = 'flex';
+    adminDashboard.style.display = 'none';
+    if (pinInput) pinInput.focus();
+  };
 
-      if (btnLoginSubmit) btnLoginSubmit.disabled = true;
+  checkSession();
 
-      try {
-        const success = await store.login(pin);
-        if (success) {
-          resetLockout();
-          pinInput.value = '';
-          checkAuth();
-          showToast("¡Bienvenido al Panel de Control de FAG Eventos!");
-        } else {
-          recordFailedAttempt();
-          const loginCard = document.querySelector('.login-card');
-          if (loginCard) {
-            loginCard.classList.remove('shake');
-            void loginCard.offsetWidth; // trigger reflow
-            loginCard.classList.add('shake');
-          }
-          showToast("PIN incorrecto. Acceso denegado.", true);
-          pinInput.focus();
-          pinInput.select();
-        }
-      } catch (err) {
-        showToast("Error de autenticación: " + err.message, true);
-      } finally {
-        if (!checkLockoutStatus() && btnLoginSubmit) {
-          btnLoginSubmit.disabled = false;
-        }
-      }
-    });
-  }
-
-  // Toggle visibilidad del PIN
-  const btnTogglePin = document.getElementById('btnTogglePin');
-  const togglePinIcon = document.getElementById('togglePinIcon');
+  // --- MOSTRAR / OCULTAR CONTRASEÑA ---
   if (btnTogglePin && pinInput) {
     btnTogglePin.addEventListener('click', () => {
       const isPassword = pinInput.type === 'password';
@@ -315,34 +226,88 @@ document.addEventListener('DOMContentLoaded', () => {
       if (togglePinIcon) {
         togglePinIcon.className = isPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
       }
-      btnTogglePin.setAttribute('title', isPassword ? 'Ocultar contraseña' : 'Ver contraseña');
     });
   }
 
+  // --- LOGIN ---
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = pinInput.value;
+      if (!password) return;
+
+      if (btnLoginSubmit) btnLoginSubmit.disabled = true;
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ password })
+        });
+
+        const json = await res.json().catch(() => ({}));
+
+        if (res.status === 200 && json.status === 'success') {
+          pinInput.value = '';
+          if (loginLockoutBanner) loginLockoutBanner.style.display = 'none';
+          await store.fetchFromCloud();
+          loginScreen.style.display = 'none';
+          adminDashboard.style.display = 'flex';
+          populateAllFields();
+          renderGalleryAdmin();
+          setUnsavedChanges(false);
+          resetInactivityTimer();
+          showToast("¡Bienvenido al Panel de Control de FAG Eventos!");
+        } else if (res.status === 429) {
+          handleLockout(json.retryAfterSeconds || 30);
+          showToast(json.error || "Acceso temporalmente bloqueado por demasiados intentos.", true);
+        } else {
+          // 401 Contraseña incorrecta
+          const loginCard = document.querySelector('.login-card');
+          if (loginCard) {
+            loginCard.classList.remove('shake');
+            void loginCard.offsetWidth; // Reflow
+            loginCard.classList.add('shake');
+          }
+          showToast(json.error || "Contraseña incorrecta. Acceso denegado.", true);
+          pinInput.focus();
+          pinInput.select();
+        }
+      } catch (err) {
+        showToast("Error de conexión al iniciar sesión.", true);
+      } finally {
+        if (!loginLockoutBanner || loginLockoutBanner.style.display === 'none') {
+          if (btnLoginSubmit) btnLoginSubmit.disabled = false;
+        }
+      }
+    });
+  }
+
+  // --- LOGOUT ---
   if (btnLogout) {
-    btnLogout.addEventListener('click', () => {
-      store.logout();
-      checkAuth();
-      showToast("Sesión cerrada.");
+    btnLogout.addEventListener('click', async () => {
+      await performLogout();
+      showToast("Sesión cerrada correctamente.");
     });
   }
 
   // --- CAMBIO DE PESTAÑAS (TABS) ---
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const targetTab = btn.getAttribute('data-tab');
+      const targetId = btn.getAttribute('data-tab');
       tabBtns.forEach(b => b.classList.remove('active'));
       tabPanels.forEach(p => p.classList.remove('active'));
-
       btn.classList.add('active');
-      const panel = document.getElementById(targetTab);
-      if (panel) panel.classList.add('active');
+      const targetPanel = document.getElementById(targetId);
+      if (targetPanel) targetPanel.classList.add('active');
     });
   });
 
-  // --- POBLAR FORMULARIOS CON DATOS ACTUALES ---
-  const populateAllFields = () => {
+  // --- LLENAR CAMPOS DESDE STORE ---
+  function populateAllFields() {
     const d = store.getData();
+    if (!d) return;
 
     // Contacto
     if (d.contact) {
@@ -359,143 +324,210 @@ document.addEventListener('DOMContentLoaded', () => {
     if (d.hero) {
       if (inputHero1) inputHero1.value = d.hero.titleLine1 || '';
       if (inputHero2) inputHero2.value = d.hero.titleLine2 || '';
-      updateHeroPreview();
     }
 
     // Estadísticas
     if (d.stats) {
-      const s1 = d.stats.stat1;
-      const s2 = d.stats.stat2;
-      const s3 = d.stats.stat3;
-
-      if (s1) {
-        if (stat1Target) stat1Target.value = s1.target;
-        if (stat1Prefix) stat1Prefix.value = s1.prefix || '';
-        if (stat1Label1) stat1Label1.value = s1.label1 || '';
-        if (stat1Label2) stat1Label2.value = s1.label2 || '';
+      if (d.stats.stat1) {
+        if (stat1Target) stat1Target.value = d.stats.stat1.target ?? 30;
+        if (stat1Prefix) stat1Prefix.value = d.stats.stat1.prefix || '';
+        if (stat1Label1) stat1Label1.value = d.stats.stat1.label1 || '';
+        if (stat1Label2) stat1Label2.value = d.stats.stat1.label2 || '';
       }
-      if (s2) {
-        if (stat2Target) stat2Target.value = s2.target;
-        if (stat2Prefix) stat2Prefix.value = s2.prefix || '';
-        if (stat2Label1) stat2Label1.value = s2.label1 || '';
-        if (stat2Label2) stat2Label2.value = s2.label2 || '';
+      if (d.stats.stat2) {
+        if (stat2Target) stat2Target.value = d.stats.stat2.target ?? 10;
+        if (stat2Prefix) stat2Prefix.value = d.stats.stat2.prefix || '';
+        if (stat2Label1) stat2Label1.value = d.stats.stat2.label1 || '';
+        if (stat2Label2) stat2Label2.value = d.stats.stat2.label2 || '';
       }
-      if (s3) {
-        if (stat3Target) stat3Target.value = s3.target;
-        if (stat3Suffix) stat3Suffix.value = s3.suffix || '';
-        if (stat3Label1) stat3Label1.value = s3.label1 || '';
-        if (stat3Label2) stat3Label2.value = s3.label2 || '';
+      if (d.stats.stat3) {
+        if (stat3Target) stat3Target.value = d.stats.stat3.target ?? 100;
+        if (stat3Suffix) stat3Suffix.value = d.stats.stat3.suffix || '';
+        if (stat3Label1) stat3Label1.value = d.stats.stat3.label1 || '';
+        if (stat3Label2) stat3Label2.value = d.stats.stat3.label2 || '';
       }
     }
+  }
 
-    // Cloud
-    if (d.cloudConfig) {
-      if (inputSupabaseUrl) inputSupabaseUrl.value = d.cloudConfig.supabaseUrl || '';
-      if (inputSupabaseKey) inputSupabaseKey.value = d.cloudConfig.supabaseKey || '';
-    }
-  };
-
-  // --- VISTA PREVIA EN VIVO DEL HERO ---
-  const updateHeroPreview = () => {
-    const prevLine1 = document.getElementById('prevLine1');
-    const prevLine2 = document.getElementById('prevLine2');
-    if (prevLine1 && inputHero1) prevLine1.textContent = inputHero1.value.trim() || 'Grandes Convocatorias.';
-    if (prevLine2 && inputHero2) prevLine2.textContent = inputHero2.value.trim() || 'Espectáculos de Nivel Mundial.';
-  };
-
-  if (inputHero1) inputHero1.addEventListener('input', updateHeroPreview);
-  if (inputHero2) inputHero2.addEventListener('input', updateHeroPreview);
-
-  // --- GUARDAR CONTACTO ---
-  const saveContactData = () => {
-    const current = store.getData();
-    current.contact = {
-      whatsapp: inputWhatsapp.value.trim().replace(/[^0-9]/g, ''),
-      whatsappDisplay: inputWhatsappDisplay.value.trim(),
-      whatsappMessage: inputWhatsappMsg.value.trim(),
-      email: inputEmail.value.trim(),
-      instagram: inputInstagram.value.trim(),
-      instagramDisplay: "@fag.eventos",
-      instagramFer: inputInstagramFer.value.trim(),
-      instagramFede: inputInstagramFede.value.trim()
-    };
-    store.saveData(current);
-    showToast("¡Contacto guardado! Sincronizado en vivo con el Sitio Web.");
-  };
-
-  // --- GUARDAR ESTADÍSTICAS & TITULARES ---
-  const saveStatsData = () => {
-    const current = store.getData();
-    current.hero = {
-      ...current.hero,
-      titleLine1: inputHero1.value.trim(),
-      titleLine2: inputHero2.value.trim()
-    };
-    current.stats = {
-      stat1: {
-        target: parseInt(stat1Target.value, 10) || 30,
-        prefix: stat1Prefix.value.trim(),
-        suffix: "",
-        label1: stat1Label1.value.trim(),
-        label2: stat1Label2.value.trim()
-      },
-      stat2: {
-        target: parseInt(stat2Target.value, 10) || 10,
-        prefix: stat2Prefix.value.trim(),
-        suffix: "",
-        label1: stat2Label1.value.trim(),
-        label2: stat2Label2.value.trim()
-      },
-      stat3: {
-        target: parseInt(stat3Target.value, 10) || 100,
-        prefix: "",
-        suffix: stat3Suffix.value.trim(),
-        label1: stat3Label1.value.trim(),
-        label2: stat3Label2.value.trim()
-      }
-    };
-    store.saveData(current);
-    showToast("¡Cifras y Portada guardadas! Vinculadas con el Inicio.");
-  };
-
-  // Listeners de botones de guardado
+  // --- GUARDADO LOCAL DE SECCIONES (SOLO EN MEMORIA) ---
   document.querySelectorAll('.btn-save-section').forEach(btn => {
     btn.addEventListener('click', () => {
       const section = btn.getAttribute('data-section');
-      if (section === 'contact') saveContactData();
-      if (section === 'stats') saveStatsData();
+      const current = store.getData();
+
+      if (section === 'contact') {
+        const rawPhone = inputWhatsapp ? inputWhatsapp.value.trim() : '';
+        const digitsPhone = store.onlyDigits(rawPhone);
+        if (digitsPhone.length < 8 || digitsPhone.length > 15) {
+          showToast("El teléfono debe contener entre 8 y 15 dígitos.", true);
+          return;
+        }
+
+        const email = inputEmail ? inputEmail.value.trim() : '';
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+          showToast("Ingresá un correo electrónico válido.", true);
+          return;
+        }
+
+        const igOfficial = inputInstagram ? inputInstagram.value.trim() : '';
+        const igFer = inputInstagramFer ? inputInstagramFer.value.trim() : '';
+        const igFede = inputInstagramFede ? inputInstagramFede.value.trim() : '';
+
+        const checkIg = (u) => {
+          try {
+            const p = new URL(u);
+            return p.protocol === 'https:' && (p.hostname === 'instagram.com' || p.hostname === 'www.instagram.com');
+          } catch {
+            return false;
+          }
+        };
+
+        if (igOfficial && !checkIg(igOfficial)) {
+          showToast("La URL de Instagram Oficial debe ser HTTPS de instagram.com.", true);
+          return;
+        }
+        if (igFer && !checkIg(igFer)) {
+          showToast("La URL de Instagram de Fernando debe ser HTTPS de instagram.com.", true);
+          return;
+        }
+        if (igFede && !checkIg(igFede)) {
+          showToast("La URL de Instagram de Federico debe ser HTTPS de instagram.com.", true);
+          return;
+        }
+
+        current.contact = {
+          whatsapp: digitsPhone,
+          whatsappDisplay: inputWhatsappDisplay ? inputWhatsappDisplay.value.trim().slice(0, 30) : '',
+          whatsappMessage: inputWhatsappMsg ? inputWhatsappMsg.value.trim().slice(0, 300) : '',
+          email: email.slice(0, 120),
+          instagram: igOfficial,
+          instagramDisplay: inputInstagramDisplay ? inputInstagramDisplay.value.trim().slice(0, 40) : '@fag.eventos',
+          instagramFer: igFer,
+          instagramFede: igFede
+        };
+
+        store.saveData(current);
+        setUnsavedChanges(true);
+        showToast("Contacto actualizado en memoria. No olvides 'Publicar cambios'.");
+      }
+
+      if (section === 'stats') {
+        const line1 = inputHero1 ? inputHero1.value.trim().slice(0, 80) : '';
+        const line2 = inputHero2 ? inputHero2.value.trim().slice(0, 80) : '';
+        if (line1.includes('<') || line1.includes('>') || line2.includes('<') || line2.includes('>')) {
+          showToast("Los títulos no pueden contener caracteres < o >.", true);
+          return;
+        }
+
+        current.hero = {
+          titleLine1: line1 || 'Grandes Convocatorias.',
+          titleLine2: line2 || 'Espectáculos de Nivel Mundial.',
+          pill1: current.hero?.pill1 || 'Financiamiento Propio',
+          pill2: current.hero?.pill2 || 'Internacional'
+        };
+
+        const t1 = parseInt(stat1Target ? stat1Target.value : '30', 10);
+        const t2 = parseInt(stat2Target ? stat2Target.value : '10', 10);
+        const t3 = parseInt(stat3Target ? stat3Target.value : '100', 10);
+
+        current.stats = {
+          stat1: {
+            target: isNaN(t1) ? 30 : Math.min(100000, Math.max(0, t1)),
+            prefix: (stat1Prefix ? stat1Prefix.value.trim() : '+').slice(0, 3),
+            suffix: '',
+            label1: (stat1Label1 ? stat1Label1.value.trim() : 'Años de').slice(0, 30),
+            label2: (stat1Label2 ? stat1Label2.value.trim() : 'Trayectoria').slice(0, 30)
+          },
+          stat2: {
+            target: isNaN(t2) ? 10 : Math.min(100000, Math.max(0, t2)),
+            prefix: (stat2Prefix ? stat2Prefix.value.trim() : '+').slice(0, 3),
+            suffix: '',
+            label1: (stat2Label1 ? stat2Label1.value.trim() : 'Países con').slice(0, 30),
+            label2: (stat2Label2 ? stat2Label2.value.trim() : 'Producciones').slice(0, 30)
+          },
+          stat3: {
+            target: isNaN(t3) ? 100 : Math.min(100000, Math.max(0, t3)),
+            prefix: '',
+            suffix: (stat3Suffix ? stat3Suffix.value.trim() : '%').slice(0, 3),
+            label1: (stat3Label1 ? stat3Label1.value.trim() : 'Gestión Propia').slice(0, 30),
+            label2: (stat3Label2 ? stat3Label2.value.trim() : '& Financiamiento').slice(0, 30)
+          }
+        };
+
+        store.saveData(current);
+        setUnsavedChanges(true);
+        showToast("Estadísticas actualizadas en memoria. No olvides 'Publicar cambios'.");
+      }
     });
   });
 
-  if (btnHeaderSave) {
-    btnHeaderSave.addEventListener('click', () => {
-      saveContactData();
-      saveStatsData();
-      showToast("¡Todos los cambios guardados y vinculados con el Inicio!");
-    });
-  }
-
-  // Probar WhatsApp
+  // --- BOTÓN PROBAR WHATSAPP ---
   if (btnTestWa) {
     btnTestWa.addEventListener('click', () => {
-      const phone = inputWhatsapp.value.trim().replace(/[^0-9]/g, '');
-      const msg = encodeURIComponent(inputWhatsappMsg.value.trim());
-      if (!phone) {
-        showToast("Por favor ingresá un número primero.", true);
-        return;
-      }
+      const rawPhone = inputWhatsapp ? inputWhatsapp.value.trim() : '';
+      const phone = store.onlyDigits(rawPhone) || "5493517580045";
+      const msg = encodeURIComponent(inputWhatsappMsg ? inputWhatsappMsg.value.trim() : '');
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     });
   }
 
-  // --- GESTIÓN DE GALERÍA & REELS ---
-  const renderGalleryAdmin = () => {
-    if (!galleryAdminList) return;
-    const d = store.getData();
-    const items = d.gallery || [];
+  // --- PUBLICAR CAMBIOS EN EL SERVIDOR ---
+  if (btnPublish) {
+    btnPublish.addEventListener('click', async () => {
+      if (btnPublish.disabled) return;
+      btnPublish.disabled = true;
 
+      if (publishStatus) {
+        publishStatus.textContent = 'Publicando...';
+        publishStatus.className = 'publish-status';
+      }
+
+      try {
+        const newVersion = await store.publish();
+        setUnsavedChanges(false);
+        if (publishStatus) {
+          publishStatus.textContent = `Publicado (versión ${newVersion})`;
+          publishStatus.className = 'publish-status status-published';
+        }
+        showToast(`Cambios publicados con éxito (versión ${newVersion}).`);
+      } catch (err) {
+        if (publishStatus) {
+          publishStatus.textContent = 'Error';
+          publishStatus.className = 'publish-status status-error';
+        }
+
+        if (err.message === 'SESSION_EXPIRED') {
+          showToast("Tu sesión ha expirado. Por favor ingresá nuevamente.", true);
+          loginScreen.style.display = 'flex';
+          adminDashboard.style.display = 'none';
+        } else if (err.message === 'CONFLICT') {
+          const reload = confirm("El contenido fue modificado desde otra sesión. ¿Deseas recargar la versión más reciente del servidor? (Los cambios no guardados se perderán)");
+          if (reload) {
+            await store.fetchFromCloud();
+            populateAllFields();
+            renderGalleryAdmin();
+            setUnsavedChanges(false);
+          }
+        } else {
+          showToast(err.message || "Error al publicar los datos.", true);
+        }
+      } finally {
+        btnPublish.disabled = false;
+      }
+    });
+  }
+
+  // --- RENDERIZAR LISTA DE GALERÍA SIN INNERHTML ---
+  function renderGalleryAdmin() {
+    if (!galleryAdminList) return;
+
+    const items = store.getData().gallery || [];
     if (items.length === 0) {
-      galleryAdminList.innerHTML = `<p style="color: var(--admin-muted); padding: 24px; text-align: center; grid-column: 1 / -1;">No hay elementos en la galería. Creá el primero con el botón superior.</p>`;
+      const p = document.createElement('p');
+      p.style.cssText = 'color: var(--admin-muted); padding: 24px; text-align: center; grid-column: 1 / -1;';
+      p.textContent = 'No hay elementos en la galería. Creá el primero con el botón superior.';
+      galleryAdminList.replaceChildren(p);
       return;
     }
 
@@ -506,329 +538,376 @@ document.addEventListener('DOMContentLoaded', () => {
       'mural-standard': 'Estándar 3x2'
     };
 
-    galleryAdminList.innerHTML = items.map((item, index) => `
-      <div class="gallery-admin-card" data-id="${item.id}">
-        <div class="admin-card-thumb-wrap">
-          <img src="${item.img}" alt="${item.title}" class="admin-card-thumb" onerror="this.src='assets/fag-logo.png'">
-          <span class="admin-card-badge"><i class="fa-solid ${item.badgeIcon || 'fa-camera'}"></i> ${item.badgeText || 'Evento'}</span>
-          ${item.isReel ? '<span class="admin-card-reel-tag"><i class="fa-solid fa-play"></i> Reel</span>' : ''}
-        </div>
-        <div class="admin-card-body">
-          <h4 class="admin-card-title">${item.title}</h4>
-          <span class="admin-card-sub">${item.subtitle}</span>
-          <div class="admin-card-meta">
-            <span><i class="fa-solid fa-tag"></i> ${item.categoryName || item.category}</span>
-            <span><i class="fa-solid fa-shapes"></i> ${spanLabels[item.span] || 'Estándar 3x2'}</span>
-          </div>
-          <div class="admin-card-actions">
-            <div class="actions-order-group">
-              <button type="button" class="btn-mini-action btn-move-up" data-index="${index}" title="Subir" ${index === 0 ? 'disabled style="opacity:0.4;"' : ''}>
-                <i class="fa-solid fa-arrow-up"></i>
-              </button>
-              <button type="button" class="btn-mini-action btn-move-down" data-index="${index}" title="Bajar" ${index === items.length - 1 ? 'disabled style="opacity:0.4;"' : ''}>
-                <i class="fa-solid fa-arrow-down"></i>
-              </button>
-            </div>
-            <div style="display: flex; gap: 6px;">
-              <button type="button" class="btn-mini-action btn-edit-item" data-id="${item.id}" title="Editar">
-                <i class="fa-solid fa-pen-to-square"></i> Editar
-              </button>
-              <button type="button" class="btn-mini-action btn-danger btn-delete-item" data-id="${item.id}" title="Eliminar">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `).join('');
+    const fragment = document.createDocumentFragment();
 
-    bindGalleryAdminActions();
-  };
+    items.forEach((item, index) => {
+      const card = document.createElement('div');
+      card.className = 'gallery-admin-card';
+      card.dataset.id = item.id;
 
-  const bindGalleryAdminActions = () => {
-    // Editar
-    document.querySelectorAll('.btn-edit-item').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-id');
-        openItemModal(id);
-      });
+      // Thumbnail
+      const thumbWrap = document.createElement('div');
+      thumbWrap.className = 'admin-card-thumb-wrap';
+
+      const img = document.createElement('img');
+      const safeImgSrc = store.safeUrl(item.img, { allowRelativeAssets: true }) || 'assets/fag-logo.png';
+      img.src = safeImgSrc;
+      img.alt = item.title || 'Trabajo FAG';
+      img.className = 'admin-card-thumb';
+      img.addEventListener('error', () => {
+        img.src = 'assets/fag-logo.png';
+      }, { once: true });
+      thumbWrap.appendChild(img);
+
+      const badge = document.createElement('span');
+      badge.className = 'admin-card-badge';
+      const icon = document.createElement('i');
+      const safeIcon = /^fa-[a-z0-9-]+$/.test(item.badgeIcon || '') ? item.badgeIcon : 'fa-camera';
+      icon.className = `fa-solid ${safeIcon}`;
+      badge.appendChild(icon);
+      badge.appendChild(document.createTextNode(' ' + (item.badgeText || 'Evento')));
+      thumbWrap.appendChild(badge);
+
+      if (item.isReel) {
+        const reelTag = document.createElement('span');
+        reelTag.className = 'admin-card-reel-tag';
+        const reelIcon = document.createElement('i');
+        reelIcon.className = 'fa-solid fa-play';
+        reelTag.appendChild(reelIcon);
+        reelTag.appendChild(document.createTextNode(' Reel'));
+        thumbWrap.appendChild(reelTag);
+      }
+      card.appendChild(thumbWrap);
+
+      // Body
+      const body = document.createElement('div');
+      body.className = 'admin-card-body';
+
+      const h4 = document.createElement('h4');
+      h4.className = 'admin-card-title';
+      h4.textContent = item.title || '';
+      body.appendChild(h4);
+
+      const sub = document.createElement('span');
+      sub.className = 'admin-card-sub';
+      sub.textContent = item.subtitle || '';
+      body.appendChild(sub);
+
+      const meta = document.createElement('div');
+      meta.className = 'admin-card-meta';
+
+      const spanTag = document.createElement('span');
+      const iTag = document.createElement('i');
+      iTag.className = 'fa-solid fa-tag';
+      spanTag.appendChild(iTag);
+      spanTag.appendChild(document.createTextNode(' ' + (item.categoryName || item.category || '')));
+      meta.appendChild(spanTag);
+
+      const spanShape = document.createElement('span');
+      const iShape = document.createElement('i');
+      iShape.className = 'fa-solid fa-shapes';
+      spanShape.appendChild(iShape);
+      spanShape.appendChild(document.createTextNode(' ' + (spanLabels[item.span] || 'Estándar 3x2')));
+      meta.appendChild(spanShape);
+
+      body.appendChild(meta);
+
+      // Actions
+      const actions = document.createElement('div');
+      actions.className = 'admin-card-actions';
+
+      const orderGroup = document.createElement('div');
+      orderGroup.className = 'actions-order-group';
+
+      const btnUp = document.createElement('button');
+      btnUp.type = 'button';
+      btnUp.className = 'btn-mini-action btn-move-up';
+      btnUp.dataset.index = String(index);
+      btnUp.title = 'Subir';
+      if (index === 0) {
+        btnUp.disabled = true;
+        btnUp.style.opacity = '0.4';
+      }
+      const iUp = document.createElement('i');
+      iUp.className = 'fa-solid fa-arrow-up';
+      btnUp.appendChild(iUp);
+      orderGroup.appendChild(btnUp);
+
+      const btnDown = document.createElement('button');
+      btnDown.type = 'button';
+      btnDown.className = 'btn-mini-action btn-move-down';
+      btnDown.dataset.index = String(index);
+      btnDown.title = 'Bajar';
+      if (index === items.length - 1) {
+        btnDown.disabled = true;
+        btnDown.style.opacity = '0.4';
+      }
+      const iDown = document.createElement('i');
+      iDown.className = 'fa-solid fa-arrow-down';
+      btnDown.appendChild(iDown);
+      orderGroup.appendChild(btnDown);
+
+      actions.appendChild(orderGroup);
+
+      const editDeleteGroup = document.createElement('div');
+      editDeleteGroup.style.display = 'flex';
+      editDeleteGroup.style.gap = '6px';
+
+      const btnEdit = document.createElement('button');
+      btnEdit.type = 'button';
+      btnEdit.className = 'btn-mini-action btn-edit-item';
+      btnEdit.dataset.id = item.id;
+      btnEdit.title = 'Editar';
+      const iEdit = document.createElement('i');
+      iEdit.className = 'fa-solid fa-pen-to-square';
+      btnEdit.appendChild(iEdit);
+      btnEdit.appendChild(document.createTextNode(' Editar'));
+      editDeleteGroup.appendChild(btnEdit);
+
+      const btnDelete = document.createElement('button');
+      btnDelete.type = 'button';
+      btnDelete.className = 'btn-mini-action btn-danger-action btn-delete-item';
+      btnDelete.dataset.id = item.id;
+      btnDelete.title = 'Eliminar';
+      const iDelete = document.createElement('i');
+      iDelete.className = 'fa-solid fa-trash';
+      btnDelete.appendChild(iDelete);
+      editDeleteGroup.appendChild(btnDelete);
+
+      actions.appendChild(editDeleteGroup);
+      body.appendChild(actions);
+      card.appendChild(body);
+
+      fragment.appendChild(card);
     });
 
-    // Eliminar
-    document.querySelectorAll('.btn-delete-item').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-id');
-        if (confirm("¿Estás seguro de que deseás eliminar este trabajo de la galería?")) {
-          const current = store.getData();
-          current.gallery = current.gallery.filter(i => i.id !== id);
+    galleryAdminList.replaceChildren(fragment);
+  }
+
+  // --- ACCIONES EN ELEMENTOS DE GALERÍA (EDITAR, BORRAR, REORDENAR) ---
+  if (galleryAdminList) {
+    galleryAdminList.addEventListener('click', (e) => {
+      const btnMoveUp = e.target.closest('.btn-move-up');
+      const btnMoveDown = e.target.closest('.btn-move-down');
+      const btnEdit = e.target.closest('.btn-edit-item');
+      const btnDelete = e.target.closest('.btn-delete-item');
+
+      const current = store.getData();
+      const gallery = current.gallery || [];
+
+      if (btnMoveUp) {
+        const idx = parseInt(btnMoveUp.dataset.index, 10);
+        if (idx > 0 && idx < gallery.length) {
+          const temp = gallery[idx];
+          gallery[idx] = gallery[idx - 1];
+          gallery[idx - 1] = temp;
           store.saveData(current);
           renderGalleryAdmin();
-          showToast("Elemento eliminado de la galería.");
+          setUnsavedChanges(true);
         }
-      });
-    });
+        return;
+      }
 
-    // Mover Arriba
-    document.querySelectorAll('.btn-move-up').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const index = parseInt(btn.getAttribute('data-index'), 10);
-        if (index > 0) {
-          const current = store.getData();
-          const temp = current.gallery[index];
-          current.gallery[index] = current.gallery[index - 1];
-          current.gallery[index - 1] = temp;
+      if (btnMoveDown) {
+        const idx = parseInt(btnMoveDown.dataset.index, 10);
+        if (idx >= 0 && idx < gallery.length - 1) {
+          const temp = gallery[idx];
+          gallery[idx] = gallery[idx + 1];
+          gallery[idx + 1] = temp;
           store.saveData(current);
           renderGalleryAdmin();
+          setUnsavedChanges(true);
         }
-      });
-    });
+        return;
+      }
 
-    // Mover Abajo
-    document.querySelectorAll('.btn-move-down').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const index = parseInt(btn.getAttribute('data-index'), 10);
-        const current = store.getData();
-        if (index < current.gallery.length - 1) {
-          const temp = current.gallery[index];
-          current.gallery[index] = current.gallery[index + 1];
-          current.gallery[index + 1] = temp;
+      if (btnEdit) {
+        const id = btnEdit.dataset.id;
+        const item = gallery.find(it => it.id === id);
+        if (item) openGalleryModal(item);
+        return;
+      }
+
+      if (btnDelete) {
+        const id = btnDelete.dataset.id;
+        if (confirm("¿Estás seguro de que deseás eliminar este elemento de la galería?")) {
+          current.gallery = gallery.filter(it => it.id !== id);
           store.saveData(current);
           renderGalleryAdmin();
+          setUnsavedChanges(true);
+          showToast("Elemento eliminado en memoria. Recordá 'Publicar cambios'.");
         }
-      });
+        return;
+      }
     });
-  };
+  }
 
-  // Abrir modal de nuevo/editar item
-  const openItemModal = (id = null) => {
-    if (id) {
-      const d = store.getData();
-      const item = d.gallery.find(i => i.id === id);
-      if (!item) return;
-
-      itemModalTitle.textContent = "Editar Trabajo / Reel";
-      itemEditId.value = item.id;
-      itemTitle.value = item.title || '';
-      itemSubtitle.value = item.subtitle || '';
-      itemCategory.value = item.category || 'festivales';
-      itemCategoryName.value = item.categoryName || '';
-      itemImg.value = item.img || '';
-      itemLink.value = item.link || '';
-      itemBadgeText.value = item.badgeText || '';
-      itemBadgeIcon.value = item.badgeIcon || 'fa-camera';
-      itemIsReel.checked = Boolean(item.isReel);
+  // --- MODAL DE GALERÍA (AGREGAR / EDITAR) ---
+  const openGalleryModal = (item = null) => {
+    if (!itemModal) return;
+    if (item) {
+      if (itemModalTitle) itemModalTitle.textContent = "Editar Trabajo";
+      if (itemEditId) itemEditId.value = item.id;
+      if (itemTitle) itemTitle.value = item.title || '';
+      if (itemSubtitle) itemSubtitle.value = item.subtitle || '';
+      if (itemCategory) itemCategory.value = item.category || 'festivales';
+      if (itemCategoryName) itemCategoryName.value = item.categoryName || '';
+      if (itemImg) itemImg.value = item.img || '';
+      if (itemLink) itemLink.value = item.link || '';
+      if (itemBadgeText) itemBadgeText.value = item.badgeText || '';
+      if (itemBadgeIcon) itemBadgeIcon.value = item.badgeIcon || 'fa-camera';
+      if (itemIsReel) itemIsReel.checked = Boolean(item.isReel);
       if (itemSpan) itemSpan.value = item.span || 'mural-standard';
     } else {
-      itemModalTitle.textContent = "Nuevo Trabajo / Reel";
-      itemEditId.value = '';
-      itemForm.reset();
-      itemCategory.value = 'festivales';
-      itemBadgeIcon.value = 'fa-camera';
-      itemIsReel.checked = false;
+      if (itemModalTitle) itemModalTitle.textContent = "Agregar Nuevo Trabajo";
+      if (itemForm) itemForm.reset();
+      if (itemEditId) itemEditId.value = '';
+      if (itemCategory) itemCategory.value = 'festivales';
+      if (itemBadgeIcon) itemBadgeIcon.value = 'fa-camera';
       if (itemSpan) itemSpan.value = 'mural-standard';
     }
-
     itemModal.classList.add('active');
   };
 
-  const closeItemModal = () => {
-    itemModal.classList.remove('active');
+  const closeGalleryModal = () => {
+    if (itemModal) itemModal.classList.remove('active');
   };
 
-  if (btnNewGalleryItem) btnNewGalleryItem.addEventListener('click', () => openItemModal());
-  if (btnItemModalClose) btnItemModalClose.addEventListener('click', closeItemModal);
-  if (btnItemCancel) btnItemCancel.addEventListener('click', closeItemModal);
+  if (btnNewGalleryItem) {
+    btnNewGalleryItem.addEventListener('click', () => openGalleryModal());
+  }
+
+  if (btnItemModalClose) btnItemModalClose.addEventListener('click', closeGalleryModal);
+  if (btnItemCancel) btnItemCancel.addEventListener('click', closeGalleryModal);
 
   if (itemForm) {
     itemForm.addEventListener('submit', (e) => {
       e.preventDefault();
+
+      const title = itemTitle.value.trim();
+      if (!title || title.length > 80 || title.includes('<') || title.includes('>')) {
+        showToast("El título es obligatorio (máx. 80 caracteres, sin < ni >).", true);
+        return;
+      }
+
+      const rawImg = itemImg.value.trim();
+      const safeImg = store.safeUrl(rawImg, { allowRelativeAssets: true });
+      if (!safeImg) {
+        showToast("La imagen debe ser una ruta relativa válida (assets/gallery/...) o una URL HTTPS.", true);
+        return;
+      }
+
+      const rawLink = itemLink.value.trim();
+      const safeLink = store.safeUrl(rawLink);
+      let isValidInstagram = false;
+      try {
+        const u = new URL(safeLink);
+        isValidInstagram = u.protocol === 'https:' && (u.hostname === 'instagram.com' || u.hostname === 'www.instagram.com');
+      } catch {}
+
+      if (!isValidInstagram) {
+        showToast("El enlace debe ser una URL HTTPS válida de instagram.com.", true);
+        return;
+      }
+
       const current = store.getData();
-      const isEditing = Boolean(itemEditId.value);
-      const id = isEditing ? itemEditId.value : `item-${Date.now()}`;
+      const gallery = current.gallery || [];
+      const editId = itemEditId.value;
 
-      // Nombre amigable para la categoría seleccionada
-      const categoryOptions = {
-        'festivales': 'Festivales & Fiestas',
-        'tecnica': 'Montaje & Técnica',
-        'gastronomia': 'Gastronomía & BTL',
-        'videos': 'Videos & Reels',
-        'festivales tecnica': 'Festivales & Montaje',
-        'festivales gastronomia': 'Fiestas & Gastronomía',
-        'festivales gastronomia videos': 'Festivales & Experiencias',
-        'festivales videos': 'Festivales & Videos'
-      };
-
-      const newItem = {
-        id,
-        title: itemTitle.value.trim(),
-        subtitle: itemSubtitle.value.trim(),
+      const itemPayload = {
+        id: editId || `item-${crypto.randomUUID().slice(0, 8)}`,
+        title,
+        subtitle: (itemSubtitle.value || '').trim().slice(0, 120),
         category: itemCategory.value,
-        categoryName: itemCategoryName.value.trim() || categoryOptions[itemCategory.value] || 'Evento',
-        img: itemImg.value.trim(),
-        link: itemLink.value.trim(),
-        badgeText: itemBadgeText.value.trim() || 'Evento',
-        badgeIcon: itemBadgeIcon.value,
-        isReel: itemIsReel.checked,
-        span: (itemSpan && itemSpan.value) || 'mural-standard'
+        categoryName: (itemCategoryName.value || '').trim().slice(0, 60),
+        img: safeImg,
+        link: safeLink,
+        badgeText: (itemBadgeText.value || '').trim().slice(0, 30),
+        badgeIcon: itemBadgeIcon.value || 'fa-camera',
+        isReel: Boolean(itemIsReel.checked),
+        span: itemSpan.value || 'mural-standard'
       };
 
-      if (isEditing) {
-        const idx = current.gallery.findIndex(i => i.id === id);
-        if (idx !== -1) current.gallery[idx] = newItem;
+      if (editId) {
+        const idx = gallery.findIndex(it => it.id === editId);
+        if (idx !== -1) {
+          gallery[idx] = itemPayload;
+        } else {
+          gallery.push(itemPayload);
+        }
       } else {
-        current.gallery.unshift(newItem); // Colocar al principio
+        gallery.push(itemPayload);
       }
 
+      current.gallery = gallery;
       store.saveData(current);
-      closeItemModal();
       renderGalleryAdmin();
-      showToast(isEditing ? "Trabajo actualizado." : "Nuevo trabajo agregado a la galería.");
+      closeGalleryModal();
+      setUnsavedChanges(true);
+      showToast("Elemento guardado en memoria. Recordá 'Publicar cambios'.");
     });
   }
 
-  // --- SINCRONIZACIÓN EN LA NUBE (NEON / VERCEL & SUPABASE) ---
-  const updateCloudStatus = () => {
-    if (!cloudStatusBox) return;
-    const isConfigured = store.isCloudConfigured();
-    const cfg = store.getData().cloudConfig || {};
-    const lastSync = cfg.lastSynced;
+  // --- FORMULARIO DE CAMBIO DE CONTRASEÑA ---
+  if (formChangePassword) {
+    formChangePassword.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const currentPassword = inputCurrentPassword ? inputCurrentPassword.value : '';
+      const newPassword = inputNewPassword ? inputNewPassword.value : '';
+      const confirmPassword = inputConfirmPassword ? inputConfirmPassword.value : '';
 
-    if (isConfigured) {
-      cloudStatusBox.className = "cloud-status-box connected";
-      const isNeon = cfg.provider === 'neon' || !cfg.supabaseUrl;
-      cloudStatusTitle.textContent = isNeon ? "Base de Datos Neon (Vercel) Vinculada" : "Base de Datos Supabase Conectada";
-      const syncDate = lastSync ? new Date(lastSync).toLocaleString('es-AR') : 'Listo para sincronizar';
-      cloudStatusDesc.textContent = isNeon
-        ? `Sincronización Serverless activa vía /api/data. Última sincronización: ${syncDate}`
-        : `Los cambios se guardan globalmente. Última sincronización: ${syncDate}`;
-    } else {
-      cloudStatusBox.className = "cloud-status-box local";
-      cloudStatusTitle.textContent = "Modo Local Activo";
-      cloudStatusDesc.textContent = "Los datos se guardan en el navegador. Conectá Neon en Vercel para publicar cambios globalmente.";
-    }
-  };
-
-  if (btnSaveCloudConfig) {
-    btnSaveCloudConfig.addEventListener('click', async () => {
-      const url = inputSupabaseUrl ? inputSupabaseUrl.value.trim() : '';
-      const key = inputSupabaseKey ? inputSupabaseKey.value.trim() : '';
-
-      const current = store.getData();
-      current.cloudConfig.supabaseUrl = url;
-      current.cloudConfig.supabaseKey = key;
-      current.cloudConfig.provider = url ? 'supabase' : 'neon';
-      await store.saveData(current, false);
-      updateCloudStatus();
-      showToast("Configuración de base de datos actualizada.");
-    });
-  }
-
-  if (btnTestCloud) {
-    btnTestCloud.addEventListener('click', async () => {
-      const url = inputSupabaseUrl ? inputSupabaseUrl.value.trim() : '';
-      const key = inputSupabaseKey ? inputSupabaseKey.value.trim() : '';
-      try {
-        btnTestCloud.disabled = true;
-        btnTestCloud.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Probando...';
-        const res = await store.testCloudConnection(url, key);
-        const name = res.provider === 'neon' ? 'Neon en Vercel' : 'Supabase';
-        showToast(`¡Conexión a ${name} exitosa!`);
-        updateCloudStatus();
-      } catch (err) {
-        showToast(`Fallo de conexión: ${err.message}`, true);
-      } finally {
-        btnTestCloud.disabled = false;
-        btnTestCloud.innerHTML = '<i class="fa-solid fa-vial"></i> Probar Conexión';
+      if (!currentPassword) {
+        showToast("Ingresá la contraseña actual.", true);
+        return;
       }
-    });
-  }
 
-  if (btnPushCloud) {
-    btnPushCloud.addEventListener('click', async () => {
-      try {
-        btnPushCloud.disabled = true;
-        btnPushCloud.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...';
-        const res = await store.pushToCloud();
-        if (res && res.success) {
-          const prov = res.provider === 'neon' ? 'Neon (Vercel)' : 'Supabase';
-          showToast(`¡Datos subidos a ${prov}! Ya son visibles para cualquier dispositivo.`);
-          updateCloudStatus();
-        } else {
-          showToast("No se pudo subir a la nube. Si estás en local, desplegá en Vercel.", true);
-        }
-      } catch (err) {
-        showToast(`Error al subir: ${err.message}`, true);
-      } finally {
-        btnPushCloud.disabled = false;
-        btnPushCloud.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Subir Datos a la Nube';
+      if (newPassword.length < 12) {
+        showToast("La nueva contraseña debe tener al menos 12 caracteres.", true);
+        return;
       }
-    });
-  }
 
-  if (btnPullCloud) {
-    btnPullCloud.addEventListener('click', async () => {
-      try {
-        btnPullCloud.disabled = true;
-        btnPullCloud.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Descargando...';
-        const cloudData = await store.fetchFromCloud();
-        if (cloudData) {
-          populateAllFields();
-          renderGalleryAdmin();
-          updateCloudStatus();
-          showToast("¡Datos descargados desde la nube con éxito!");
-        } else {
-          showToast("No se encontraron datos en la nube o aún no se han subido.", true);
-        }
-      } catch (err) {
-        showToast(`Error al descargar: ${err.message}`, true);
-      } finally {
-        btnPullCloud.disabled = false;
-        btnPullCloud.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> Descargar Datos de la Nube';
+      if (newPassword !== confirmPassword) {
+        showToast("Las contraseñas nuevas no coinciden.", true);
+        return;
       }
-    });
-  }
 
-  if (btnSyncNow) {
-    btnSyncNow.addEventListener('click', async () => {
-      btnSyncNow.disabled = true;
-      btnSyncNow.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando...';
+      if (btnSubmitPassword) btnSubmitPassword.disabled = true;
+
       try {
-        const res = await store.pushToCloud();
-        if (res && res.success) {
-          showToast("Sincronización global completada con éxito.");
-          updateCloudStatus();
-        } else {
-          showToast("No se pudo sincronizar con la nube.", true);
-        }
-      } catch (err) {
-        showToast(`Error al sincronizar: ${err.message}`, true);
-      } finally {
-        btnSyncNow.disabled = false;
-        btnSyncNow.innerHTML = '<i class="fa-solid fa-rotate"></i> Sincronizar Ahora';
-      }
-    });
-  }
-
-  // Copiar SQL
-  if (btnCopySql) {
-    btnCopySql.addEventListener('click', () => {
-      const code = document.getElementById('sqlCode')?.textContent;
-      if (code) {
-        navigator.clipboard.writeText(code).then(() => {
-          btnCopySql.innerHTML = '<i class="fa-solid fa-check"></i> ¡Copiado!';
-          setTimeout(() => {
-            btnCopySql.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar SQL';
-          }, 2500);
+        const res = await fetch('/api/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ currentPassword, newPassword })
         });
+
+        const json = await res.json().catch(() => ({}));
+
+        if (res.status === 200 && json.status === 'success') {
+          showToast(json.message || "Contraseña actualizada. Iniciá sesión nuevamente.");
+          formChangePassword.reset();
+          loginScreen.style.display = 'flex';
+          adminDashboard.style.display = 'none';
+          if (pinInput) {
+            pinInput.value = '';
+            pinInput.focus();
+          }
+        } else {
+          showToast(json.error || "No se pudo actualizar la contraseña.", true);
+        }
+      } catch (err) {
+        showToast("Error de conexión al cambiar la contraseña.", true);
+      } finally {
+        if (btnSubmitPassword) btnSubmitPassword.disabled = false;
       }
     });
   }
 
-  // Exportar / Importar JSON
+  // --- COPIAS DE SEGURIDAD (EXPORTAR / IMPORTAR / RESTAURAR) ---
   if (btnExportJson) {
     btnExportJson.addEventListener('click', () => {
       store.exportBackup();
-      showToast("Descarga de copia de seguridad iniciada.");
+      showToast("Copia de seguridad descargada.");
     });
   }
 
@@ -843,9 +922,12 @@ document.addEventListener('DOMContentLoaded', () => {
           await store.importBackup(event.target.result);
           populateAllFields();
           renderGalleryAdmin();
-          showToast("Copia de seguridad restaurada con éxito.");
+          setUnsavedChanges(true);
+          showToast("Copia importada en memoria. Recordá 'Publicar cambios'.");
         } catch (err) {
-          showToast(`Error al restaurar: ${err.message}`, true);
+          showToast("Error al importar el archivo: " + err.message, true);
+        } finally {
+          fileImportJson.value = '';
         }
       };
       reader.readAsText(file);
@@ -854,47 +936,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnResetDefaults) {
     btnResetDefaults.addEventListener('click', () => {
-      if (confirm("¿Estás seguro de que deseás restaurar todos los datos a sus valores originales de fábrica? Se borrarán los cambios locales.")) {
-        store.resetToDefaults();
+      const ok = confirm("¿Estás seguro de que deseás restaurar los valores de fábrica en memoria? Los cambios no se harán públicos hasta que presiones 'Publicar cambios'.");
+      if (ok) {
+        store.data = JSON.parse(JSON.stringify(DEFAULT_FAG_DATA));
         populateAllFields();
         renderGalleryAdmin();
-        updateCloudStatus();
-        showToast("Valores de fábrica restaurados.");
+        setUnsavedChanges(true);
+        showToast("Valores de fábrica cargados en memoria. Recordá 'Publicar cambios'.");
       }
     });
   }
-
-  // --- CAMBIO DE PIN DE SEGURIDAD ---
-  if (formChangePin) {
-    formChangePin.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const current = inputCurrentPin.value;
-      const newPin = inputNewPin.value;
-      const confirmPin = inputConfirmPin.value;
-
-      const isValid = await store.verifyPin(current);
-      if (!isValid) {
-        showToast("El PIN actual no es correcto.", true);
-        inputCurrentPin.focus();
-        return;
-      }
-
-      if (newPin !== confirmPin) {
-        showToast("Los nuevos PIN no coinciden.", true);
-        inputConfirmPin.focus();
-        return;
-      }
-
-      try {
-        await store.setMasterPin(newPin);
-        formChangePin.reset();
-        showToast("¡PIN maestro actualizado exitosamente con cifrado SHA-256!");
-      } catch (err) {
-        showToast(err.message, true);
-      }
-    });
-  }
-
-  // Comprobar estado al cargar la página
-  checkAuth();
 });
