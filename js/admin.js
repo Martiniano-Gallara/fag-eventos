@@ -109,11 +109,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const setUnsavedChanges = (dirty) => {
     hasUnsavedChanges = dirty;
     if (!publishStatus) return;
+    const label = publishStatus.querySelector('.status-label');
+    const text = dirty
+      ? 'Cambios sin publicar'
+      : (store.version > 0 ? `Al día (v${store.version})` : 'Sin cambios');
+
+    if (label) {
+      label.textContent = text;
+    } else {
+      publishStatus.textContent = text;
+    }
+
     if (dirty) {
-      publishStatus.textContent = 'Cambios sin publicar';
       publishStatus.className = 'publish-status status-dirty';
     } else {
-      publishStatus.textContent = store.version > 0 ? `Publicado (versión ${store.version})` : 'Sin cambios';
       publishStatus.className = 'publish-status status-clean';
     }
   };
@@ -349,117 +358,129 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- GUARDADO LOCAL DE SECCIONES (SOLO EN MEMORIA) ---
+  // --- FUNCIONES DE GUARDADO DE SECCIONES EN MEMORIA ---
+  const commitContactSection = (showFeedback = true) => {
+    const rawPhone = inputWhatsapp ? inputWhatsapp.value.trim() : '';
+    const digitsPhone = store.onlyDigits(rawPhone);
+    if (digitsPhone.length < 8 || digitsPhone.length > 15) {
+      if (showFeedback) showToast("El teléfono debe contener entre 8 y 15 dígitos.", true);
+      return false;
+    }
+
+    const email = inputEmail ? inputEmail.value.trim() : '';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      if (showFeedback) showToast("Ingresá un correo electrónico válido.", true);
+      return false;
+    }
+
+    const igOfficial = inputInstagram ? inputInstagram.value.trim() : '';
+    const igFer = inputInstagramFer ? inputInstagramFer.value.trim() : '';
+    const igFede = inputInstagramFede ? inputInstagramFede.value.trim() : '';
+
+    const checkIg = (u) => {
+      try {
+        const p = new URL(u);
+        return p.protocol === 'https:' && (p.hostname === 'instagram.com' || p.hostname === 'www.instagram.com');
+      } catch {
+        return false;
+      }
+    };
+
+    if (igOfficial && !checkIg(igOfficial)) {
+      if (showFeedback) showToast("La URL de Instagram Oficial debe ser HTTPS de instagram.com.", true);
+      return false;
+    }
+    if (igFer && !checkIg(igFer)) {
+      if (showFeedback) showToast("La URL de Instagram de Fernando debe ser HTTPS de instagram.com.", true);
+      return false;
+    }
+    if (igFede && !checkIg(igFede)) {
+      if (showFeedback) showToast("La URL de Instagram de Federico debe ser HTTPS de instagram.com.", true);
+      return false;
+    }
+
+    const current = store.getData();
+    current.contact = {
+      whatsapp: digitsPhone,
+      whatsappDisplay: inputWhatsappDisplay ? inputWhatsappDisplay.value.trim().slice(0, 30) : '',
+      whatsappMessage: inputWhatsappMsg ? inputWhatsappMsg.value.trim().slice(0, 300) : '',
+      email: email.slice(0, 120),
+      instagram: igOfficial,
+      instagramDisplay: inputInstagramDisplay ? inputInstagramDisplay.value.trim().slice(0, 40) : '@fag.eventos',
+      instagramFer: igFer,
+      instagramFede: igFede
+    };
+
+    store.saveData(current);
+    setUnsavedChanges(true);
+    if (showFeedback) showToast("Contacto guardado en memoria. Recordá 'Publicar'.");
+    return true;
+  };
+
+  const commitStatsSection = (showFeedback = true) => {
+    const line1 = inputHero1 ? inputHero1.value.trim().slice(0, 80) : '';
+    const line2 = inputHero2 ? inputHero2.value.trim().slice(0, 80) : '';
+    if (line1.includes('<') || line1.includes('>') || line2.includes('<') || line2.includes('>')) {
+      if (showFeedback) showToast("Los títulos no pueden contener caracteres < o >.", true);
+      return false;
+    }
+
+    const current = store.getData();
+    current.hero = {
+      titleLine1: line1 || 'Grandes Convocatorias.',
+      titleLine2: line2 || 'Espectáculos de Nivel Mundial.',
+      pill1: current.hero?.pill1 || 'Financiamiento Propio',
+      pill2: current.hero?.pill2 || 'Internacional'
+    };
+
+    const t1 = parseInt(stat1Target ? stat1Target.value : '30', 10);
+    const t2 = parseInt(stat2Target ? stat2Target.value : '10', 10);
+    const t3 = parseInt(stat3Target ? stat3Target.value : '100', 10);
+
+    current.stats = {
+      stat1: {
+        target: isNaN(t1) ? 30 : Math.min(100000, Math.max(0, t1)),
+        prefix: (stat1Prefix ? stat1Prefix.value.trim() : '+').slice(0, 3),
+        suffix: '',
+        label1: (stat1Label1 ? stat1Label1.value.trim() : 'Años de').slice(0, 30),
+        label2: (stat1Label2 ? stat1Label2.value.trim() : 'Trayectoria').slice(0, 30)
+      },
+      stat2: {
+        target: isNaN(t2) ? 10 : Math.min(100000, Math.max(0, t2)),
+        prefix: (stat2Prefix ? stat2Prefix.value.trim() : '+').slice(0, 3),
+        suffix: '',
+        label1: (stat2Label1 ? stat2Label1.value.trim() : 'Países con').slice(0, 30),
+        label2: (stat2Label2 ? stat2Label2.value.trim() : 'Producciones').slice(0, 30)
+      },
+      stat3: {
+        target: isNaN(t3) ? 100 : Math.min(100000, Math.max(0, t3)),
+        prefix: '',
+        suffix: (stat3Suffix ? stat3Suffix.value.trim() : '%').slice(0, 3),
+        label1: (stat3Label1 ? stat3Label1.value.trim() : 'Gestión Propia').slice(0, 30),
+        label2: (stat3Label2 ? stat3Label2.value.trim() : '& Financiamiento').slice(0, 30)
+      }
+    };
+
+    store.saveData(current);
+    setUnsavedChanges(true);
+    if (showFeedback) showToast("Portada y cifras guardadas en memoria. Recordá 'Publicar'.");
+    return true;
+  };
+
+  // Botones de guardado de sección
   document.querySelectorAll('.btn-save-section').forEach(btn => {
     btn.addEventListener('click', () => {
       const section = btn.getAttribute('data-section');
-      const current = store.getData();
-
-      if (section === 'contact') {
-        const rawPhone = inputWhatsapp ? inputWhatsapp.value.trim() : '';
-        const digitsPhone = store.onlyDigits(rawPhone);
-        if (digitsPhone.length < 8 || digitsPhone.length > 15) {
-          showToast("El teléfono debe contener entre 8 y 15 dígitos.", true);
-          return;
-        }
-
-        const email = inputEmail ? inputEmail.value.trim() : '';
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!email || !emailRegex.test(email)) {
-          showToast("Ingresá un correo electrónico válido.", true);
-          return;
-        }
-
-        const igOfficial = inputInstagram ? inputInstagram.value.trim() : '';
-        const igFer = inputInstagramFer ? inputInstagramFer.value.trim() : '';
-        const igFede = inputInstagramFede ? inputInstagramFede.value.trim() : '';
-
-        const checkIg = (u) => {
-          try {
-            const p = new URL(u);
-            return p.protocol === 'https:' && (p.hostname === 'instagram.com' || p.hostname === 'www.instagram.com');
-          } catch {
-            return false;
-          }
-        };
-
-        if (igOfficial && !checkIg(igOfficial)) {
-          showToast("La URL de Instagram Oficial debe ser HTTPS de instagram.com.", true);
-          return;
-        }
-        if (igFer && !checkIg(igFer)) {
-          showToast("La URL de Instagram de Fernando debe ser HTTPS de instagram.com.", true);
-          return;
-        }
-        if (igFede && !checkIg(igFede)) {
-          showToast("La URL de Instagram de Federico debe ser HTTPS de instagram.com.", true);
-          return;
-        }
-
-        current.contact = {
-          whatsapp: digitsPhone,
-          whatsappDisplay: inputWhatsappDisplay ? inputWhatsappDisplay.value.trim().slice(0, 30) : '',
-          whatsappMessage: inputWhatsappMsg ? inputWhatsappMsg.value.trim().slice(0, 300) : '',
-          email: email.slice(0, 120),
-          instagram: igOfficial,
-          instagramDisplay: inputInstagramDisplay ? inputInstagramDisplay.value.trim().slice(0, 40) : '@fag.eventos',
-          instagramFer: igFer,
-          instagramFede: igFede
-        };
-
-        store.saveData(current);
-        setUnsavedChanges(true);
-        showToast("Contacto actualizado en memoria. No olvides 'Publicar cambios'.");
-      }
-
-      if (section === 'stats') {
-        const line1 = inputHero1 ? inputHero1.value.trim().slice(0, 80) : '';
-        const line2 = inputHero2 ? inputHero2.value.trim().slice(0, 80) : '';
-        if (line1.includes('<') || line1.includes('>') || line2.includes('<') || line2.includes('>')) {
-          showToast("Los títulos no pueden contener caracteres < o >.", true);
-          return;
-        }
-
-        current.hero = {
-          titleLine1: line1 || 'Grandes Convocatorias.',
-          titleLine2: line2 || 'Espectáculos de Nivel Mundial.',
-          pill1: current.hero?.pill1 || 'Financiamiento Propio',
-          pill2: current.hero?.pill2 || 'Internacional'
-        };
-
-        const t1 = parseInt(stat1Target ? stat1Target.value : '30', 10);
-        const t2 = parseInt(stat2Target ? stat2Target.value : '10', 10);
-        const t3 = parseInt(stat3Target ? stat3Target.value : '100', 10);
-
-        current.stats = {
-          stat1: {
-            target: isNaN(t1) ? 30 : Math.min(100000, Math.max(0, t1)),
-            prefix: (stat1Prefix ? stat1Prefix.value.trim() : '+').slice(0, 3),
-            suffix: '',
-            label1: (stat1Label1 ? stat1Label1.value.trim() : 'Años de').slice(0, 30),
-            label2: (stat1Label2 ? stat1Label2.value.trim() : 'Trayectoria').slice(0, 30)
-          },
-          stat2: {
-            target: isNaN(t2) ? 10 : Math.min(100000, Math.max(0, t2)),
-            prefix: (stat2Prefix ? stat2Prefix.value.trim() : '+').slice(0, 3),
-            suffix: '',
-            label1: (stat2Label1 ? stat2Label1.value.trim() : 'Países con').slice(0, 30),
-            label2: (stat2Label2 ? stat2Label2.value.trim() : 'Producciones').slice(0, 30)
-          },
-          stat3: {
-            target: isNaN(t3) ? 100 : Math.min(100000, Math.max(0, t3)),
-            prefix: '',
-            suffix: (stat3Suffix ? stat3Suffix.value.trim() : '%').slice(0, 3),
-            label1: (stat3Label1 ? stat3Label1.value.trim() : 'Gestión Propia').slice(0, 30),
-            label2: (stat3Label2 ? stat3Label2.value.trim() : '& Financiamiento').slice(0, 30)
-          }
-        };
-
-        store.saveData(current);
-        setUnsavedChanges(true);
-        showToast("Estadísticas actualizadas en memoria. No olvides 'Publicar cambios'.");
-      }
+      if (section === 'contact') commitContactSection(true);
+      if (section === 'stats') commitStatsSection(true);
     });
+  });
+
+  // Detección automática de cambios en tiempo real
+  const trackedInputs = document.querySelectorAll('#tab-contacto input, #tab-contacto textarea, #tab-estadisticas input');
+  trackedInputs.forEach(input => {
+    input.addEventListener('input', () => setUnsavedChanges(true));
   });
 
   // --- BOTÓN PROBAR WHATSAPP ---
@@ -478,8 +499,22 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btnPublish.disabled) return;
       btnPublish.disabled = true;
 
+      // Auto-sincronizar formularios en memoria antes de publicar si hay campos editados
+      if (inputWhatsapp && !commitContactSection(false)) {
+        btnPublish.disabled = false;
+        showToast("Por favor revisá los datos de contacto antes de publicar.", true);
+        return;
+      }
+      if (inputHero1 && !commitStatsSection(false)) {
+        btnPublish.disabled = false;
+        showToast("Por favor revisá los datos de portada antes de publicar.", true);
+        return;
+      }
+
       if (publishStatus) {
-        publishStatus.textContent = 'Publicando...';
+        const label = publishStatus.querySelector('.status-label');
+        if (label) label.textContent = 'Publicando...';
+        else publishStatus.textContent = 'Publicando...';
         publishStatus.className = 'publish-status';
       }
 
@@ -487,13 +522,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const newVersion = await store.publish();
         setUnsavedChanges(false);
         if (publishStatus) {
-          publishStatus.textContent = `Publicado (versión ${newVersion})`;
+          const label = publishStatus.querySelector('.status-label');
+          if (label) label.textContent = `Al día (v${newVersion})`;
+          else publishStatus.textContent = `Al día (v${newVersion})`;
           publishStatus.className = 'publish-status status-published';
         }
-        showToast(`Cambios publicados con éxito (versión ${newVersion}).`);
+        showToast(`¡Cambios publicados en vivo con éxito! (versión ${newVersion})`);
       } catch (err) {
         if (publishStatus) {
-          publishStatus.textContent = 'Error';
+          const label = publishStatus.querySelector('.status-label');
+          if (label) label.textContent = 'Error';
+          else publishStatus.textContent = 'Error';
           publishStatus.className = 'publish-status status-error';
         }
 
@@ -779,6 +818,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnItemModalClose) btnItemModalClose.addEventListener('click', closeGalleryModal);
   if (btnItemCancel) btnItemCancel.addEventListener('click', closeGalleryModal);
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  if (modalBackdrop) modalBackdrop.addEventListener('click', closeGalleryModal);
 
   if (itemForm) {
     itemForm.addEventListener('submit', (e) => {

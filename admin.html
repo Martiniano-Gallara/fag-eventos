@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Panel de Administración | FAG Eventos</title>
   <link rel="icon" type="image/png" href="assets/fag-logo.png">
@@ -10,7 +10,7 @@
   <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Font Awesome 6 Icons con SRI -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
@@ -21,10 +21,9 @@
 <body>
 
   <!-- ==========================================================================
-       PANTALLA DE ACCESO (LOGIN CON CONTRASEÑA)
+       PANTALLA DE ACCESO (LOGIN)
        ========================================================================== -->
   <section id="loginScreen" class="admin-login-screen">
-    <!-- Luces y esferas ambientales de fondo -->
     <div class="login-ambient-glow glow-1" aria-hidden="true"></div>
     <div class="login-ambient-glow glow-2" aria-hidden="true"></div>
     <div class="login-ambient-grid" aria-hidden="true"></div>
@@ -45,12 +44,12 @@
       <h1 class="login-title">Panel de Control</h1>
       <p class="login-subtitle">Ingresá la contraseña de administración para gestionar el sitio web de FAG Eventos.</p>
 
-      <!-- Banner de Alerta por Bloqueo Anti-Fuerza Bruta del Servidor -->
+      <!-- Alerta de Bloqueo Anti-Fuerza Bruta -->
       <div id="loginLockoutBanner" class="login-lockout-banner" style="display: none;" role="alert">
         <i class="fa-solid fa-shield-halved"></i>
         <div class="lockout-text">
-          <strong>Acceso Bloqueado por Seguridad</strong>
-          <span id="lockoutTimerMsg">Demasiados intentos fallidos. Reintentá en 00:30s</span>
+          <strong>Acceso Bloqueado</strong>
+          <span id="lockoutTimerMsg">Demasiados intentos. Reintentá en 00:30s</span>
         </div>
       </div>
 
@@ -59,7 +58,7 @@
           <div class="pin-icon-box">
             <i class="fa-solid fa-lock pin-icon"></i>
           </div>
-          <input type="password" id="pinInput" class="pin-input" placeholder="Ingresá la contraseña de administración" autocomplete="current-password" autofocus required>
+          <input type="password" id="pinInput" class="pin-input" placeholder="Contraseña de administración" autocomplete="current-password" autofocus required>
           <button type="button" id="btnTogglePin" class="btn-toggle-pin" aria-label="Mostrar u ocultar contraseña" title="Ver contraseña">
             <i class="fa-solid fa-eye" id="togglePinIcon"></i>
           </button>
@@ -87,193 +86,94 @@
        ========================================================================== -->
   <div id="adminDashboard" class="admin-dashboard" style="display: none;">
     
-    <!-- Top Header Premium -->
+    <!-- Header Decente y Minimalista -->
     <header class="admin-header">
       <div class="header-container">
-        <a href="index.html" class="header-brand" title="Ir al sitio público de FAG Eventos">
-          <img src="assets/fag-logo.png" alt="Logo FAG" class="header-logo">
-        </a>
+        <div class="header-left">
+          <a href="index.html" class="header-brand" title="Ir al sitio público de FAG Eventos">
+            <img src="assets/fag-logo.png" alt="Logo FAG" class="header-logo">
+          </a>
+          <span class="header-tag">Admin</span>
+        </div>
 
         <div class="header-actions">
-          <a href="index.html" target="_blank" class="btn-header-action btn-header-web" title="Ver la web pública en pestaña nueva">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            <span>Ver Sitio Web</span>
-          </a>
-          <span id="publishStatus" class="publish-status status-clean">Sin cambios</span>
-          <button id="btnPublish" class="btn-header-action btn-header-save" title="Publicar cambios en el servidor">
+          <!-- Estado de Publicación -->
+          <span id="publishStatus" class="publish-status status-clean" title="Estado de sincronización con el servidor">
+            <span class="status-dot"></span>
+            <span class="status-label">Sin cambios</span>
+          </span>
+
+          <!-- Botón Publicar Cambios -->
+          <button id="btnPublish" class="btn-header-publish" title="Publicar cambios en el servidor web">
             <i class="fa-solid fa-cloud-arrow-up"></i>
-            <span>Publicar cambios</span>
+            <span>Publicar</span>
           </button>
-          <button id="btnLogout" class="btn-header-action btn-logout" title="Cerrar sesión">
+
+          <!-- Ver Sitio Web -->
+          <a href="index.html" target="_blank" class="btn-header-ghost" title="Ver la web pública en pestaña nueva">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <span class="btn-text-desktop">Ver web</span>
+          </a>
+
+          <!-- Cerrar Sesión -->
+          <button id="btnLogout" class="btn-header-ghost btn-ghost-danger" title="Cerrar sesión">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            <span>Salir</span>
+            <span class="btn-text-desktop">Salir</span>
           </button>
         </div>
       </div>
     </header>
 
-    <!-- Tabs Bar (Pestaña Cloud eliminada) -->
-    <nav class="admin-tabs-bar">
+    <!-- Barra de Pestañas Limpia & Desplazable -->
+    <nav class="admin-tabs-bar" aria-label="Secciones del panel">
       <div class="tabs-container">
-        <button class="tab-btn active" data-tab="tab-contacto">
-          <i class="fa-solid fa-address-book"></i> Contacto & Redes
+        <button class="tab-btn active" data-tab="tab-estadisticas">
+          <i class="fa-solid fa-compass"></i>
+          <span>Portada & Cifras</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-contacto">
+          <i class="fa-solid fa-address-book"></i>
+          <span>Contacto & Redes</span>
         </button>
         <button class="tab-btn" data-tab="tab-galeria">
-          <i class="fa-solid fa-photo-film"></i> Galería & Reels
-        </button>
-        <button class="tab-btn" data-tab="tab-estadisticas">
-          <i class="fa-solid fa-chart-line"></i> Estadísticas & Portada
+          <i class="fa-solid fa-images"></i>
+          <span>Galería</span>
         </button>
         <button class="tab-btn" data-tab="tab-seguridad">
-          <i class="fa-solid fa-shield-halved"></i> Seguridad
+          <i class="fa-solid fa-gear"></i>
+          <span>Ajustes & Clave</span>
         </button>
       </div>
     </nav>
 
-    <!-- Main Content Area -->
+    <!-- Contenido Principal Comprimido -->
     <main class="admin-main">
       <div class="main-container">
 
         <!-- ====================================================================
-             TAB 1: CONTACTO & REDES SOCIALES
+             TAB 1: PORTADA & CIFRAS (TITULARES Y ESTADÍSTICAS)
              ==================================================================== -->
-        <section id="tab-contacto" class="tab-panel active">
-          <div class="panel-header">
+        <section id="tab-estadisticas" class="tab-panel active">
+          <div class="panel-header-simple">
             <div>
-              <div class="panel-header-badge">
-                <i class="fa-solid fa-link"></i> Sincronizado con la Portada
-              </div>
-              <h2 class="panel-title">Información de Contacto y Redes</h2>
-              <p class="panel-desc">Los cambios modifican los botones de WhatsApp, email y redes de la web principal al publicar.</p>
-            </div>
-            <button class="btn-primary btn-save-section" data-section="contact">
-              <i class="fa-solid fa-check"></i> Guardar Contacto
-            </button>
-          </div>
-
-          <div class="admin-cards-stack">
-            <!-- Sección 1: Canal WhatsApp -->
-            <div class="admin-card">
-              <div class="card-header-flex">
-                <div class="card-header-left">
-                  <span class="card-icon-badge whatsapp"><i class="fa-brands fa-whatsapp"></i></span>
-                  <div>
-                    <h3 class="card-title">WhatsApp Directo</h3>
-                    <p class="card-subtitle">Canal principal de cotizaciones y consultas instantáneas</p>
-                  </div>
-                </div>
-                <span class="card-status-pill green"><i class="fa-solid fa-circle-dot"></i> Activo en la Web</span>
-              </div>
-
-              <div class="form-grid compact-grid-2">
-                <div class="form-field">
-                  <label class="form-label" for="inputWhatsapp">Número Internacional (solo dígitos)</label>
-                  <input type="text" id="inputWhatsapp" class="form-input" placeholder="Ej: 5493517580045">
-                  <span class="form-hint">Para Argentina: 54 + 9 + característica (351) + número (8 a 15 dígitos).</span>
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="inputWhatsappDisplay">Número visible para el usuario</label>
-                  <input type="text" id="inputWhatsappDisplay" class="form-input" placeholder="+54 9 351 758-0045">
-                  <span class="form-hint">Texto que ve el visitante en pantalla.</span>
-                </div>
-              </div>
-
-              <div class="form-field" style="margin-top: 14px;">
-                <label class="form-label" for="inputWhatsappMsg">Mensaje predeterminado de consulta</label>
-                <textarea id="inputWhatsappMsg" class="form-textarea" rows="2" placeholder="¡Hola FAG Eventos! Me comunico desde la web oficial para consultar por la organización y producción de un evento."></textarea>
-              </div>
-
-              <div style="margin-top: 14px; display: flex; align-items: center; justify-content: flex-start;">
-                <button type="button" id="btnTestWa" class="btn-secondary btn-compact">
-                  <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Probar enlace WhatsApp ahora
-                </button>
-              </div>
-            </div>
-
-            <!-- Sección 2: Correo Electrónico & Perfiles de Redes -->
-            <div class="admin-card">
-              <div class="card-header-flex">
-                <div class="card-header-left">
-                  <span class="card-icon-badge social"><i class="fa-solid fa-at"></i></span>
-                  <div>
-                    <h3 class="card-title">Correo Electrónico & Redes Sociales</h3>
-                    <p class="card-subtitle">Dirección de correo institucional y perfiles oficiales</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-grid compact-grid-2">
-                <div class="form-field">
-                  <label class="form-label" for="inputEmail">Correo Electrónico de Contacto</label>
-                  <input type="email" id="inputEmail" class="form-input" placeholder="fgigena@gmail.com">
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="inputInstagram">Instagram Oficial FAG (URL HTTPS)</label>
-                  <input type="url" id="inputInstagram" class="form-input" placeholder="https://www.instagram.com/fag.eventos/">
-                </div>
-              </div>
-
-              <div class="form-grid compact-grid-3" style="margin-top: 14px;">
-                <div class="form-field">
-                  <label class="form-label" for="inputInstagramDisplay">Usuario visible Instagram</label>
-                  <input type="text" id="inputInstagramDisplay" class="form-input" placeholder="@fag.eventos">
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="inputInstagramFer">Instagram Fernando Gigena</label>
-                  <input type="url" id="inputInstagramFer" class="form-input" placeholder="https://www.instagram.com/fergigena/">
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="inputInstagramFede">Instagram Federico Pellizzon</label>
-                  <input type="url" id="inputInstagramFede" class="form-input" placeholder="https://www.instagram.com/fedepellizzon/">
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ====================================================================
-             TAB 2: GALERÍA DE TRABAJOS & REELS DE INSTAGRAM
-             ==================================================================== -->
-        <section id="tab-galeria" class="tab-panel">
-          <div class="panel-header">
-            <div>
-              <h2 class="panel-title">Mural de Trabajos & Conciertos</h2>
-              <p class="panel-desc">Gestioná los elementos fotográficos y videos que componen el mosaico artístico de la portada.</p>
-            </div>
-            <button id="btnNewGalleryItem" class="btn-primary">
-              <i class="fa-solid fa-plus"></i> Agregar Nuevo Trabajo
-            </button>
-          </div>
-
-          <div id="galleryAdminList" class="gallery-admin-grid">
-            <!-- Cargado dinámicamente vía JavaScript -->
-          </div>
-        </section>
-
-        <!-- ====================================================================
-             TAB 3: ESTADÍSTICAS & TITULARES
-             ==================================================================== -->
-        <section id="tab-estadisticas" class="tab-panel">
-          <div class="panel-header">
-            <div>
-              <h2 class="panel-title">Estadísticas & Mensajes Principales</h2>
-              <p class="panel-desc">Editá las métricas de impacto y las dos líneas del titular principal de la portada.</p>
+              <h2 class="panel-title">Portada & Cifras</h2>
+              <p class="panel-desc">Textos principales y métricas de impacto de la página web.</p>
             </div>
             <button class="btn-primary btn-save-section" data-section="stats">
-              <i class="fa-solid fa-check"></i> Guardar Estadísticas
+              <i class="fa-solid fa-check"></i>
+              <span>Guardar Portada</span>
             </button>
           </div>
 
           <!-- Titular Principal Hero -->
-          <div class="admin-card" style="margin-bottom: 24px;">
-            <h3 class="card-title"><i class="fa-solid fa-heading"></i> Titular Principal de Portada (Hero)</h3>
-            <p style="font-size: 0.88rem; color: var(--admin-muted); margin-bottom: 16px;">
-              Este es el texto de gran tamaño visible inmediatamente al entrar al sitio web.
-            </p>
-
-            <div class="form-grid">
+          <div class="admin-card">
+            <div class="card-title-row">
+              <i class="fa-solid fa-heading card-title-icon"></i>
+              <h3 class="card-title">Titular Principal (Hero)</h3>
+            </div>
+            <div class="form-grid grid-2">
               <div class="form-field">
-                <label class="form-label" for="inputHero1">Línea 1 (Blanca)</label>
+                <label class="form-label" for="inputHero1">Línea 1 (Texto Principal)</label>
                 <input type="text" id="inputHero1" class="form-input" placeholder="Grandes Convocatorias.">
               </div>
               <div class="form-field">
@@ -283,70 +183,85 @@
             </div>
           </div>
 
-          <!-- Tres Métricas de Impacto -->
-          <div class="admin-cards-stack">
-            <div class="admin-card">
-              <h3 class="card-title"><i class="fa-solid fa-chart-simple"></i> Cifra de Impacto 1</h3>
-              <div class="form-grid compact-grid-4">
-                <div class="form-field">
-                  <label class="form-label" for="stat1Target">Número Objetivo</label>
-                  <input type="number" id="stat1Target" class="form-input" placeholder="30">
+          <!-- 3 Cifras de Impacto -->
+          <div class="admin-card">
+            <div class="card-title-row">
+              <i class="fa-solid fa-chart-simple card-title-icon"></i>
+              <h3 class="card-title">Cifras de Impacto</h3>
+            </div>
+            <div class="stats-cards-grid">
+              <!-- Métrica 1 -->
+              <div class="stat-mini-box">
+                <div class="stat-mini-header">Métrica 1</div>
+                <div class="form-grid grid-2">
+                  <div class="form-field">
+                    <label class="form-label" for="stat1Target">Número</label>
+                    <input type="number" id="stat1Target" class="form-input" placeholder="30">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label" for="stat1Prefix">Prefijo</label>
+                    <input type="text" id="stat1Prefix" class="form-input" placeholder="+">
+                  </div>
                 </div>
-                <div class="form-field">
-                  <label class="form-label" for="stat1Prefix">Prefijo (+, %, x, etc.)</label>
-                  <input type="text" id="stat1Prefix" class="form-input" placeholder="+">
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="stat1Label1">Renglón 1</label>
-                  <input type="text" id="stat1Label1" class="form-input" placeholder="Años de">
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="stat1Label2">Renglón 2</label>
-                  <input type="text" id="stat1Label2" class="form-input" placeholder="Trayectoria">
+                <div class="form-grid grid-2" style="margin-top: 8px;">
+                  <div class="form-field">
+                    <label class="form-label" for="stat1Label1">Línea 1</label>
+                    <input type="text" id="stat1Label1" class="form-input" placeholder="Años de">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label" for="stat1Label2">Línea 2</label>
+                    <input type="text" id="stat1Label2" class="form-input" placeholder="Trayectoria">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="admin-card">
-              <h3 class="card-title"><i class="fa-solid fa-chart-simple"></i> Cifra de Impacto 2</h3>
-              <div class="form-grid compact-grid-4">
-                <div class="form-field">
-                  <label class="form-label" for="stat2Target">Número Objetivo</label>
-                  <input type="number" id="stat2Target" class="form-input" placeholder="10">
+              <!-- Métrica 2 -->
+              <div class="stat-mini-box">
+                <div class="stat-mini-header">Métrica 2</div>
+                <div class="form-grid grid-2">
+                  <div class="form-field">
+                    <label class="form-label" for="stat2Target">Número</label>
+                    <input type="number" id="stat2Target" class="form-input" placeholder="10">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label" for="stat2Prefix">Prefijo</label>
+                    <input type="text" id="stat2Prefix" class="form-input" placeholder="+">
+                  </div>
                 </div>
-                <div class="form-field">
-                  <label class="form-label" for="stat2Prefix">Prefijo (+, %, x, etc.)</label>
-                  <input type="text" id="stat2Prefix" class="form-input" placeholder="+">
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="stat2Label1">Renglón 1</label>
-                  <input type="text" id="stat2Label1" class="form-input" placeholder="Países con">
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="stat2Label2">Renglón 2</label>
-                  <input type="text" id="stat2Label2" class="form-input" placeholder="Producciones">
+                <div class="form-grid grid-2" style="margin-top: 8px;">
+                  <div class="form-field">
+                    <label class="form-label" for="stat2Label1">Línea 1</label>
+                    <input type="text" id="stat2Label1" class="form-input" placeholder="Países con">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label" for="stat2Label2">Línea 2</label>
+                    <input type="text" id="stat2Label2" class="form-input" placeholder="Producciones">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="admin-card">
-              <h3 class="card-title"><i class="fa-solid fa-chart-simple"></i> Cifra de Impacto 3</h3>
-              <div class="form-grid compact-grid-4">
-                <div class="form-field">
-                  <label class="form-label" for="stat3Target">Número Objetivo</label>
-                  <input type="number" id="stat3Target" class="form-input" placeholder="100">
+              <!-- Métrica 3 -->
+              <div class="stat-mini-box">
+                <div class="stat-mini-header">Métrica 3</div>
+                <div class="form-grid grid-2">
+                  <div class="form-field">
+                    <label class="form-label" for="stat3Target">Número</label>
+                    <input type="number" id="stat3Target" class="form-input" placeholder="100">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label" for="stat3Suffix">Sufijo</label>
+                    <input type="text" id="stat3Suffix" class="form-input" placeholder="%">
+                  </div>
                 </div>
-                <div class="form-field">
-                  <label class="form-label" for="stat3Suffix">Sufijo (%, +, etc.)</label>
-                  <input type="text" id="stat3Suffix" class="form-input" placeholder="%">
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="stat3Label1">Renglón 1</label>
-                  <input type="text" id="stat3Label1" class="form-input" placeholder="Gestión Propia">
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="stat3Label2">Renglón 2</label>
-                  <input type="text" id="stat3Label2" class="form-input" placeholder="& Financiamiento">
+                <div class="form-grid grid-2" style="margin-top: 8px;">
+                  <div class="form-field">
+                    <label class="form-label" for="stat3Label1">Línea 1</label>
+                    <input type="text" id="stat3Label1" class="form-input" placeholder="Gestión Propia">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label" for="stat3Label2">Línea 2</label>
+                    <input type="text" id="stat3Label2" class="form-input" placeholder="& Financiamiento">
+                  </div>
                 </div>
               </div>
             </div>
@@ -354,37 +269,137 @@
         </section>
 
         <!-- ====================================================================
-             TAB 4: SEGURIDAD & COPIAS DE SEGURIDAD
+             TAB 2: CONTACTO & REDES
              ==================================================================== -->
-        <section id="tab-seguridad" class="tab-panel">
-          <div class="panel-header">
+        <section id="tab-contacto" class="tab-panel">
+          <div class="panel-header-simple">
             <div>
-              <h2 class="panel-title">Seguridad y Copias de Respaldo</h2>
-              <p class="panel-desc">Gestioná la contraseña de acceso al panel y las copias de seguridad de los datos.</p>
+              <h2 class="panel-title">Contacto & Redes</h2>
+              <p class="panel-desc">WhatsApp de consultas, correo electrónico y cuentas de Instagram.</p>
+            </div>
+            <button class="btn-primary btn-save-section" data-section="contact">
+              <i class="fa-solid fa-check"></i>
+              <span>Guardar Contacto</span>
+            </button>
+          </div>
+
+          <!-- WhatsApp y Email -->
+          <div class="admin-card">
+            <div class="card-title-row">
+              <i class="fa-brands fa-whatsapp card-title-icon color-wa"></i>
+              <h3 class="card-title">Canal WhatsApp & Email</h3>
+            </div>
+            <div class="form-grid grid-2">
+              <div class="form-field">
+                <label class="form-label" for="inputWhatsapp">Número WhatsApp (solo dígitos)</label>
+                <input type="text" id="inputWhatsapp" class="form-input" placeholder="Ej: 5493517580045">
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="inputWhatsappDisplay">Número visible en pantalla</label>
+                <input type="text" id="inputWhatsappDisplay" class="form-input" placeholder="+54 9 351 758-0045">
+              </div>
+            </div>
+
+            <div class="form-field" style="margin-top: 12px;">
+              <label class="form-label" for="inputWhatsappMsg">Mensaje predeterminado de consulta</label>
+              <textarea id="inputWhatsappMsg" class="form-textarea" rows="2" placeholder="¡Hola FAG Eventos! Me comunico desde la web..."></textarea>
+            </div>
+
+            <div class="card-inline-action" style="margin-top: 10px;">
+              <button type="button" id="btnTestWa" class="btn-secondary btn-sm">
+                <i class="fa-brands fa-whatsapp color-wa"></i> Probar enlace WhatsApp
+              </button>
+            </div>
+
+            <div class="form-field" style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--admin-border);">
+              <label class="form-label" for="inputEmail">Correo Electrónico Institucional</label>
+              <input type="email" id="inputEmail" class="form-input" placeholder="fgigena@gmail.com">
             </div>
           </div>
 
-          <div class="admin-cards-stack">
-            <!-- Cambio de Contraseña de Administración -->
-            <div class="admin-card" style="max-width: 540px;">
-              <h3 class="card-title"><i class="fa-solid fa-key"></i> Cambiar Contraseña de Administración</h3>
-              <p style="font-size: 0.88rem; color: var(--admin-muted); margin-bottom: 16px;">
-                La contraseña debe tener al menos 12 caracteres. Al cambiarla, tu sesión se cerrará y deberás iniciar sesión nuevamente.
-              </p>
+          <!-- Redes Sociales (Instagram) -->
+          <div class="admin-card">
+            <div class="card-title-row">
+              <i class="fa-brands fa-instagram card-title-icon color-ig"></i>
+              <h3 class="card-title">Perfiles de Instagram</h3>
+            </div>
+            <div class="form-grid grid-2">
+              <div class="form-field">
+                <label class="form-label" for="inputInstagram">Instagram Oficial FAG (URL HTTPS)</label>
+                <input type="url" id="inputInstagram" class="form-input" placeholder="https://www.instagram.com/fag.eventos/">
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="inputInstagramDisplay">Usuario visible</label>
+                <input type="text" id="inputInstagramDisplay" class="form-input" placeholder="@fag.eventos">
+              </div>
+            </div>
+
+            <div class="form-grid grid-2" style="margin-top: 12px;">
+              <div class="form-field">
+                <label class="form-label" for="inputInstagramFer">Instagram Fernando Gigena</label>
+                <input type="url" id="inputInstagramFer" class="form-input" placeholder="https://www.instagram.com/fergigena/">
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="inputInstagramFede">Instagram Federico Pellizzon</label>
+                <input type="url" id="inputInstagramFede" class="form-input" placeholder="https://www.instagram.com/fedepellizzon/">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             TAB 3: GALERÍA DE TRABAJOS & REELS
+             ==================================================================== -->
+        <section id="tab-galeria" class="tab-panel">
+          <div class="panel-header-simple">
+            <div>
+              <h2 class="panel-title">Galería de Trabajos</h2>
+              <p class="panel-desc">Fotos y videos que componen el mural de la portada.</p>
+            </div>
+            <button id="btnNewGalleryItem" class="btn-primary">
+              <i class="fa-solid fa-plus"></i>
+              <span>Agregar Trabajo</span>
+            </button>
+          </div>
+
+          <!-- Grilla de Trabajos Dinámica -->
+          <div id="galleryAdminList" class="gallery-admin-grid">
+            <!-- Cargado vía JavaScript -->
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             TAB 4: AJUSTES & SEGURIDAD
+             ==================================================================== -->
+        <section id="tab-seguridad" class="tab-panel">
+          <div class="panel-header-simple">
+            <div>
+              <h2 class="panel-title">Ajustes & Seguridad</h2>
+              <p class="panel-desc">Gestión de la clave de acceso y copias de seguridad de datos.</p>
+            </div>
+          </div>
+
+          <div class="form-grid grid-2">
+            <!-- Cambio de Contraseña -->
+            <div class="admin-card">
+              <div class="card-title-row">
+                <i class="fa-solid fa-key card-title-icon"></i>
+                <h3 class="card-title">Cambiar Contraseña</h3>
+              </div>
               <form id="formChangePassword">
-                <div class="form-field" style="margin-bottom: 14px;">
+                <div class="form-field" style="margin-bottom: 10px;">
                   <label class="form-label" for="inputCurrentPassword">Contraseña Actual</label>
                   <input type="password" id="inputCurrentPassword" class="form-input" autocomplete="current-password" required>
                 </div>
-                <div class="form-field" style="margin-bottom: 14px;">
+                <div class="form-field" style="margin-bottom: 10px;">
                   <label class="form-label" for="inputNewPassword">Nueva Contraseña (mínimo 12 caracteres)</label>
                   <input type="password" id="inputNewPassword" class="form-input" minlength="12" autocomplete="new-password" required>
                 </div>
-                <div class="form-field" style="margin-bottom: 20px;">
+                <div class="form-field" style="margin-bottom: 14px;">
                   <label class="form-label" for="inputConfirmPassword">Confirmar Nueva Contraseña</label>
                   <input type="password" id="inputConfirmPassword" class="form-input" minlength="12" autocomplete="new-password" required>
                 </div>
-                <button type="submit" id="btnSubmitPassword" class="btn-primary">
+                <button type="submit" id="btnSubmitPassword" class="btn-primary btn-block">
                   <i class="fa-solid fa-lock"></i> Actualizar Contraseña
                 </button>
               </form>
@@ -392,19 +407,22 @@
 
             <!-- Copias de Seguridad JSON -->
             <div class="admin-card">
-              <h3 class="card-title"><i class="fa-solid fa-file-export"></i> Copias de Seguridad</h3>
-              <p style="font-size: 0.88rem; color: var(--admin-muted); margin-bottom: 14px;">
-                Descargá una copia de todos los datos en archivo JSON o restaurá un archivo guardado previamente.
+              <div class="card-title-row">
+                <i class="fa-solid fa-database card-title-icon"></i>
+                <h3 class="card-title">Copias de Seguridad</h3>
+              </div>
+              <p style="font-size: 0.84rem; color: var(--admin-muted); margin-bottom: 14px;">
+                Descargá una copia de todos los textos y trabajos o restaurá un archivo guardado previamente.
               </p>
-              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                <button type="button" id="btnExportJson" class="btn-secondary">
-                  <i class="fa-solid fa-download"></i> Descargar Copia de Seguridad (JSON)
+              <div class="backup-actions-stack">
+                <button type="button" id="btnExportJson" class="btn-secondary btn-block">
+                  <i class="fa-solid fa-download"></i> Descargar Copia (JSON)
                 </button>
-                <label class="btn-secondary" style="cursor: pointer;">
+                <label class="btn-secondary btn-block" style="cursor: pointer; text-align: center; display: block;">
                   <i class="fa-solid fa-upload"></i> Restaurar Copia (JSON)
                   <input type="file" id="fileImportJson" accept=".json" style="display: none;">
                 </label>
-                <button type="button" id="btnResetDefaults" class="btn-secondary btn-danger">
+                <button type="button" id="btnResetDefaults" class="btn-secondary btn-danger btn-block">
                   <i class="fa-solid fa-rotate-left"></i> Restaurar Valores de Fábrica
                 </button>
               </div>
@@ -417,21 +435,22 @@
   </div>
 
   <!-- ==========================================================================
-       MODAL DE EDICIÓN / CREACIÓN DE ITEM DE GALERÍA
+       MODAL DE EDICIÓN / CREACIÓN DE ITEM DE GALERÍA (100% RESPONSIVE)
        ========================================================================== -->
-  <div id="itemModal" class="admin-modal">
+  <div id="itemModal" class="admin-modal" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
     <div class="modal-content-card">
       <div class="modal-header">
         <h3 id="itemModalTitle" class="modal-title">Editar Trabajo</h3>
-        <button id="btnItemModalClose" class="modal-close">&times;</button>
+        <button id="btnItemModalClose" class="modal-close" aria-label="Cerrar ventana">&times;</button>
       </div>
 
-      <form id="itemForm">
+      <form id="itemForm" class="modal-form">
         <input type="hidden" id="itemEditId">
 
-        <div class="form-grid">
+        <div class="form-grid grid-2">
           <div class="form-field">
-            <label class="form-label" for="itemTitle">Título del Evento / Trabajo</label>
+            <label class="form-label" for="itemTitle">Título del Trabajo / Evento</label>
             <input type="text" id="itemTitle" class="form-input" placeholder="Ej: Carnavales 2026" required>
           </div>
           <div class="form-field">
@@ -440,9 +459,9 @@
           </div>
         </div>
 
-        <div class="form-grid" style="margin-top: 14px;">
+        <div class="form-grid grid-2" style="margin-top: 10px;">
           <div class="form-field">
-            <label class="form-label" for="itemCategory">Filtros de Categoría</label>
+            <label class="form-label" for="itemCategory">Filtro de Categoría</label>
             <select id="itemCategory" class="form-select" required>
               <option value="festivales">Festivales & Fiestas</option>
               <option value="tecnica">Montaje & Técnica</option>
@@ -455,63 +474,62 @@
             </select>
           </div>
           <div class="form-field">
-            <label class="form-label" for="itemCategoryName">Nombre visible de la categoría</label>
+            <label class="form-label" for="itemCategoryName">Nombre visible categoría</label>
             <input type="text" id="itemCategoryName" class="form-input" placeholder="Ej: Festivales & Montaje">
           </div>
         </div>
 
-        <div class="form-field" style="margin-top: 14px;">
+        <div class="form-field" style="margin-top: 10px;">
           <label class="form-label" for="itemImg">Ruta o URL de la Imagen</label>
           <input type="text" id="itemImg" class="form-input" placeholder="assets/gallery/ejemplo.webp o https://..." required>
-          <span class="form-hint">Podés usar imágenes de la carpeta assets/gallery/ o cualquier URL externa HTTPS.</span>
         </div>
 
-        <div class="form-field" style="margin-top: 14px;">
-          <label class="form-label" for="itemLink">Enlace a Instagram (Publicación / Reel / Historia)</label>
+        <div class="form-field" style="margin-top: 10px;">
+          <label class="form-label" for="itemLink">Enlace a Instagram (Publicación / Reel)</label>
           <input type="url" id="itemLink" class="form-input" placeholder="https://www.instagram.com/p/..." required>
         </div>
 
-        <div class="form-grid" style="margin-top: 14px;">
+        <div class="form-grid grid-2" style="margin-top: 10px;">
           <div class="form-field">
-            <label class="form-label" for="itemBadgeText">Texto del Badge</label>
-            <input type="text" id="itemBadgeText" class="form-input" placeholder="Ej: Estructura, Escenario, Gastronomía">
+            <label class="form-label" for="itemBadgeText">Texto de Etiqueta (Badge)</label>
+            <input type="text" id="itemBadgeText" class="form-input" placeholder="Ej: Escenario, Estructura">
           </div>
           <div class="form-field">
-            <label class="form-label" for="itemBadgeIcon">Ícono FontAwesome</label>
+            <label class="form-label" for="itemBadgeIcon">Ícono</label>
             <select id="itemBadgeIcon" class="form-select">
-              <option value="fa-layer-group">Estructura (fa-layer-group)</option>
-              <option value="fa-tv">Escenario / Pantallas (fa-tv)</option>
-              <option value="fa-chair">Predio / Plateas (fa-chair)</option>
-              <option value="fa-music">Shows / Música (fa-music)</option>
-              <option value="fa-utensils">Gastronomía (fa-utensils)</option>
-              <option value="fa-beer-mug-empty">Bebidas (fa-beer-mug-empty)</option>
-              <option value="fa-masks-theater">Carnaval (fa-masks-theater)</option>
-              <option value="fa-location-dot">Ubicación (fa-location-dot)</option>
-              <option value="fa-microphone">Micrófono (fa-microphone)</option>
-              <option value="fa-guitar">Guitarra (fa-guitar)</option>
-              <option value="fa-bolt">Rayo / Sonido (fa-bolt)</option>
-              <option value="fa-star">Estrella (fa-star)</option>
-              <option value="fa-camera">General (fa-camera)</option>
+              <option value="fa-layer-group">Estructura</option>
+              <option value="fa-tv">Escenario / Pantallas</option>
+              <option value="fa-chair">Predio / Plateas</option>
+              <option value="fa-music">Shows / Música</option>
+              <option value="fa-utensils">Gastronomía</option>
+              <option value="fa-beer-mug-empty">Bebidas</option>
+              <option value="fa-masks-theater">Carnaval</option>
+              <option value="fa-location-dot">Ubicación</option>
+              <option value="fa-microphone">Micrófono</option>
+              <option value="fa-guitar">Guitarra</option>
+              <option value="fa-bolt">Rayo / Sonido</option>
+              <option value="fa-star">Estrella</option>
+              <option value="fa-camera">Cámara / General</option>
             </select>
           </div>
         </div>
 
-        <div class="form-field" style="margin-top: 14px;">
-          <label class="form-label" for="itemSpan">Formato y Proporción en el Mural</label>
-          <select id="itemSpan" class="form-select">
-            <option value="mural-standard">Estándar (3 columnas x 2 filas)</option>
-            <option value="mural-hero">Hero Destacado Grande (5 columnas x 3 filas)</option>
-            <option value="mural-wide">Panorámico Horizontal (4 columnas x 2 filas)</option>
-            <option value="mural-tall">Vertical Alto (3 columnas x 3 filas)</option>
-          </select>
-          <span class="form-hint">Ajusta cómo encaja visualmente la fotografía en el mosaico de pared de la portada.</span>
-        </div>
-
-        <div class="form-field" style="margin-top: 16px;">
-          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 700; color: var(--admin-navy);">
-            <input type="checkbox" id="itemIsReel" style="width: 18px; height: 18px; accent-color: #DC2743;">
-            <span><i class="fa-solid fa-play" style="color: #DC2743;"></i> Es un Video / Reel de Instagram (muestra etiqueta roja)</span>
-          </label>
+        <div class="form-grid grid-2" style="margin-top: 10px; align-items: center;">
+          <div class="form-field">
+            <label class="form-label" for="itemSpan">Formato en Mural</label>
+            <select id="itemSpan" class="form-select">
+              <option value="mural-standard">Estándar (3 col x 2 filas)</option>
+              <option value="mural-hero">Hero Destacado (5 col x 3 filas)</option>
+              <option value="mural-wide">Horizontal Panorámico (4 col x 2 filas)</option>
+              <option value="mural-tall">Vertical Alto (3 col x 3 filas)</option>
+            </select>
+          </div>
+          <div class="form-field checkbox-field" style="margin-top: 18px;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="itemIsReel" class="checkbox-input">
+              <span><i class="fa-solid fa-play color-reel"></i> Es un Reel / Video</span>
+            </label>
+          </div>
         </div>
 
         <div class="modal-footer">
@@ -524,7 +542,7 @@
 
   <!-- Toast Notification -->
   <div id="adminToast" class="admin-toast">
-    <i class="fa-solid fa-circle-check" style="color: #10B981; font-size: 1.2rem;"></i>
+    <i class="fa-solid fa-circle-check" style="color: #10B981;"></i>
     <span id="adminToastMsg">¡Cambios guardados con éxito!</span>
   </div>
 
