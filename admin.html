@@ -45,7 +45,7 @@
       <p class="login-subtitle">Ingresá la contraseña de administración para gestionar el sitio web de FAG Eventos.</p>
 
       <!-- Alerta de Bloqueo Anti-Fuerza Bruta -->
-      <div id="loginLockoutBanner" class="login-lockout-banner" style="display: none;" role="alert">
+      <div id="loginLockoutBanner" class="login-lockout-banner is-hidden" role="alert">
         <i class="fa-solid fa-shield-halved"></i>
         <div class="lockout-text">
           <strong>Acceso Bloqueado</strong>
@@ -64,7 +64,7 @@
           </button>
         </div>
 
-        <div id="loginAttemptsWarn" class="login-attempts-warn" style="display: none;"></div>
+        <div id="loginAttemptsWarn" class="login-attempts-warn is-hidden"></div>
 
         <button type="submit" id="btnLoginSubmit" class="btn-login">
           <span>Ingresar al Panel</span>
@@ -84,7 +84,7 @@
   <!-- ==========================================================================
        DASHBOARD ADMINISTRATIVO
        ========================================================================== -->
-  <div id="adminDashboard" class="admin-dashboard" style="display: none;">
+  <div id="adminDashboard" class="admin-dashboard is-hidden">
     
     <!-- Header Decente y Minimalista -->
     <header class="admin-header">
@@ -203,7 +203,7 @@
                     <input type="text" id="stat1Prefix" class="form-input" placeholder="+">
                   </div>
                 </div>
-                <div class="form-grid grid-2" style="margin-top: 8px;">
+                <div class="form-grid grid-2 mt-8">
                   <div class="form-field">
                     <label class="form-label" for="stat1Label1">Línea 1</label>
                     <input type="text" id="stat1Label1" class="form-input" placeholder="Años de">
@@ -228,7 +228,7 @@
                     <input type="text" id="stat2Prefix" class="form-input" placeholder="+">
                   </div>
                 </div>
-                <div class="form-grid grid-2" style="margin-top: 8px;">
+                <div class="form-grid grid-2 mt-8">
                   <div class="form-field">
                     <label class="form-label" for="stat2Label1">Línea 1</label>
                     <input type="text" id="stat2Label1" class="form-input" placeholder="Países con">
@@ -253,7 +253,7 @@
                     <input type="text" id="stat3Suffix" class="form-input" placeholder="%">
                   </div>
                 </div>
-                <div class="form-grid grid-2" style="margin-top: 8px;">
+                <div class="form-grid grid-2 mt-8">
                   <div class="form-field">
                     <label class="form-label" for="stat3Label1">Línea 1</label>
                     <input type="text" id="stat3Label1" class="form-input" placeholder="Gestión Propia">
@@ -300,18 +300,18 @@
               </div>
             </div>
 
-            <div class="form-field" style="margin-top: 12px;">
+            <div class="form-field mt-12">
               <label class="form-label" for="inputWhatsappMsg">Mensaje predeterminado de consulta</label>
               <textarea id="inputWhatsappMsg" class="form-textarea" rows="2" placeholder="¡Hola FAG Eventos! Me comunico desde la web..."></textarea>
             </div>
 
-            <div class="card-inline-action" style="margin-top: 10px;">
+            <div class="card-inline-action mt-10">
               <button type="button" id="btnTestWa" class="btn-secondary btn-sm">
                 <i class="fa-brands fa-whatsapp color-wa"></i> Probar enlace WhatsApp
               </button>
             </div>
 
-            <div class="form-field" style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--admin-border);">
+            <div class="form-field form-field-divided">
               <label class="form-label" for="inputEmail">Correo Electrónico Institucional</label>
               <input type="email" id="inputEmail" class="form-input" placeholder="fgigena@gmail.com">
             </div>
@@ -334,7 +334,7 @@
               </div>
             </div>
 
-            <div class="form-grid grid-2" style="margin-top: 12px;">
+            <div class="form-grid grid-2 mt-12">
               <div class="form-field">
                 <label class="form-label" for="inputInstagramFer">Instagram Fernando Gigena</label>
                 <input type="url" id="inputInstagramFer" class="form-input" placeholder="https://www.instagram.com/fergigena/">
@@ -387,15 +387,15 @@
                 <h3 class="card-title">Cambiar Contraseña</h3>
               </div>
               <form id="formChangePassword">
-                <div class="form-field" style="margin-bottom: 10px;">
+                <div class="form-field mb-10">
                   <label class="form-label" for="inputCurrentPassword">Contraseña Actual</label>
                   <input type="password" id="inputCurrentPassword" class="form-input" autocomplete="current-password" required>
                 </div>
-                <div class="form-field" style="margin-bottom: 10px;">
+                <div class="form-field mb-10">
                   <label class="form-label" for="inputNewPassword">Nueva Contraseña (mínimo 12 caracteres)</label>
                   <input type="password" id="inputNewPassword" class="form-input" minlength="12" autocomplete="new-password" required>
                 </div>
-                <div class="form-field" style="margin-bottom: 14px;">
+                <div class="form-field mb-14">
                   <label class="form-label" for="inputConfirmPassword">Confirmar Nueva Contraseña</label>
                   <input type="password" id="inputConfirmPassword" class="form-input" minlength="12" autocomplete="new-password" required>
                 </div>
@@ -411,16 +411,16 @@
                 <i class="fa-solid fa-database card-title-icon"></i>
                 <h3 class="card-title">Copias de Seguridad</h3>
               </div>
-              <p style="font-size: 0.84rem; color: var(--admin-muted); margin-bottom: 14px;">
+              <p class="backup-card-desc">
                 Descargá una copia de todos los textos y trabajos o restaurá un archivo guardado previamente.
               </p>
               <div class="backup-actions-stack">
                 <button type="button" id="btnExportJson" class="btn-secondary btn-block">
                   <i class="fa-solid fa-download"></i> Descargar Copia (JSON)
                 </button>
-                <label class="btn-secondary btn-block" style="cursor: pointer; text-align: center; display: block;">
+                <label class="btn-secondary btn-block label-file-import">
                   <i class="fa-solid fa-upload"></i> Restaurar Copia (JSON)
-                  <input type="file" id="fileImportJson" accept=".json" style="display: none;">
+                  <input type="file" id="fileImportJson" accept=".json" class="input-file-hidden">
                 </label>
                 <button type="button" id="btnResetDefaults" class="btn-secondary btn-danger btn-block">
                   <i class="fa-solid fa-rotate-left"></i> Restaurar Valores de Fábrica
@@ -459,7 +459,7 @@
           </div>
         </div>
 
-        <div class="form-grid grid-2" style="margin-top: 10px;">
+        <div class="form-grid grid-2 mt-10">
           <div class="form-field">
             <label class="form-label" for="itemCategory">Filtro de Categoría</label>
             <select id="itemCategory" class="form-select" required>
@@ -479,17 +479,17 @@
           </div>
         </div>
 
-        <div class="form-field" style="margin-top: 10px;">
+        <div class="form-field mt-10">
           <label class="form-label" for="itemImg">Ruta o URL de la Imagen</label>
           <input type="text" id="itemImg" class="form-input" placeholder="assets/gallery/ejemplo.webp o https://..." required>
         </div>
 
-        <div class="form-field" style="margin-top: 10px;">
+        <div class="form-field mt-10">
           <label class="form-label" for="itemLink">Enlace a Instagram (Publicación / Reel)</label>
           <input type="url" id="itemLink" class="form-input" placeholder="https://www.instagram.com/p/..." required>
         </div>
 
-        <div class="form-grid grid-2" style="margin-top: 10px;">
+        <div class="form-grid grid-2 mt-10">
           <div class="form-field">
             <label class="form-label" for="itemBadgeText">Texto de Etiqueta (Badge)</label>
             <input type="text" id="itemBadgeText" class="form-input" placeholder="Ej: Escenario, Estructura">
@@ -514,7 +514,7 @@
           </div>
         </div>
 
-        <div class="form-grid grid-2" style="margin-top: 10px; align-items: center;">
+        <div class="form-grid grid-2 form-grid-aligned">
           <div class="form-field">
             <label class="form-label" for="itemSpan">Formato en Mural</label>
             <select id="itemSpan" class="form-select">
@@ -524,7 +524,7 @@
               <option value="mural-tall">Vertical Alto (3 col x 3 filas)</option>
             </select>
           </div>
-          <div class="form-field checkbox-field" style="margin-top: 18px;">
+          <div class="form-field checkbox-field mt-18">
             <label class="checkbox-label">
               <input type="checkbox" id="itemIsReel" class="checkbox-input">
               <span><i class="fa-solid fa-play color-reel"></i> Es un Reel / Video</span>
@@ -542,7 +542,7 @@
 
   <!-- Toast Notification -->
   <div id="adminToast" class="admin-toast">
-    <i class="fa-solid fa-circle-check" style="color: #10B981;"></i>
+    <i class="fa-solid fa-circle-check text-success"></i>
     <span id="adminToastMsg">¡Cambios guardados con éxito!</span>
   </div>
 

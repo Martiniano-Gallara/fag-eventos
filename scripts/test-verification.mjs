@@ -4,6 +4,7 @@ import loginHandler from '../api/login.js';
 import logoutHandler from '../api/logout.js';
 import sessionHandler from '../api/session.js';
 import changePasswordHandler from '../api/change-password.js';
+import cspReportHandler from '../api/csp-report.js';
 import * as dbModule from '../api/_lib/db.js';
 
 process.env.SESSION_SECRET = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
@@ -411,6 +412,33 @@ async function runTests() {
     if (res.statusCode !== 500 || res.body?.error !== 'Error interno.' || leaked) {
       throw new Error('Test 13 failed');
     }
+  }
+
+  // Test 14: Receptor de reportes CSP (/api/csp-report)
+  {
+    // 14a: Rechazar métodos no POST
+    const { req: reqGet, res: resGet } = createMockReqRes({ method: 'GET' });
+    await cspReportHandler(reqGet, resGet);
+    console.log(`Test 14a - CSP report GET -> status: ${resGet.statusCode} (expected 405)`);
+    if (resGet.statusCode !== 405) throw new Error('Test 14a failed');
+
+    // 14b: Aceptar reporte POST válido
+    const mockReport = {
+      'csp-report': {
+        'document-uri': 'https://fag-eventos.vercel.app/',
+        'violated-directive': "script-src 'self'",
+        'blocked-uri': 'http://evil.com/xss.js',
+        'disposition': 'report'
+      }
+    };
+    const { req: reqPost, res: resPost } = createMockReqRes({
+      method: 'POST',
+      headers: { 'content-type': 'application/csp-report' },
+      body: mockReport
+    });
+    await cspReportHandler(reqPost, resPost);
+    console.log(`Test 14b - CSP report POST -> status: ${resPost.statusCode} (expected 204)`);
+    if (resPost.statusCode !== 204) throw new Error('Test 14b failed');
   }
 
   console.log('--- ALL VERIFICATION TESTS COMPLETED SUCCESSFULLY! ---');

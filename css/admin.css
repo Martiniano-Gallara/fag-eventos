@@ -1186,3 +1186,82 @@ html, body {
     transform: translate(50%, 0);
   }
 }
+
+/* ==========================================================================
+   CSP COMPLIANT UTILITIES (REEMPLAZO DE ESTILOS INLINE)
+   ========================================================================== */
+.is-hidden {
+  display: none !important;
+}
+
+.mt-8 {
+  margin-top: 8px !important;
+}
+
+.mt-10 {
+  margin-top: 10px !important;
+}
+
+.mt-12 {
+  margin-top: 12px !important;
+}
+
+.mt-18 {
+  margin-top: 18px !important;
+}
+
+.mb-10 {
+  margin-bottom: 10px !important;
+}
+
+.mb-14 {
+  margin-bottom: 14px !important;
+}
+
+.form-field-divided {
+  margin-top: 14px !important;
+  padding-top: 14px !important;
+  border-top: 1px solid var(--admin-border) !important;
+}
+
+.backup-card-desc {
+  font-size: 0.84rem;
+  color: var(--admin-muted);
+  margin-bottom: 14px;
+}
+
+.label-file-import {
+  cursor: pointer;
+  text-align: center;
+  display: block;
+}
+
+.input-file-hidden {
+  display: none !important;
+}
+
+.form-grid-aligned {
+  margin-top: 10px;
+  align-items: center;
+}
+
+.text-success {
+  color: #10B981 !important;
+}
+
+.admin-gallery-empty {
+  color: var(--admin-muted);
+  padding: 24px;
+  text-align: center;
+  grid-column: 1 / -1;
+}
+
+.admin-card-action-group {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-toast.toast-danger {
+  background: var(--admin-danger) !important;
+}
+

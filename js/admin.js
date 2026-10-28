@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const showToast = (message, isError = false) => {
     if (adminToastMsg) adminToastMsg.textContent = message;
     if (adminToast) {
-      adminToast.style.background = isError ? 'var(--admin-danger)' : 'var(--admin-dark)';
+      adminToast.classList.toggle('toast-danger', isError);
       adminToast.classList.add('show');
       setTimeout(() => {
         adminToast.classList.remove('show');
@@ -135,12 +135,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const showLoginScreen = () => {
+    if (loginScreen) loginScreen.classList.remove('is-hidden');
+    if (adminDashboard) adminDashboard.classList.add('is-hidden');
+  };
+
+  const showDashboard = () => {
+    if (loginScreen) loginScreen.classList.add('is-hidden');
+    if (adminDashboard) adminDashboard.classList.remove('is-hidden');
+  };
+
   // --- MANEJO DE BLOQUEO POR RATE LIMITING (SERVIDOR) ---
   const handleLockout = (retryAfterSeconds) => {
     if (lockoutInterval) clearInterval(lockoutInterval);
     let remaining = Math.max(1, Math.ceil(retryAfterSeconds));
 
-    if (loginLockoutBanner) loginLockoutBanner.style.display = 'flex';
+    if (loginLockoutBanner) loginLockoutBanner.classList.remove('is-hidden');
     if (pinInput) pinInput.disabled = true;
     if (btnLoginSubmit) btnLoginSubmit.disabled = true;
 
@@ -154,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (remaining <= 0) {
         clearInterval(lockoutInterval);
         lockoutInterval = null;
-        if (loginLockoutBanner) loginLockoutBanner.style.display = 'none';
+        if (loginLockoutBanner) loginLockoutBanner.classList.add('is-hidden');
         if (pinInput) {
           pinInput.disabled = false;
           pinInput.focus();
@@ -177,8 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
     } catch {}
-    loginScreen.style.display = 'flex';
-    adminDashboard.style.display = 'none';
+    showLoginScreen();
     if (pinInput) {
       pinInput.value = '';
       pinInput.focus();
@@ -208,8 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.ok && data.authenticated) {
         // Cargar SIEMPRE datos de la nube antes de llenar formularios y renderizar
         await store.fetchFromCloud();
-        loginScreen.style.display = 'none';
-        adminDashboard.style.display = 'flex';
+        showDashboard();
         populateAllFields();
         renderGalleryAdmin();
         setUnsavedChanges(false);
@@ -220,8 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.warn("FagAdmin: Error al verificar sesión.", e);
     }
 
-    loginScreen.style.display = 'flex';
-    adminDashboard.style.display = 'none';
+    showLoginScreen();
     if (pinInput) pinInput.focus();
   };
 
@@ -259,10 +266,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (res.status === 200 && json.status === 'success') {
           pinInput.value = '';
-          if (loginLockoutBanner) loginLockoutBanner.style.display = 'none';
+          if (loginLockoutBanner) loginLockoutBanner.classList.add('is-hidden');
           await store.fetchFromCloud();
-          loginScreen.style.display = 'none';
-          adminDashboard.style.display = 'flex';
+          showDashboard();
           populateAllFields();
           renderGalleryAdmin();
           setUnsavedChanges(false);
@@ -286,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (err) {
         showToast("Error de conexión al iniciar sesión.", true);
       } finally {
-        if (!loginLockoutBanner || loginLockoutBanner.style.display === 'none') {
+        if (!loginLockoutBanner || loginLockoutBanner.classList.contains('is-hidden')) {
           if (btnLoginSubmit) btnLoginSubmit.disabled = false;
         }
       }
@@ -538,8 +544,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (err.message === 'SESSION_EXPIRED') {
           showToast("Tu sesión ha expirado. Por favor ingresá nuevamente.", true);
-          loginScreen.style.display = 'flex';
-          adminDashboard.style.display = 'none';
+          showLoginScreen();
         } else if (err.message === 'CONFLICT') {
           const reload = confirm("El contenido fue modificado desde otra sesión. ¿Deseas recargar la versión más reciente del servidor? (Los cambios no guardados se perderán)");
           if (reload) {
@@ -564,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const items = store.getData().gallery || [];
     if (items.length === 0) {
       const p = document.createElement('p');
-      p.style.cssText = 'color: var(--admin-muted); padding: 24px; text-align: center; grid-column: 1 / -1;';
+      p.className = 'admin-gallery-empty';
       p.textContent = 'No hay elementos en la galería. Creá el primero con el botón superior.';
       galleryAdminList.replaceChildren(p);
       return;
@@ -665,7 +670,6 @@ document.addEventListener('DOMContentLoaded', () => {
       btnUp.title = 'Subir';
       if (index === 0) {
         btnUp.disabled = true;
-        btnUp.style.opacity = '0.4';
       }
       const iUp = document.createElement('i');
       iUp.className = 'fa-solid fa-arrow-up';
@@ -679,7 +683,6 @@ document.addEventListener('DOMContentLoaded', () => {
       btnDown.title = 'Bajar';
       if (index === items.length - 1) {
         btnDown.disabled = true;
-        btnDown.style.opacity = '0.4';
       }
       const iDown = document.createElement('i');
       iDown.className = 'fa-solid fa-arrow-down';
@@ -689,8 +692,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actions.appendChild(orderGroup);
 
       const editDeleteGroup = document.createElement('div');
-      editDeleteGroup.style.display = 'flex';
-      editDeleteGroup.style.gap = '6px';
+      editDeleteGroup.className = 'admin-card-action-group';
 
       const btnEdit = document.createElement('button');
       btnEdit.type = 'button';
@@ -927,8 +929,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res.status === 200 && json.status === 'success') {
           showToast(json.message || "Contraseña actualizada. Iniciá sesión nuevamente.");
           formChangePassword.reset();
-          loginScreen.style.display = 'flex';
-          adminDashboard.style.display = 'none';
+          showLoginScreen();
           if (pinInput) {
             pinInput.value = '';
             pinInput.focus();

@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mobileDrawer.classList.add('active');
       drawerBackdrop.classList.add('active');
       if (mobileDrawerOpen) mobileDrawerOpen.classList.add('active');
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add('overflow-hidden');
     }
   };
 
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mobileDrawer.classList.remove('active');
       drawerBackdrop.classList.remove('active');
       if (mobileDrawerOpen) mobileDrawerOpen.classList.remove('active');
-      document.body.style.overflow = '';
+      document.body.classList.remove('overflow-hidden');
     }
   };
 
@@ -201,17 +201,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const isMatch = filterValue === 'all' || categories.includes(filterValue.toLowerCase());
 
       if (isMatch) {
-        item.style.display = 'block';
+        item.classList.remove('filtered-hidden');
         const t = setTimeout(() => {
-          item.style.opacity = '1';
-          item.style.transform = 'translateY(0) scale(1)';
+          item.classList.remove('filtering-out');
         }, 20);
         galleryFilterTimeouts.set(item, t);
       } else {
-        item.style.opacity = '0';
-        item.style.transform = 'translateY(20px) scale(0.95)';
+        item.classList.add('filtering-out');
         const t = setTimeout(() => {
-          item.style.display = 'none';
+          item.classList.add('filtered-hidden');
         }, 220);
         galleryFilterTimeouts.set(item, t);
       }
@@ -239,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const lightboxIgText = document.getElementById('lightboxIgText');
 
   let currentGalleryIndex = 0;
-  const getVisibleGalleryItems = () => Array.from(document.querySelectorAll('.gallery-item')).filter(i => i.style.display !== 'none');
+  const getVisibleGalleryItems = () => Array.from(document.querySelectorAll('.gallery-item')).filter(i => !i.classList.contains('filtered-hidden'));
 
   const updateLightboxContent = (index) => {
     const items = getVisibleGalleryItems();
@@ -284,13 +282,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!lightbox) return;
     updateLightboxContent(index);
     lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    document.body.classList.add('overflow-hidden');
   };
 
   const closeLightbox = () => {
     if (!lightbox) return;
     lightbox.classList.remove('active');
-    document.body.style.overflow = '';
+    document.body.classList.remove('overflow-hidden');
   };
 
   function bindGalleryLightbox() {
@@ -333,17 +331,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (directorChips.length && directorModal) {
     const openDirectorModal = (directorId) => {
-      if (profileFernando) profileFernando.style.display = directorId === 'fernando-gigena' ? 'block' : 'none';
-      if (profileFederico) profileFederico.style.display = directorId === 'federico-pellizzon' ? 'block' : 'none';
+      if (profileFernando) profileFernando.classList.toggle('is-hidden', directorId !== 'fernando-gigena');
+      if (profileFederico) profileFederico.classList.toggle('is-hidden', directorId !== 'federico-pellizzon');
       directorModal.classList.add('active');
       directorModal.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add('overflow-hidden');
     };
 
     const closeDirectorModal = () => {
       directorModal.classList.remove('active');
       directorModal.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = '';
+      document.body.classList.remove('overflow-hidden');
     };
 
     directorChips.forEach(chip => {
