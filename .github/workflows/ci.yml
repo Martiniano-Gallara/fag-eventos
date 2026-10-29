@@ -38,64 +38,64 @@ jobs:
 
       - name: "Health: /api/data devuelve status success o empty"
         run: |
-          STATUS=$(curl -sf https://fag-eventos.vercel.app/api/data | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status',''))")
+          STATUS=$(curl -sf https://www.fageventos.com/api/data | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status',''))")
           echo "api/data status: $STATUS"
           [[ "$STATUS" == "success" || "$STATUS" == "empty" ]]
 
       - name: "CSP: script-src solo 'self' (sin unsafe-inline)"
         run: |
-          HEADER=$(curl -sI https://fag-eventos.vercel.app | tr -d '\r' | grep -i content-security-policy)
+          HEADER=$(curl -sI https://www.fageventos.com | tr -d '\r' | grep -i content-security-policy)
           echo "$HEADER"
           echo "$HEADER" | grep -q "script-src 'self'"
           echo "$HEADER" | grep -qv "unsafe-inline" || (echo "FAIL: unsafe-inline presente en CSP" && exit 1)
 
       - name: "CSP: /admin.html tiene el mismo header"
         run: |
-          HEADER=$(curl -sI https://fag-eventos.vercel.app/admin.html | tr -d '\r' | grep -i content-security-policy)
+          HEADER=$(curl -sI https://www.fageventos.com/admin.html | tr -d '\r' | grep -i content-security-policy)
           echo "$HEADER"
           echo "$HEADER" | grep -q "script-src 'self'"
 
       - name: "CSP Report: GET -> 405"
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://fag-eventos.vercel.app/api/csp-report)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://www.fageventos.com/api/csp-report)
           echo "GET /api/csp-report -> $STATUS"
           [ "$STATUS" = "405" ]
 
       - name: "CSP Report: POST -> 204"
         run: |
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-            https://fag-eventos.vercel.app/api/csp-report \
+            https://www.fageventos.com/api/csp-report \
             -H "Content-Type: application/csp-report" \
-            -d '{"csp-report":{"document-uri":"https://fag-eventos.vercel.app/","violated-directive":"script-src","blocked-uri":"https://ci.test/evil.js"}}')
+            -d '{"csp-report":{"document-uri":"https://www.fageventos.com/","violated-directive":"script-src","blocked-uri":"https://ci.test/evil.js"}}')
           echo "POST /api/csp-report -> $STATUS"
           [ "$STATUS" = "204" ]
 
       - name: "Headers: HSTS presente"
         run: |
-          curl -sI https://fag-eventos.vercel.app | tr -d '\r' | grep -i strict-transport-security | grep -q "max-age"
+          curl -sI https://www.fageventos.com | tr -d '\r' | grep -i strict-transport-security | grep -q "max-age"
 
       - name: "Headers: X-Frame-Options DENY"
         run: |
-          curl -sI https://fag-eventos.vercel.app | tr -d '\r' | grep -i x-frame-options | grep -q -i "deny"
+          curl -sI https://www.fageventos.com | tr -d '\r' | grep -i x-frame-options | grep -q -i "deny"
 
       - name: "Headers: nosniff"
         run: |
-          curl -sI https://fag-eventos.vercel.app | tr -d '\r' | grep -i x-content-type-options | grep -q "nosniff"
+          curl -sI https://www.fageventos.com | tr -d '\r' | grep -i x-content-type-options | grep -q "nosniff"
 
       - name: "admin.html: Cache-Control no-store"
         run: |
-          curl -sI https://fag-eventos.vercel.app/admin.html | tr -d '\r' | grep -i cache-control | grep -q "no-store"
+          curl -sI https://www.fageventos.com/admin.html | tr -d '\r' | grep -i cache-control | grep -q "no-store"
 
       - name: "Session: /api/session devuelve authenticated false sin cookie"
         run: |
-          BODY=$(curl -sf https://fag-eventos.vercel.app/api/session)
+          BODY=$(curl -sf https://www.fageventos.com/api/session)
           echo "session body: $BODY"
           echo "$BODY" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d.get('authenticated')==False, 'expected false'"
 
       - name: "Login: POST con credencial incorrecta devuelve 401"
         run: |
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-            https://fag-eventos.vercel.app/api/login \
+            https://www.fageventos.com/api/login \
             -H "Content-Type: application/json" \
             -d '{"password":"smoke-test-wrong-pw-ci"}')
           echo "login with wrong pw -> $STATUS"

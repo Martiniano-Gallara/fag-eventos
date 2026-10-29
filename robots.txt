@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin.html
 Disallow: /api/
 
-Sitemap: https://fag-eventos.vercel.app/sitemap.xml
+Sitemap: https://www.fageventos.com/sitemap.xml

@@ -1,7 +1,8 @@
 # FAG Eventos — Documentación de Entrega
 
-> **Producción:** https://fag-eventos.vercel.app  
-> **Panel de administración:** https://fag-eventos.vercel.app/admin.html  
+> **Producción:** https://www.fageventos.com  
+> **Panel de administración:** https://www.fageventos.com/admin.html  
+> **Dominio alternativo (Vercel):** https://fag-eventos.vercel.app  
 > **Repositorio:** https://github.com/Martiniano-Gallara/fag-eventos
 
 ---
