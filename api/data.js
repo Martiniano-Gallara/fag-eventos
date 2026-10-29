@@ -51,8 +51,8 @@ export default async function handler(req, res) {
 
       let body = req.body;
       if (typeof body === 'string') {
-        if (Buffer.byteLength(body, 'utf8') > 100 * 1024) {
-          return res.status(400).json({ error: 'El tamaño de la solicitud excede los 100 KB.' });
+        if (Buffer.byteLength(body, 'utf8') > 4.5 * 1024 * 1024) {
+          return res.status(400).json({ error: 'El tamaño de la solicitud excede los 4.5 MB.' });
         }
         try {
           body = JSON.parse(body);
@@ -61,8 +61,8 @@ export default async function handler(req, res) {
         }
       } else if (body && typeof body === 'object') {
         const serialized = JSON.stringify(body);
-        if (Buffer.byteLength(serialized, 'utf8') > 100 * 1024) {
-          return res.status(400).json({ error: 'El tamaño de la solicitud excede los 100 KB.' });
+        if (Buffer.byteLength(serialized, 'utf8') > 4.5 * 1024 * 1024) {
+          return res.status(400).json({ error: 'El tamaño de la solicitud excede los 4.5 MB.' });
         }
       } else {
         return res.status(400).json({ error: 'Cuerpo de solicitud inválido.' });

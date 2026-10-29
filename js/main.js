@@ -189,7 +189,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const galleryFilterTimeouts = new Map();
 
   const handleGalleryFilter = (filterValue) => {
+    const galleryGrid = document.getElementById('galleryGrid');
     const galleryItems = document.querySelectorAll('.gallery-item');
+    let visibleCount = 0;
+
     galleryItems.forEach(item => {
       if (galleryFilterTimeouts.has(item)) {
         clearTimeout(galleryFilterTimeouts.get(item));
@@ -201,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isMatch = filterValue === 'all' || categories.includes(filterValue.toLowerCase());
 
       if (isMatch) {
+        visibleCount++;
         item.classList.remove('filtered-hidden');
         const t = setTimeout(() => {
           item.classList.remove('filtering-out');
@@ -214,7 +218,18 @@ document.addEventListener('DOMContentLoaded', () => {
         galleryFilterTimeouts.set(item, t);
       }
     });
+
+    if (galleryGrid) {
+      galleryGrid.dataset.visibleCount = String(visibleCount);
+    }
   };
+
+  // Inicializar contador visible
+  const initGalleryGrid = document.getElementById('galleryGrid');
+  if (initGalleryGrid) {
+    const totalVisible = initGalleryGrid.querySelectorAll('.gallery-item:not(.filtered-hidden)').length;
+    initGalleryGrid.dataset.visibleCount = String(totalVisible);
+  }
 
   filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {

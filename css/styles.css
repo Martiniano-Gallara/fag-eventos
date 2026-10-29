@@ -2728,6 +2728,70 @@ button.summary-director-chip:hover .chip-action-hint {
   }
 }
 
+/* ==========================================================================
+   ADAPTACIÓN DINÁMICA DEL MURAL SEGÚN CANTIDAD DE ITEMS ACTIVOS/VISIBLES
+   Garantiza que no queden huecos negros cuando hay pocos ítems o filtros
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .gallery-grid.mural-mosaic-grid[data-visible-count="1"] {
+    display: flex !important;
+    justify-content: center !important;
+  }
+  .gallery-grid.mural-mosaic-grid[data-visible-count="1"] .gallery-item {
+    max-width: 760px;
+    min-height: 420px;
+    width: 100%;
+  }
+
+  .gallery-grid.mural-mosaic-grid[data-visible-count="2"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: 320px !important;
+  }
+  .gallery-grid.mural-mosaic-grid[data-visible-count="2"] .gallery-item {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+
+  .gallery-grid.mural-mosaic-grid[data-visible-count="3"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-auto-rows: 280px !important;
+  }
+  .gallery-grid.mural-mosaic-grid[data-visible-count="3"] .gallery-item {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+
+  .gallery-grid.mural-mosaic-grid[data-visible-count="4"] {
+    grid-template-columns: repeat(4, 1fr) !important;
+    grid-auto-rows: 240px !important;
+  }
+  .gallery-grid.mural-mosaic-grid[data-visible-count="4"] .gallery-item {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .gallery-grid.mural-mosaic-grid[data-visible-count="1"] {
+    display: flex !important;
+    justify-content: center !important;
+  }
+  .gallery-grid.mural-mosaic-grid[data-visible-count="1"] .gallery-item {
+    max-width: 560px;
+    min-height: 340px;
+    width: 100%;
+  }
+
+  .gallery-grid.mural-mosaic-grid[data-visible-count="2"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: 260px !important;
+  }
+  .gallery-grid.mural-mosaic-grid[data-visible-count="2"] .gallery-item {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+}
+
 /* Elementos de la Galería - Efecto Blanco y Negro / Alto Contraste */
 .gallery-item {
   position: relative;

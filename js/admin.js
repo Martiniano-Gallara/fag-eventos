@@ -83,13 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const itemTitle = document.getElementById('itemTitle');
   const itemSubtitle = document.getElementById('itemSubtitle');
   const itemCategory = document.getElementById('itemCategory');
-  const itemCategoryName = document.getElementById('itemCategoryName');
-  const itemImg = document.getElementById('itemImg');
   const itemLink = document.getElementById('itemLink');
-  const itemBadgeText = document.getElementById('itemBadgeText');
-  const itemBadgeIcon = document.getElementById('itemBadgeIcon');
-  const itemIsReel = document.getElementById('itemIsReel');
-  const itemSpan = document.getElementById('itemSpan');
+  const itemImgData = document.getElementById('itemImgData');
+  const itemFileInput = document.getElementById('itemFileInput');
+  const imageUploadDropzone = document.getElementById('imageUploadDropzone');
+  const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+  const imagePreview = document.getElementById('imagePreview');
+  const imageUploadPrompt = document.getElementById('imageUploadPrompt');
+  const btnChangeImage = document.getElementById('btnChangeImage');
 
   let hasUnsavedChanges = false;
   let lockoutInterval = null;
@@ -109,21 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const setUnsavedChanges = (dirty) => {
     hasUnsavedChanges = dirty;
     if (!publishStatus) return;
-    const label = publishStatus.querySelector('.status-label');
-    const text = dirty
-      ? 'Cambios sin publicar'
-      : (store.version > 0 ? `Al día (v${store.version})` : 'Sin cambios');
-
-    if (label) {
-      label.textContent = text;
-    } else {
-      publishStatus.textContent = text;
-    }
-
     if (dirty) {
+      publishStatus.classList.remove('is-hidden');
       publishStatus.className = 'publish-status status-dirty';
+      const label = publishStatus.querySelector('.status-label');
+      if (label) label.textContent = 'Cambios sin publicar';
     } else {
-      publishStatus.className = 'publish-status status-clean';
+      publishStatus.classList.add('is-hidden');
     }
   };
 
@@ -299,17 +292,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- LOGOUT ---
+  // --- LOGOUT (CON GUARDA DE CAMBIOS PENDIENTES) ---
   if (btnLogout) {
     btnLogout.addEventListener('click', async () => {
+      if (hasUnsavedChanges) {
+        const ok = confirm("Tenés cambios pendientes sin publicar. Si cerrás sesión ahora, se perderán.\n\n¿Estás seguro de que deseás salir?");
+        if (!ok) return;
+      }
       await performLogout();
       showToast("Sesión cerrada correctamente.");
     });
   }
 
-  // --- CAMBIO DE PESTAÑAS (TABS) ---
+  // --- ENLACES EXTERNOS / VER WEB (CON GUARDA) ---
+  document.querySelectorAll('a[href="index.html"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      if (hasUnsavedChanges) {
+        const ok = confirm("Tenés cambios pendientes sin publicar.\n\n¿Deseás salir a la web pública y descartar los cambios no publicados?");
+        if (!ok) {
+          e.preventDefault();
+        }
+      }
+    });
+  });
+
+  // --- CAMBIO DE PESTAÑAS (TABS CON GUARDA DE CAMBIOS PENDIENTES) ---
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
+      if (hasUnsavedChanges) {
+        const ok = confirm("Tenés cambios pendientes sin publicar en esta sección.\n\n¿Deseás descartar los cambios y cambiar de pestaña?");
+        if (!ok) return;
+        // Revertir cambios en memoria al estado del store
+        populateAllFields();
+        renderGalleryAdmin();
+        setUnsavedChanges(false);
+      }
       const targetId = btn.getAttribute('data-tab');
       tabBtns.forEach(b => b.classList.remove('active'));
       tabPanels.forEach(p => p.classList.remove('active'));
@@ -527,12 +544,6 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const newVersion = await store.publish();
         setUnsavedChanges(false);
-        if (publishStatus) {
-          const label = publishStatus.querySelector('.status-label');
-          if (label) label.textContent = `Al día (v${newVersion})`;
-          else publishStatus.textContent = `Al día (v${newVersion})`;
-          publishStatus.className = 'publish-status status-published';
-        }
         showToast(`¡Cambios publicados en vivo con éxito! (versión ${newVersion})`);
       } catch (err) {
         if (publishStatus) {
@@ -602,25 +613,6 @@ document.addEventListener('DOMContentLoaded', () => {
         img.src = 'assets/fag-logo.png';
       }, { once: true });
       thumbWrap.appendChild(img);
-
-      const badge = document.createElement('span');
-      badge.className = 'admin-card-badge';
-      const icon = document.createElement('i');
-      const safeIcon = /^fa-[a-z0-9-]+$/.test(item.badgeIcon || '') ? item.badgeIcon : 'fa-camera';
-      icon.className = `fa-solid ${safeIcon}`;
-      badge.appendChild(icon);
-      badge.appendChild(document.createTextNode(' ' + (item.badgeText || 'Evento')));
-      thumbWrap.appendChild(badge);
-
-      if (item.isReel) {
-        const reelTag = document.createElement('span');
-        reelTag.className = 'admin-card-reel-tag';
-        const reelIcon = document.createElement('i');
-        reelIcon.className = 'fa-solid fa-play';
-        reelTag.appendChild(reelIcon);
-        reelTag.appendChild(document.createTextNode(' Reel'));
-        thumbWrap.appendChild(reelTag);
-      }
       card.appendChild(thumbWrap);
 
       // Body
@@ -646,13 +638,6 @@ document.addEventListener('DOMContentLoaded', () => {
       spanTag.appendChild(iTag);
       spanTag.appendChild(document.createTextNode(' ' + (item.categoryName || item.category || '')));
       meta.appendChild(spanTag);
-
-      const spanShape = document.createElement('span');
-      const iShape = document.createElement('i');
-      iShape.className = 'fa-solid fa-shapes';
-      spanShape.appendChild(iShape);
-      spanShape.appendChild(document.createTextNode(' ' + (spanLabels[item.span] || 'Estándar 3x2')));
-      meta.appendChild(spanShape);
 
       body.appendChild(meta);
 
@@ -783,7 +768,89 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- MODAL DE GALERÍA (AGREGAR / EDITAR) ---
+  // --- PROCESAMIENTO DE IMÁGENES DESDE EL DISPOSITIVO ---
+  const processImageFile = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast("Seleccioná un archivo de imagen válido (JPG, PNG o WebP).", true);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Redimensionar si supera 1600px para garantizar subida rápida y peso liviano
+        const MAX_DIM = 1600;
+        let width = img.width;
+        let height = img.height;
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width > height) {
+            height = Math.round((height * MAX_DIM) / width);
+            width = MAX_DIM;
+          } else {
+            width = Math.round((width * MAX_DIM) / height);
+            height = MAX_DIM;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convertir a JPEG con compresión equilibrada
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        if (itemImgData) itemImgData.value = dataUrl;
+        if (imagePreview) imagePreview.src = dataUrl;
+        if (imagePreviewContainer) imagePreviewContainer.classList.remove('is-hidden');
+        if (imageUploadPrompt) imageUploadPrompt.classList.add('is-hidden');
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  if (itemFileInput) {
+    itemFileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) processImageFile(file);
+      itemFileInput.value = '';
+    });
+  }
+
+  if (imageUploadDropzone) {
+    imageUploadDropzone.addEventListener('click', (e) => {
+      if (btnChangeImage && (e.target === btnChangeImage || btnChangeImage.contains(e.target))) {
+        return;
+      }
+      if (itemFileInput) itemFileInput.click();
+    });
+
+    imageUploadDropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      imageUploadDropzone.classList.add('drag-over');
+    });
+
+    imageUploadDropzone.addEventListener('dragleave', () => {
+      imageUploadDropzone.classList.remove('drag-over');
+    });
+
+    imageUploadDropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      imageUploadDropzone.classList.remove('drag-over');
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) processImageFile(file);
+    });
+  }
+
+  if (btnChangeImage) {
+    btnChangeImage.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (itemFileInput) itemFileInput.click();
+    });
+  }
+
+  // --- MODAL DE GALERÍA (AGREGAR / EDITAR SIMPLIFICADO) ---
   const openGalleryModal = (item = null) => {
     if (!itemModal) return;
     if (item) {
@@ -791,27 +858,52 @@ document.addEventListener('DOMContentLoaded', () => {
       if (itemEditId) itemEditId.value = item.id;
       if (itemTitle) itemTitle.value = item.title || '';
       if (itemSubtitle) itemSubtitle.value = item.subtitle || '';
-      if (itemCategory) itemCategory.value = item.category || 'festivales';
-      if (itemCategoryName) itemCategoryName.value = item.categoryName || '';
-      if (itemImg) itemImg.value = item.img || '';
-      if (itemLink) itemLink.value = item.link || '';
-      if (itemBadgeText) itemBadgeText.value = item.badgeText || '';
-      if (itemBadgeIcon) itemBadgeIcon.value = item.badgeIcon || 'fa-camera';
-      if (itemIsReel) itemIsReel.checked = Boolean(item.isReel);
-      if (itemSpan) itemSpan.value = item.span || 'mural-standard';
+
+      const allowedCats = ['festivales', 'tecnica', 'gastronomia', 'videos'];
+      let matchedCat = 'festivales';
+      if (item.category) {
+        const parts = item.category.split(/\s+/);
+        for (const p of parts) {
+          if (allowedCats.includes(p)) {
+            matchedCat = p;
+            break;
+          }
+        }
+      }
+      if (itemCategory) itemCategory.value = matchedCat;
+
+      if (itemLink) {
+        itemLink.value = (item.link && item.link !== 'https://www.instagram.com/fag.eventos/') ? item.link : '';
+      }
+
+      if (itemImgData) itemImgData.value = item.img || '';
+
+      if (item.img && imagePreview) {
+        const safeImg = store.safeUrl(item.img, { allowRelativeAssets: true }) || item.img;
+        imagePreview.src = safeImg;
+        if (imagePreviewContainer) imagePreviewContainer.classList.remove('is-hidden');
+        if (imageUploadPrompt) imageUploadPrompt.classList.add('is-hidden');
+      } else {
+        if (imagePreviewContainer) imagePreviewContainer.classList.add('is-hidden');
+        if (imageUploadPrompt) imageUploadPrompt.classList.remove('is-hidden');
+      }
     } else {
       if (itemModalTitle) itemModalTitle.textContent = "Agregar Nuevo Trabajo";
       if (itemForm) itemForm.reset();
       if (itemEditId) itemEditId.value = '';
+      if (itemImgData) itemImgData.value = '';
       if (itemCategory) itemCategory.value = 'festivales';
-      if (itemBadgeIcon) itemBadgeIcon.value = 'fa-camera';
-      if (itemSpan) itemSpan.value = 'mural-standard';
+      if (imagePreview) imagePreview.src = '';
+      if (imagePreviewContainer) imagePreviewContainer.classList.add('is-hidden');
+      if (imageUploadPrompt) imageUploadPrompt.classList.remove('is-hidden');
     }
     itemModal.classList.add('active');
+    document.body.classList.add('overflow-hidden');
   };
 
   const closeGalleryModal = () => {
     if (itemModal) itemModal.classList.remove('active');
+    document.body.classList.remove('overflow-hidden');
   };
 
   if (btnNewGalleryItem) {
@@ -823,6 +915,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalBackdrop = document.getElementById('modalBackdrop');
   if (modalBackdrop) modalBackdrop.addEventListener('click', closeGalleryModal);
 
+  // Cerrar modal al presionar Escape
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && itemModal && itemModal.classList.contains('active')) {
+      closeGalleryModal();
+    }
+  });
+
   if (itemForm) {
     itemForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -833,42 +932,54 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const rawImg = itemImg.value.trim();
-      const safeImg = store.safeUrl(rawImg, { allowRelativeAssets: true });
-      if (!safeImg) {
-        showToast("La imagen debe ser una ruta relativa válida (assets/gallery/...) o una URL HTTPS.", true);
+      const imgVal = itemImgData ? itemImgData.value.trim() : '';
+      if (!imgVal) {
+        showToast("Por favor seleccioná una foto desde tu dispositivo.", true);
         return;
       }
 
-      const rawLink = itemLink.value.trim();
-      const safeLink = store.safeUrl(rawLink);
-      let isValidInstagram = false;
-      try {
-        const u = new URL(safeLink);
-        isValidInstagram = u.protocol === 'https:' && (u.hostname === 'instagram.com' || u.hostname === 'www.instagram.com');
-      } catch {}
-
-      if (!isValidInstagram) {
-        showToast("El enlace debe ser una URL HTTPS válida de instagram.com.", true);
-        return;
+      let linkVal = itemLink ? itemLink.value.trim() : '';
+      if (!linkVal) {
+        linkVal = 'https://www.instagram.com/fag.eventos/';
+      } else {
+        try {
+          const u = new URL(linkVal);
+          if (u.protocol !== 'https:' || (!u.hostname.includes('instagram.com'))) {
+            showToast("El enlace debe ser una URL HTTPS de instagram.com.", true);
+            return;
+          }
+        } catch {
+          showToast("El enlace de Instagram ingresado no es válido.", true);
+          return;
+        }
       }
+
+      const catNames = {
+        'festivales': 'Festivales & Fiestas',
+        'tecnica': 'Montaje & Técnica',
+        'gastronomia': 'Gastronomía & BTL',
+        'videos': 'Videos & Cobertura'
+      };
+      const catVal = itemCategory ? itemCategory.value : 'festivales';
+      const catName = catNames[catVal] || 'Festivales';
 
       const current = store.getData();
       const gallery = current.gallery || [];
       const editId = itemEditId.value;
+      const existingItem = editId ? gallery.find(it => it.id === editId) : null;
 
       const itemPayload = {
-        id: editId || `item-${crypto.randomUUID().slice(0, 8)}`,
+        id: editId || `item-${Math.random().toString(36).slice(2, 10)}`,
         title,
         subtitle: (itemSubtitle.value || '').trim().slice(0, 120),
-        category: itemCategory.value,
-        categoryName: (itemCategoryName.value || '').trim().slice(0, 60),
-        img: safeImg,
-        link: safeLink,
-        badgeText: (itemBadgeText.value || '').trim().slice(0, 30),
-        badgeIcon: itemBadgeIcon.value || 'fa-camera',
-        isReel: Boolean(itemIsReel.checked),
-        span: itemSpan.value || 'mural-standard'
+        category: catVal,
+        categoryName: catName,
+        img: imgVal,
+        link: linkVal,
+        badgeText: existingItem?.badgeText || 'Evento',
+        badgeIcon: existingItem?.badgeIcon || 'fa-camera',
+        isReel: Boolean(existingItem?.isReel),
+        span: existingItem?.span || 'mural-standard'
       };
 
       if (editId) {
@@ -887,7 +998,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderGalleryAdmin();
       closeGalleryModal();
       setUnsavedChanges(true);
-      showToast("Elemento guardado en memoria. Recordá 'Publicar cambios'.");
+      showToast("Trabajo guardado en memoria. Recordá presionar 'Publicar' para subir los cambios a la web.");
     });
   }
 

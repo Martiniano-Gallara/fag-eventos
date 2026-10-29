@@ -97,10 +97,10 @@
         </div>
 
         <div class="header-actions">
-          <!-- Estado de Publicación -->
-          <span id="publishStatus" class="publish-status status-clean" title="Estado de sincronización con el servidor">
+          <!-- Estado de Publicación (Solo visible si hay cambios sin publicar) -->
+          <span id="publishStatus" class="publish-status status-dirty is-hidden" title="Hay cambios en memoria pendientes de publicar">
             <span class="status-dot"></span>
-            <span class="status-label">Sin cambios</span>
+            <span class="status-label">Cambios sin publicar</span>
           </span>
 
           <!-- Botón Publicar Cambios -->
@@ -469,7 +469,7 @@
   </div>
 
   <!-- ==========================================================================
-       MODAL DE EDICIÓN / CREACIÓN DE ITEM DE GALERÍA (100% RESPONSIVE)
+       MODAL DE EDICIÓN / CREACIÓN DE ITEM DE GALERÍA (SIMPLIFICADO)
        ========================================================================== -->
   <div id="itemModal" class="admin-modal" aria-hidden="true">
     <div class="modal-backdrop" id="modalBackdrop"></div>
@@ -481,94 +481,58 @@
 
       <form id="itemForm" class="modal-form">
         <input type="hidden" id="itemEditId">
+        <input type="hidden" id="itemImgData">
 
-        <div class="form-grid grid-2">
-          <div class="form-field">
-            <label class="form-label" for="itemTitle">Título del Trabajo / Evento</label>
-            <input type="text" id="itemTitle" class="form-input" placeholder="Ej: Carnavales 2026" required>
-          </div>
-          <div class="form-field">
-            <label class="form-label" for="itemSubtitle">Subtítulo Descriptivo</label>
-            <input type="text" id="itemSubtitle" class="form-input" placeholder="Ej: Montaje de Escenario Layher" required>
+        <!-- Carga de imagen desde el dispositivo -->
+        <div class="form-field mb-14">
+          <label class="form-label">Foto del Evento / Trabajo</label>
+          <div class="image-upload-dropzone" id="imageUploadDropzone" title="Hacé clic para seleccionar una imagen desde tu dispositivo">
+            <div id="imagePreviewContainer" class="image-preview-container is-hidden">
+              <img id="imagePreview" class="image-preview-img" src="" alt="Vista previa de imagen">
+              <button type="button" id="btnChangeImage" class="btn-change-image">
+                <i class="fa-solid fa-camera"></i> Cambiar foto
+              </button>
+            </div>
+            <div id="imageUploadPrompt" class="image-upload-prompt">
+              <i class="fa-solid fa-cloud-arrow-up upload-prompt-icon"></i>
+              <span class="upload-prompt-text">Seleccionar foto de tu dispositivo</span>
+              <span class="upload-prompt-hint">JPG, PNG o WebP desde tu computadora o celular</span>
+            </div>
+            <input type="file" id="itemFileInput" accept="image/png,image/jpeg,image/webp,image/avif" class="input-file-hidden">
           </div>
         </div>
 
-        <div class="form-grid grid-2 mt-10">
-          <div class="form-field">
-            <label class="form-label" for="itemCategory">Filtro de Categoría</label>
-            <select id="itemCategory" class="form-select" required>
-              <option value="festivales">Festivales & Fiestas</option>
-              <option value="tecnica">Montaje & Técnica</option>
-              <option value="gastronomia">Gastronomía & BTL</option>
-              <option value="videos">Videos & Reels</option>
-              <option value="festivales tecnica">Festivales + Montaje</option>
-              <option value="festivales gastronomia">Festivales + Gastronomía</option>
-              <option value="festivales gastronomia videos">Festivales + Gastronomía + Videos</option>
-              <option value="festivales videos">Festivales + Videos</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label class="form-label" for="itemCategoryName">Nombre visible categoría</label>
-            <input type="text" id="itemCategoryName" class="form-input" placeholder="Ej: Festivales & Montaje">
-          </div>
+        <div class="form-field mb-12">
+          <label class="form-label" for="itemTitle">Título del Evento o Show</label>
+          <input type="text" id="itemTitle" class="form-input" placeholder="Ej: Carnavales 2026" required>
         </div>
 
-        <div class="form-field mt-10">
-          <label class="form-label" for="itemImg">Ruta o URL de la Imagen</label>
-          <input type="text" id="itemImg" class="form-input" placeholder="assets/gallery/ejemplo.webp o https://..." required>
+        <div class="form-field mb-12">
+          <label class="form-label" for="itemSubtitle">Subtítulo Descriptivo</label>
+          <input type="text" id="itemSubtitle" class="form-input" placeholder="Ej: Montaje de Escenario Layher" required>
         </div>
 
-        <div class="form-field mt-10">
-          <label class="form-label" for="itemLink">Enlace a Instagram (Publicación / Reel)</label>
-          <input type="url" id="itemLink" class="form-input" placeholder="https://www.instagram.com/p/..." required>
+        <div class="form-field mb-12">
+          <label class="form-label" for="itemCategory">Categoría</label>
+          <select id="itemCategory" class="form-select" required>
+            <option value="festivales">Festivales & Fiestas</option>
+            <option value="tecnica">Montaje & Técnica</option>
+            <option value="gastronomia">Gastronomía & BTL</option>
+            <option value="videos">Videos & Cobertura</option>
+          </select>
         </div>
 
-        <div class="form-grid grid-2 mt-10">
-          <div class="form-field">
-            <label class="form-label" for="itemBadgeText">Texto de Etiqueta (Badge)</label>
-            <input type="text" id="itemBadgeText" class="form-input" placeholder="Ej: Escenario, Estructura">
-          </div>
-          <div class="form-field">
-            <label class="form-label" for="itemBadgeIcon">Ícono</label>
-            <select id="itemBadgeIcon" class="form-select">
-              <option value="fa-layer-group">Estructura</option>
-              <option value="fa-tv">Escenario / Pantallas</option>
-              <option value="fa-chair">Predio / Plateas</option>
-              <option value="fa-music">Shows / Música</option>
-              <option value="fa-utensils">Gastronomía</option>
-              <option value="fa-beer-mug-empty">Bebidas</option>
-              <option value="fa-masks-theater">Carnaval</option>
-              <option value="fa-location-dot">Ubicación</option>
-              <option value="fa-microphone">Micrófono</option>
-              <option value="fa-guitar">Guitarra</option>
-              <option value="fa-bolt">Rayo / Sonido</option>
-              <option value="fa-star">Estrella</option>
-              <option value="fa-camera">Cámara / General</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-grid grid-2 form-grid-aligned">
-          <div class="form-field">
-            <label class="form-label" for="itemSpan">Formato en Mural</label>
-            <select id="itemSpan" class="form-select">
-              <option value="mural-standard">Estándar (3 col x 2 filas)</option>
-              <option value="mural-hero">Hero Destacado (5 col x 3 filas)</option>
-              <option value="mural-wide">Horizontal Panorámico (4 col x 2 filas)</option>
-              <option value="mural-tall">Vertical Alto (3 col x 3 filas)</option>
-            </select>
-          </div>
-          <div class="form-field checkbox-field mt-18">
-            <label class="checkbox-label">
-              <input type="checkbox" id="itemIsReel" class="checkbox-input">
-              <span><i class="fa-solid fa-play color-reel"></i> Es un Reel / Video</span>
-            </label>
-          </div>
+        <div class="form-field mb-16">
+          <label class="form-label" for="itemLink">Enlace a Instagram (Opcional)</label>
+          <input type="url" id="itemLink" class="form-input" placeholder="https://www.instagram.com/... (si se deja vacío apunta al Instagram oficial)">
         </div>
 
         <div class="modal-footer">
           <button type="button" id="btnItemCancel" class="btn-secondary">Cancelar</button>
-          <button type="submit" class="btn-primary">Guardar Ítem</button>
+          <button type="submit" id="btnItemSave" class="btn-primary">
+            <i class="fa-solid fa-check"></i>
+            <span>Guardar Ítem</span>
+          </button>
         </div>
       </form>
     </div>

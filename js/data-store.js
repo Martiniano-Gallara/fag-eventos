@@ -30,19 +30,6 @@ const DEFAULT_FAG_DATA = {
   },
   gallery: [
     {
-      id: "item-1",
-      title: "Grandes Conciertos",
-      subtitle: "Estadios & Giras Mundiales",
-      category: "festivales videos",
-      categoryName: "Conciertos Internacionales",
-      img: "assets/gallery/mural-lead-singer.webp",
-      link: "https://www.instagram.com/fag.eventos/",
-      badgeText: "Mega Show",
-      badgeIcon: "fa-microphone",
-      isReel: false,
-      span: "mural-hero"
-    },
-    {
       id: "item-2",
       title: "Carnavales 2026",
       subtitle: "Montaje de Escenario Layher",
@@ -53,20 +40,7 @@ const DEFAULT_FAG_DATA = {
       badgeText: "Estructura",
       badgeIcon: "fa-layer-group",
       isReel: false,
-      span: "mural-wide"
-    },
-    {
-      id: "item-3",
-      title: "Festival de Peñas",
-      subtitle: "Programación Artística & Hitos",
-      category: "festivales",
-      categoryName: "Festivales Nacionales",
-      img: "assets/gallery/mural-latin-artist.webp",
-      link: "https://www.instagram.com/fag.eventos/",
-      badgeText: "Festival",
-      badgeIcon: "fa-guitar",
-      isReel: false,
-      span: "mural-tall"
+      span: "mural-hero"
     },
     {
       id: "item-4",
@@ -79,32 +53,6 @@ const DEFAULT_FAG_DATA = {
       badgeText: "Escenario",
       badgeIcon: "fa-tv",
       isReel: false,
-      span: "mural-standard"
-    },
-    {
-      id: "item-5",
-      title: "Rock & Bandas en Vivo",
-      subtitle: "Sonido Line-Array 360°",
-      category: "festivales tecnica",
-      categoryName: "Técnica & Sonido",
-      img: "assets/gallery/mural-guitar-solo.webp",
-      link: "https://www.instagram.com/fag.eventos/",
-      badgeText: "Técnica 360°",
-      badgeIcon: "fa-bolt",
-      isReel: false,
-      span: "mural-tall"
-    },
-    {
-      id: "item-6",
-      title: "Shows Masivos & Pop",
-      subtitle: "Iluminación & Puesta en Escena",
-      category: "festivales videos",
-      categoryName: "Shows en Vivo",
-      img: "assets/gallery/mural-female-star.webp",
-      link: "https://www.instagram.com/fag.eventos/",
-      badgeText: "En Vivo",
-      badgeIcon: "fa-star",
-      isReel: true,
       span: "mural-wide"
     },
     {
@@ -131,7 +79,7 @@ const DEFAULT_FAG_DATA = {
       badgeText: "Gastronomía",
       badgeIcon: "fa-beer-mug-empty",
       isReel: false,
-      span: "mural-standard"
+      span: "mural-tall"
     },
     {
       id: "item-9",
@@ -208,6 +156,12 @@ class FagDataStore {
 
     if (options.allowRelativeAssets) {
       if (/^assets\/gallery\/[a-zA-Z0-9._-]+\.(jpg|jpeg|png|webp|avif)$/i.test(trimmed)) {
+        return trimmed;
+      }
+    }
+
+    if (options.allowDataImage || options.allowRelativeAssets) {
+      if (/^data:image\/(webp|jpeg|jpg|png|gif|avif);base64,[A-Za-z0-9+/=]+$/i.test(trimmed)) {
         return trimmed;
       }
     }
@@ -574,6 +528,7 @@ class FagDataStore {
           fragment.appendChild(itemEl);
         }
         galleryGrid.replaceChildren(fragment);
+        galleryGrid.dataset.visibleCount = String(d.gallery.length);
       }
     }
 

@@ -1265,15 +1265,102 @@ html, body {
 }
 
 /* ==========================================================================
+   CARGA DE IMÁGENES DESDE DISPOSITIVO (DROPZONE & PREVIEW)
+   ========================================================================== */
+.image-upload-dropzone {
+  border: 2px dashed var(--admin-border);
+  border-radius: var(--radius-md);
+  background: #F8FAFC;
+  padding: 14px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-upload-dropzone:hover {
+  border-color: var(--admin-brand);
+  background: #EFF6FF;
+}
+
+.image-upload-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 6px;
+}
+
+.upload-prompt-icon {
+  font-size: 1.8rem;
+  color: var(--admin-brand);
+  margin-bottom: 4px;
+}
+
+.upload-prompt-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--admin-text-main);
+}
+
+.upload-prompt-hint {
+  font-size: 0.76rem;
+  color: var(--admin-text-muted);
+}
+
+.image-preview-container {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #0B1324;
+}
+
+.image-preview-img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.btn-change-image {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-xs);
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-change-image:hover {
+  background: var(--admin-brand);
+  border-color: var(--admin-brand);
+}
+
+/* ==========================================================================
    CSP COMPLIANT UTILITIES
    ========================================================================== */
 .is-hidden { display: none !important; }
+.overflow-hidden { overflow: hidden !important; }
 .mt-8 { margin-top: 8px !important; }
 .mt-10 { margin-top: 10px !important; }
 .mt-12 { margin-top: 12px !important; }
 .mt-18 { margin-top: 18px !important; }
 .mb-10 { margin-bottom: 10px !important; }
+.mb-12 { margin-bottom: 12px !important; }
 .mb-14 { margin-bottom: 14px !important; }
+.mb-16 { margin-bottom: 16px !important; }
 .mb-20 { margin-bottom: 20px !important; }
 
 .form-field-divided {

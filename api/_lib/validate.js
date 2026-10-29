@@ -21,6 +21,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ID_REGEX = /^item-[a-z0-9-]{1,40}$/;
 const BADGE_ICON_REGEX = /^fa-[a-z0-9-]{1,40}$/;
 const GALLERY_IMG_RELATIVE_REGEX = /^assets\/gallery\/[a-zA-Z0-9._-]+\.(jpg|jpeg|png|webp|avif)$/i;
+const DATA_IMAGE_REGEX = /^data:image\/(webp|jpeg|jpg|png|gif|avif);base64,[A-Za-z0-9+/=]+$/i;
 
 function validateText(str, fieldName, maxLen, { optional = false, allowNewlines = false } = {}) {
   if (str === undefined || str === null) {
@@ -86,6 +87,12 @@ function validateGalleryImg(imgStr, fieldName) {
   if (GALLERY_IMG_RELATIVE_REGEX.test(trimmed)) {
     return { ok: true, value: trimmed };
   }
+  if (DATA_IMAGE_REGEX.test(trimmed)) {
+    if (trimmed.length > 2.5 * 1024 * 1024) {
+      return { ok: false, error: `La imagen subida en ${fieldName} supera el límite de 2 MB.` };
+    }
+    return { ok: true, value: trimmed };
+  }
   try {
     const parsed = new URL(trimmed);
     if (parsed.protocol === 'https:') {
@@ -95,7 +102,7 @@ function validateGalleryImg(imgStr, fieldName) {
 
   return {
     ok: false,
-    error: `El campo ${fieldName} debe ser una ruta relativa válida en assets/gallery/ o una URL HTTPS.`
+    error: `El campo ${fieldName} debe ser una ruta relativa válida, una imagen subida válida o una URL HTTPS.`
   };
 }
 
@@ -104,11 +111,11 @@ export function validatePayload(input) {
     return { ok: false, error: 'El contenido principal debe ser un objeto válido.' };
   }
 
-  // Verificar tamaño del JSON serializado <= 100 KB
+  // Verificar tamaño del JSON serializado <= 4.5 MB (soporte imágenes subidas)
   try {
     const jsonStr = JSON.stringify(input);
-    if (Buffer.byteLength(jsonStr, 'utf8') > 100 * 1024) {
-      return { ok: false, error: 'El tamaño de los datos supera el límite máximo de 100 KB.' };
+    if (Buffer.byteLength(jsonStr, 'utf8') > 4.5 * 1024 * 1024) {
+      return { ok: false, error: 'El tamaño de los datos supera el límite máximo de 4.5 MB.' };
     }
   } catch {
     return { ok: false, error: 'Los datos no se pueden serializar correctamente.' };
