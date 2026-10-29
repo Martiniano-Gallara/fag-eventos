@@ -893,6 +893,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- FORMULARIO DE CAMBIO DE CONTRASEÑA ---
   if (formChangePassword) {
+    const reqLength = document.getElementById('reqLength');
+    const reqMatch = document.getElementById('reqMatch');
+
+    function checkPasswordReqs() {
+      const newPass = inputNewPassword ? inputNewPassword.value : '';
+      const confPass = inputConfirmPassword ? inputConfirmPassword.value : '';
+
+      if (reqLength) {
+        if (newPass.length >= 12) {
+          reqLength.classList.add('is-valid');
+        } else {
+          reqLength.classList.remove('is-valid');
+        }
+      }
+
+      if (reqMatch) {
+        if (newPass.length >= 12 && confPass && newPass === confPass) {
+          reqMatch.classList.add('is-valid');
+        } else {
+          reqMatch.classList.remove('is-valid');
+        }
+      }
+    }
+
+    if (inputNewPassword) inputNewPassword.addEventListener('input', checkPasswordReqs);
+    if (inputConfirmPassword) inputConfirmPassword.addEventListener('input', checkPasswordReqs);
+
+    // Botones de mostrar/ocultar contraseña
+    document.querySelectorAll('.btn-input-eye').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          if (icon) {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+          }
+        } else {
+          input.type = 'password';
+          if (icon) {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+          }
+        }
+      });
+    });
+
     formChangePassword.addEventListener('submit', async (e) => {
       e.preventDefault();
       const currentPassword = inputCurrentPassword ? inputCurrentPassword.value : '';
@@ -901,20 +951,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!currentPassword) {
         showToast("Ingresá la contraseña actual.", true);
+        if (inputCurrentPassword) inputCurrentPassword.focus();
         return;
       }
 
       if (newPassword.length < 12) {
         showToast("La nueva contraseña debe tener al menos 12 caracteres.", true);
+        if (inputNewPassword) inputNewPassword.focus();
         return;
       }
 
       if (newPassword !== confirmPassword) {
         showToast("Las contraseñas nuevas no coinciden.", true);
+        if (inputConfirmPassword) inputConfirmPassword.focus();
         return;
       }
 
-      if (btnSubmitPassword) btnSubmitPassword.disabled = true;
+      if (btnSubmitPassword) {
+        btnSubmitPassword.disabled = true;
+        btnSubmitPassword.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Actualizando...';
+      }
 
       try {
         const res = await fetch('/api/change-password', {
@@ -929,62 +985,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res.status === 200 && json.status === 'success') {
           showToast(json.message || "Contraseña actualizada. Iniciá sesión nuevamente.");
           formChangePassword.reset();
-          showLoginScreen();
-          if (pinInput) {
-            pinInput.value = '';
-            pinInput.focus();
-          }
+          checkPasswordReqs();
+          setTimeout(() => {
+            showLoginScreen();
+            if (pinInput) {
+              pinInput.value = '';
+              pinInput.focus();
+            }
+          }, 1000);
         } else {
           showToast(json.error || "No se pudo actualizar la contraseña.", true);
         }
       } catch (err) {
         showToast("Error de conexión al cambiar la contraseña.", true);
       } finally {
-        if (btnSubmitPassword) btnSubmitPassword.disabled = false;
-      }
-    });
-  }
-
-  // --- COPIAS DE SEGURIDAD (EXPORTAR / IMPORTAR / RESTAURAR) ---
-  if (btnExportJson) {
-    btnExportJson.addEventListener('click', () => {
-      store.exportBackup();
-      showToast("Copia de seguridad descargada.");
-    });
-  }
-
-  if (fileImportJson) {
-    fileImportJson.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          await store.importBackup(event.target.result);
-          populateAllFields();
-          renderGalleryAdmin();
-          setUnsavedChanges(true);
-          showToast("Copia importada en memoria. Recordá 'Publicar cambios'.");
-        } catch (err) {
-          showToast("Error al importar el archivo: " + err.message, true);
-        } finally {
-          fileImportJson.value = '';
+        if (btnSubmitPassword) {
+          btnSubmitPassword.disabled = false;
+          btnSubmitPassword.innerHTML = '<i class="fa-solid fa-lock"></i> <span>Actualizar Contraseña</span>';
         }
-      };
-      reader.readAsText(file);
-    });
-  }
-
-  if (btnResetDefaults) {
-    btnResetDefaults.addEventListener('click', () => {
-      const ok = confirm("¿Estás seguro de que deseás restaurar los valores de fábrica en memoria? Los cambios no se harán públicos hasta que presiones 'Publicar cambios'.");
-      if (ok) {
-        store.data = JSON.parse(JSON.stringify(DEFAULT_FAG_DATA));
-        populateAllFields();
-        renderGalleryAdmin();
-        setUnsavedChanges(true);
-        showToast("Valores de fábrica cargados en memoria. Recordá 'Publicar cambios'.");
       }
     });
   }

@@ -140,8 +140,8 @@
           <span>Galería</span>
         </button>
         <button class="tab-btn" data-tab="tab-seguridad">
-          <i class="fa-solid fa-gear"></i>
-          <span>Ajustes & Clave</span>
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Seguridad & Clave</span>
         </button>
       </div>
     </nav>
@@ -168,8 +168,13 @@
           <!-- Titular Principal Hero -->
           <div class="admin-card">
             <div class="card-title-row">
-              <i class="fa-solid fa-heading card-title-icon"></i>
-              <h3 class="card-title">Titular Principal (Hero)</h3>
+              <div class="card-title-icon-box">
+                <i class="fa-solid fa-heading card-title-icon"></i>
+              </div>
+              <div>
+                <h3 class="card-title">Titular Principal (Hero)</h3>
+                <p class="card-subtitle-small">Encabezado visible en la portada principal de la web.</p>
+              </div>
             </div>
             <div class="form-grid grid-2">
               <div class="form-field">
@@ -186,8 +191,13 @@
           <!-- 3 Cifras de Impacto -->
           <div class="admin-card">
             <div class="card-title-row">
-              <i class="fa-solid fa-chart-simple card-title-icon"></i>
-              <h3 class="card-title">Cifras de Impacto</h3>
+              <div class="card-title-icon-box">
+                <i class="fa-solid fa-chart-simple card-title-icon"></i>
+              </div>
+              <div>
+                <h3 class="card-title">Cifras de Impacto</h3>
+                <p class="card-subtitle-small">Métricas de trayectoria y gestión que se muestran animadas.</p>
+              </div>
             </div>
             <div class="stats-cards-grid">
               <!-- Métrica 1 -->
@@ -286,8 +296,13 @@
           <!-- WhatsApp y Email -->
           <div class="admin-card">
             <div class="card-title-row">
-              <i class="fa-brands fa-whatsapp card-title-icon color-wa"></i>
-              <h3 class="card-title">Canal WhatsApp & Email</h3>
+              <div class="card-title-icon-box color-wa-bg">
+                <i class="fa-brands fa-whatsapp card-title-icon color-wa"></i>
+              </div>
+              <div>
+                <h3 class="card-title">Canal WhatsApp & Email</h3>
+                <p class="card-subtitle-small">Vías de contacto y mensaje predeterminado de consultas.</p>
+              </div>
             </div>
             <div class="form-grid grid-2">
               <div class="form-field">
@@ -320,8 +335,13 @@
           <!-- Redes Sociales (Instagram) -->
           <div class="admin-card">
             <div class="card-title-row">
-              <i class="fa-brands fa-instagram card-title-icon color-ig"></i>
-              <h3 class="card-title">Perfiles de Instagram</h3>
+              <div class="card-title-icon-box color-ig-bg">
+                <i class="fa-brands fa-instagram card-title-icon color-ig"></i>
+              </div>
+              <div>
+                <h3 class="card-title">Perfiles de Instagram</h3>
+                <p class="card-subtitle-small">Cuentas oficiales vinculadas a la productora y directores.</p>
+              </div>
             </div>
             <div class="form-grid grid-2">
               <div class="form-field">
@@ -369,63 +389,77 @@
         </section>
 
         <!-- ====================================================================
-             TAB 4: AJUSTES & SEGURIDAD
+             TAB 4: SEGURIDAD & CLAVE DE ACCESO
              ==================================================================== -->
         <section id="tab-seguridad" class="tab-panel">
           <div class="panel-header-simple">
             <div>
-              <h2 class="panel-title">Ajustes & Seguridad</h2>
-              <p class="panel-desc">Gestión de la clave de acceso y copias de seguridad de datos.</p>
+              <h2 class="panel-title">Seguridad & Clave de Acceso</h2>
+              <p class="panel-desc">Administrá la clave de acceso al panel de administración de FAG Eventos.</p>
             </div>
           </div>
 
-          <div class="form-grid grid-2">
+          <div class="security-card-container">
             <!-- Cambio de Contraseña -->
-            <div class="admin-card">
+            <div class="admin-card security-card">
               <div class="card-title-row">
-                <i class="fa-solid fa-key card-title-icon"></i>
-                <h3 class="card-title">Cambiar Contraseña</h3>
+                <div class="card-title-icon-box">
+                  <i class="fa-solid fa-key card-title-icon"></i>
+                </div>
+                <div>
+                  <h3 class="card-title">Cambiar Contraseña</h3>
+                  <p class="card-subtitle-small">La nueva clave se almacenará de forma cifrada mediante derivación scrypt.</p>
+                </div>
               </div>
-              <form id="formChangePassword">
-                <div class="form-field mb-10">
-                  <label class="form-label" for="inputCurrentPassword">Contraseña Actual</label>
-                  <input type="password" id="inputCurrentPassword" class="form-input" autocomplete="current-password" required>
-                </div>
-                <div class="form-field mb-10">
-                  <label class="form-label" for="inputNewPassword">Nueva Contraseña (mínimo 12 caracteres)</label>
-                  <input type="password" id="inputNewPassword" class="form-input" minlength="12" autocomplete="new-password" required>
-                </div>
-                <div class="form-field mb-14">
-                  <label class="form-label" for="inputConfirmPassword">Confirmar Nueva Contraseña</label>
-                  <input type="password" id="inputConfirmPassword" class="form-input" minlength="12" autocomplete="new-password" required>
-                </div>
-                <button type="submit" id="btnSubmitPassword" class="btn-primary btn-block">
-                  <i class="fa-solid fa-lock"></i> Actualizar Contraseña
-                </button>
-              </form>
-            </div>
 
-            <!-- Copias de Seguridad JSON -->
-            <div class="admin-card">
-              <div class="card-title-row">
-                <i class="fa-solid fa-database card-title-icon"></i>
-                <h3 class="card-title">Copias de Seguridad</h3>
-              </div>
-              <p class="backup-card-desc">
-                Descargá una copia de todos los textos y trabajos o restaurá un archivo guardado previamente.
-              </p>
-              <div class="backup-actions-stack">
-                <button type="button" id="btnExportJson" class="btn-secondary btn-block">
-                  <i class="fa-solid fa-download"></i> Descargar Copia (JSON)
-                </button>
-                <label class="btn-secondary btn-block label-file-import">
-                  <i class="fa-solid fa-upload"></i> Restaurar Copia (JSON)
-                  <input type="file" id="fileImportJson" accept=".json" class="input-file-hidden">
-                </label>
-                <button type="button" id="btnResetDefaults" class="btn-secondary btn-danger btn-block">
-                  <i class="fa-solid fa-rotate-left"></i> Restaurar Valores de Fábrica
-                </button>
-              </div>
+              <form id="formChangePassword" class="security-form-grid">
+                <div class="form-field mb-14">
+                  <label class="form-label" for="inputCurrentPassword">Contraseña Actual</label>
+                  <div class="password-field-wrap">
+                    <input type="password" id="inputCurrentPassword" class="form-input" autocomplete="current-password" placeholder="Ingresá la contraseña actual" required>
+                    <button type="button" class="btn-input-eye" data-target="inputCurrentPassword" aria-label="Mostrar u ocultar contraseña">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-field mb-14">
+                  <label class="form-label" for="inputNewPassword">Nueva Contraseña</label>
+                  <div class="password-field-wrap">
+                    <input type="password" id="inputNewPassword" class="form-input" minlength="12" autocomplete="new-password" placeholder="Mínimo 12 caracteres" required>
+                    <button type="button" class="btn-input-eye" data-target="inputNewPassword" aria-label="Mostrar u ocultar contraseña">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                  <div class="password-check-badges">
+                    <span id="reqLength" class="check-badge">
+                      <i class="fa-solid fa-circle-check"></i> Mínimo 12 caracteres
+                    </span>
+                  </div>
+                </div>
+
+                <div class="form-field mb-20">
+                  <label class="form-label" for="inputConfirmPassword">Confirmar Nueva Contraseña</label>
+                  <div class="password-field-wrap">
+                    <input type="password" id="inputConfirmPassword" class="form-input" minlength="12" autocomplete="new-password" placeholder="Repetí la nueva contraseña" required>
+                    <button type="button" class="btn-input-eye" data-target="inputConfirmPassword" aria-label="Mostrar u ocultar contraseña">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                  <div class="password-check-badges">
+                    <span id="reqMatch" class="check-badge">
+                      <i class="fa-solid fa-circle-check"></i> Las contraseñas coinciden
+                    </span>
+                  </div>
+                </div>
+
+                <div class="security-form-actions">
+                  <button type="submit" id="btnSubmitPassword" class="btn-primary btn-submit-password">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Actualizar Contraseña</span>
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </section>
