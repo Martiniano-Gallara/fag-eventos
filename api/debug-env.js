@@ -1,4 +1,5 @@
 import { getSql, ensureSchema } from './_lib/db.js';
+import { verifyPassword } from './_lib/auth.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -16,17 +17,38 @@ export default async function handler(req, res) {
   let adminAuthRowsCount = null;
   let loginAttemptsCount = null;
   let dbError = null;
+  let testQueryError = null;
+  let testVerifyResult = null;
 
   if (dbUrl) {
     try {
       const sql = getSql();
       await ensureSchema(sql);
 
-      const authRows = await sql`SELECT count(*)::int as cnt FROM fag_admin_auth;`;
-      adminAuthRowsCount = authRows?.[0]?.cnt ?? 0;
+      const authRows = await sql`SELECT password_hash FROM fag_admin_auth WHERE id = 1;`;
+      adminAuthRowsCount = authRows?.length ?? 0;
 
-      const attemptRows = await sql`SELECT count(*)::int as cnt FROM fag_login_attempts;`;
-      loginAttemptsCount = attemptRows?.[0]?.cnt ?? 0;
+      if (adminAuthRowsCount > 0) {
+        testVerifyResult = await verifyPassword('wrongpassword', authRows[0].password_hash);
+      }
+
+      // Probar la consulta exacta de fag_login_attempts
+      try {
+        const testIp = 'debug-probe-ip';
+        const currentAttempts = 1;
+        const lockedUntil = null;
+        await sql`
+          INSERT INTO fag_login_attempts (ip, attempts, locked_until, updated_at)
+          VALUES (${testIp}, ${currentAttempts}, ${lockedUntil}, NOW())
+          ON CONFLICT (ip) DO UPDATE
+          SET attempts = EXCLUDED.attempts,
+              locked_until = EXCLUDED.locked_until,
+              updated_at = NOW();
+        `;
+        await sql`DELETE FROM fag_login_attempts WHERE ip = ${testIp};`;
+      } catch (errQ) {
+        testQueryError = errQ.message;
+      }
 
       dbStatus = 'connected';
     } catch (err) {
@@ -50,16 +72,14 @@ export default async function handler(req, res) {
       present: !!dbUrl,
       status: dbStatus,
       adminAuthRowsCount,
-      loginAttemptsCount,
-      dbError
+      dbError,
+      testQueryError,
+      testVerifyResult
     }
   };
 
-  const allOk = report.SESSION_SECRET.ok && report.ADMIN_INITIAL_PASSWORD.ok && dbStatus === 'connected';
-
   res.setHeader('Cache-Control', 'no-store');
   return res.status(200).json({
-    allOk,
     diagnostics: report
   });
 }
