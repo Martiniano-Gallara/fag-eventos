@@ -100,3 +100,4 @@ jobs:
             -d '{"password":"smoke-test-wrong-pw-ci"}')
           echo "login with wrong pw -> $STATUS"
           [ "$STATUS" != "200" ]
+

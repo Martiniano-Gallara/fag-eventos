@@ -206,3 +206,4 @@ fag-eventos/
 ## 12. Soporte
 
 Para consultas sobre el código o la infraestructura, contactar al desarrollador que entregó este proyecto.
+
