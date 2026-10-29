@@ -9,7 +9,8 @@
   "scripts": {
     "start": "serve .",
     "test": "node scripts/test-verification.mjs",
-    "fix:gallery": "node scripts/fix-gallery-extensions.mjs"
+    "fix:gallery": "node scripts/fix-gallery-extensions.mjs",
+    "fix:gallery:api": "node scripts/fix-gallery-via-api.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0"

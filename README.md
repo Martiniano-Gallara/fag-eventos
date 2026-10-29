@@ -89,13 +89,19 @@ Los cambios son locales hasta que se hace clic en **Publicar**. El sitio públic
 
 ## 6. Corregir Imágenes de Galería (Fix Único)
 
-Si las imágenes de la galería aparecen rotas, ejecutar el script de corrección de extensiones:
+Si las imágenes de la galería aparecen rotas, podés corregirlas de cualquiera de estas dos formas:
 
+**Opción A — Vía API (más simple, no requiere connection string de DB):**
 ```bash
-DATABASE_URL="postgresql://..." node scripts/fix-gallery-extensions.mjs
+npm run fix:gallery:api "<contraseña_admin>"
 ```
 
-Este script convierte las rutas `.jpg`/`.png` a `.webp` en la DB. Es idempotente (se puede correr múltiples veces sin problema).
+**Opción B — Conexión directa a PostgreSQL (Neon):**
+```bash
+DATABASE_URL="postgresql://..." npm run fix:gallery
+```
+
+Ambos scripts convierten las rutas `.jpg`/`.png` a `.webp` en la DB y verifican que las 12 imágenes respondan 200 OK. Son idempotentes (se pueden correr múltiples veces sin problema).
 
 ---
 
