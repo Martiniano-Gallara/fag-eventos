@@ -240,85 +240,68 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 6. Lightbox Modal Functionality
-  const lightbox = document.getElementById('lightboxModal');
-  const lightboxImg = document.getElementById('lightboxMedia');
-  const lightboxTitle = document.getElementById('lightboxTitle');
-  const lightboxCategory = document.getElementById('lightboxCategory');
-  const lightboxClose = document.getElementById('lightboxClose');
-  const lightboxPrev = document.getElementById('lightboxPrev');
-  const lightboxNext = document.getElementById('lightboxNext');
-  const lightboxIgLink = document.getElementById('lightboxIgLink') || document.querySelector('.lightbox-caption .btn-ig-pill');
-  const lightboxIgText = document.getElementById('lightboxIgText');
-
-  let currentGalleryIndex = 0;
-  const getVisibleGalleryItems = () => Array.from(document.querySelectorAll('.gallery-item')).filter(i => !i.classList.contains('filtered-hidden'));
-
-  const updateLightboxContent = (index) => {
-    const items = getVisibleGalleryItems();
-    if (!items.length) return;
-    if (index < 0) index = items.length - 1;
-    if (index >= items.length) index = 0;
-    currentGalleryIndex = index;
-
-    const item = items[currentGalleryIndex];
-    if (!item) return;
-
-    const rawImg = item.getAttribute('data-img') || item.querySelector('.gallery-img')?.src;
-    const imgSrc = window.fagStore ? window.fagStore.safeUrl(rawImg, { allowRelativeAssets: true }) : rawImg;
-    const title = item.querySelector('.gallery-title')?.textContent || 'FAG Eventos';
-    const category = item.getAttribute('data-category-name') || 'Evento';
-    const rawLink = item.getAttribute('data-link') || 'https://www.instagram.com/fag.eventos/';
-    const link = (window.fagStore ? window.fagStore.safeUrl(rawLink) : null) || 'https://www.instagram.com/fag.eventos/';
-
-    if (lightboxImg && imgSrc) {
-      lightboxImg.src = imgSrc;
-      lightboxImg.alt = title;
-    }
-    if (lightboxTitle) lightboxTitle.textContent = title;
-    if (lightboxCategory) lightboxCategory.textContent = category;
-
-    if (lightboxIgLink) {
-      lightboxIgLink.href = link;
-      if (lightboxIgText) {
-        if (link.includes('/reel/') || link.includes('/p/')) {
-          const isVideo = link.includes('/reel/') || item.getAttribute('data-category')?.includes('videos') || !!item.querySelector('.video-play-indicator');
-          lightboxIgText.textContent = isVideo ? 'Ver Reel en Instagram' : 'Ver Publicación';
-        } else if (link.includes('highlights')) {
-          lightboxIgText.textContent = 'Ver Historia Destacada';
-        } else {
-          lightboxIgText.textContent = 'Ver en Instagram';
-        }
-      }
-    }
-  };
-
-  const openLightbox = (index) => {
-    if (!lightbox) return;
-    updateLightboxContent(index);
-    lightbox.classList.add('active');
-    document.body.classList.add('overflow-hidden');
-  };
-
-  const closeLightbox = () => {
-    if (!lightbox) return;
-    lightbox.classList.remove('active');
-    document.body.classList.remove('overflow-hidden');
-  };
-
-  function bindGalleryLightbox() {
+  // 6. Expansión Inline en el Mural (Sin ventana emergente que tape la pantalla)
+  function bindGalleryExpand() {
     const galleryGridEl = document.getElementById('galleryGrid');
-    if (galleryGridEl && !galleryGridEl.dataset.lightboxBound) {
-      galleryGridEl.dataset.lightboxBound = "true";
+    if (galleryGridEl && !galleryGridEl.dataset.expandBound) {
+      galleryGridEl.dataset.expandBound = "true";
+
       galleryGridEl.addEventListener('click', (e) => {
+        // 1. Si se presionó el botón de cerrar la tarjeta expandida
+        const closeBtn = e.target.closest('.gallery-expand-close');
+        if (closeBtn) {
+          e.stopPropagation();
+          const item = closeBtn.closest('.gallery-item');
+          if (item) item.classList.remove('is-expanded');
+          return;
+        }
+
+        // 2. Si se hizo clic en el enlace de Instagram o dentro de él, dejar que navegue normalmente
+        const igBtn = e.target.closest('.gallery-expand-btn-ig');
+        if (igBtn) {
+          return;
+        }
+
+        // 3. Si se hizo clic en la tarjeta
         const item = e.target.closest('.gallery-item');
         if (!item) return;
-        const items = getVisibleGalleryItems();
-        const index = items.indexOf(item);
-        openLightbox(index !== -1 ? index : 0);
+
+        const isAlreadyExpanded = item.classList.contains('is-expanded');
+
+        // Cerrar cualquier otro ítem que estuviera expandido
+        document.querySelectorAll('.gallery-item.is-expanded').forEach(other => {
+          if (other !== item) other.classList.remove('is-expanded');
+        });
+
+        // Alternar estado expandido del ítem actual
+        if (isAlreadyExpanded) {
+          item.classList.remove('is-expanded');
+        } else {
+          item.classList.add('is-expanded');
+          // Desplazamiento suave para centrar el elemento expandido en la vista si quedó cortado
+          setTimeout(() => {
+            const rect = item.getBoundingClientRect();
+            if (rect.top < 80 || rect.bottom > window.innerHeight) {
+              item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }, 150);
+        }
       });
     }
   }
+
+  // Cerrar expansión con tecla Escape o clic fuera del mural
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.gallery-item.is-expanded').forEach(el => el.classList.remove('is-expanded'));
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#galleryGrid')) {
+      document.querySelectorAll('.gallery-item.is-expanded').forEach(el => el.classList.remove('is-expanded'));
+    }
+  });
 
   // 7. Dynamic WhatsApp Buttons
   const initWhatsAppListeners = () => {
@@ -385,39 +368,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.fagStore) {
     // 1) Renderizar de inmediato caché local o datos por defecto sin parpadeo
     window.fagStore.applyToDOM();
-    bindGalleryLightbox();
+    bindGalleryExpand();
 
     // 2) Siempre consultar al servidor en segundo plano
     window.fagStore.fetchFromCloud().then(() => {
       window.fagStore.applyToDOM();
-      bindGalleryLightbox();
+      bindGalleryExpand();
     });
   }
-
-  if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
-  if (lightboxPrev) {
-    lightboxPrev.addEventListener('click', (e) => {
-      e.stopPropagation();
-      updateLightboxContent(currentGalleryIndex - 1);
-    });
-  }
-  if (lightboxNext) {
-    lightboxNext.addEventListener('click', (e) => {
-      e.stopPropagation();
-      updateLightboxContent(currentGalleryIndex + 1);
-    });
-  }
-
-  if (lightbox) {
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox();
-    });
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (!lightbox || !lightbox.classList.contains('active')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') updateLightboxContent(currentGalleryIndex - 1);
-    if (e.key === 'ArrowRight') updateLightboxContent(currentGalleryIndex + 1);
-  });
 });

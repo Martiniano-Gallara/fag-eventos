@@ -518,10 +518,48 @@ class FagDataStore {
           const h4 = document.createElement('h4');
           h4.className = 'gallery-title';
           h4.textContent = item.title || '';
-
           info.appendChild(h4);
+
+          if (item.subtitle) {
+            const sub = document.createElement('span');
+            sub.className = 'gallery-subtitle';
+            sub.textContent = item.subtitle;
+            info.appendChild(sub);
+          }
+
+          // Detalles y botón que se revelan al expandirse en el mural
+          const details = document.createElement('div');
+          details.className = 'gallery-expanded-details';
+
+          const igBtn = document.createElement('a');
+          igBtn.href = linkUrl;
+          igBtn.target = '_blank';
+          igBtn.rel = 'noopener noreferrer';
+          igBtn.className = 'gallery-expand-btn-ig';
+
+          const igIcon = document.createElement('i');
+          igIcon.className = 'fa-brands fa-instagram';
+          igBtn.appendChild(igIcon);
+
+          const isVideo = linkUrl.includes('/reel/') || linkUrl.includes('/p/') || (item.category && item.category.includes('videos'));
+          const btnText = document.createTextNode(isVideo ? ' Ver Reel en Instagram' : ' Ver en Instagram');
+          igBtn.appendChild(btnText);
+
+          details.appendChild(igBtn);
+          info.appendChild(details);
           overlay.appendChild(info);
+
+          // Botón cerrar para contraer ítem expandido
+          const closeBtn = document.createElement('button');
+          closeBtn.type = 'button';
+          closeBtn.className = 'gallery-expand-close';
+          closeBtn.setAttribute('aria-label', 'Contraer elemento');
+          const closeIcon = document.createElement('i');
+          closeIcon.className = 'fa-solid fa-xmark';
+          closeBtn.appendChild(closeIcon);
+
           thumbWrap.appendChild(img);
+          thumbWrap.appendChild(closeBtn);
           thumbWrap.appendChild(overlay);
           itemEl.appendChild(thumbWrap);
 

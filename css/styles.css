@@ -2795,7 +2795,7 @@ button.summary-director-chip:hover .chip-action-hint {
 /* Elementos de la Galería - Efecto Blanco y Negro / Alto Contraste */
 .gallery-item {
   position: relative;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
   background: #000000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
@@ -2812,6 +2812,123 @@ button.summary-director-chip:hover .chip-action-hint {
   aspect-ratio: auto !important;
   overflow: hidden;
   display: block;
+}
+
+/* ==========================================================================
+   EXPANSIÓN EN EL MURAL (INLINE EXPAND - SIN EMERGENTE OSCURO)
+   ========================================================================== */
+.gallery-item.is-expanded {
+  z-index: 20 !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 0 3px #00D2FF !important;
+  cursor: default;
+}
+
+@media (min-width: 1024px) {
+  .gallery-item.is-expanded {
+    grid-column: span 6 !important;
+    grid-row: span 2 !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .gallery-item.is-expanded {
+    grid-column: span 2 !important;
+    grid-row: span 2 !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .gallery-item.is-expanded {
+    grid-column: span 2 !important;
+    grid-row: span 2 !important;
+  }
+}
+
+.gallery-item.is-expanded .gallery-img {
+  filter: grayscale(0%) contrast(105%) brightness(102%) !important;
+  transform: scale(1.03) !important;
+}
+
+/* Botón cerrar expansión dentro del ítem */
+.gallery-expand-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.2s ease;
+}
+
+.gallery-expand-close:hover {
+  background: #DC2626;
+  border-color: #DC2626;
+  transform: scale(1.1);
+}
+
+.gallery-item.is-expanded .gallery-expand-close {
+  display: flex !important;
+}
+
+/* Overlay expandido con información y botón de Instagram */
+.gallery-item.is-expanded .gallery-overlay {
+  background: linear-gradient(to top, rgba(6, 15, 29, 0.98) 0%, rgba(6, 15, 29, 0.65) 50%, rgba(6, 15, 29, 0.2) 80%, transparent 100%) !important;
+  padding: 20px 18px !important;
+}
+
+.gallery-expanded-details {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.gallery-item.is-expanded .gallery-expanded-details {
+  display: flex !important;
+}
+
+.gallery-item.is-expanded .gallery-title {
+  font-size: 1.25rem !important;
+  white-space: normal !important;
+}
+
+.gallery-item.is-expanded .gallery-subtitle {
+  font-size: 0.88rem !important;
+  white-space: normal !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.gallery-expand-btn-ig {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  color: #FFFFFF !important;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(220, 39, 67, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 4px;
+}
+
+.gallery-expand-btn-ig:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(220, 39, 67, 0.6);
 }
 
 /* Fotografía B&W por defecto idéntica al mural */
